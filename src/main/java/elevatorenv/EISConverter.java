@@ -10,7 +10,7 @@ import eis.iilang.Parameter;
 public class EISConverter {
 
 	/**
-	 * Convert the Keysset of Parameter objects into a Hashmap<Key,Parameter>
+	 * Convert the Keysset of Parameter objects into a Hashmap&lt;Key,Parameter&gt;
 	 * with Key the {@link Simulator.Keys} and value the value which should be a
 	 * Identifier (String) or Numeral (Integer or Float).
 	 * 

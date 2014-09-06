@@ -14,7 +14,7 @@ import org.intranet.sim.event.EventQueue;
 /**
 * The states of Car are substates of MovableLocation:IDLE. 
 * Valid states:
-* <table border="1" cellspacing="0" cellpadding="2">
+* <table border="1" cellspacing="0" cellpadding="2" summary="">
 *  <tr>
 *   <th rowspan="2">State</th>
 *   <th colspan="2">Variables</th>
@@ -41,7 +41,7 @@ import org.intranet.sim.event.EventQueue;
 *   <td>null</td>
 *   <td>MOVING or arrive(): DOCKED</td>
 *   <td><i>Illegal</i></td>
-*   <td>DOCKED<br/>[docked()]</td>
+*   <td>DOCKED<br>[docked()]</td>
 *  </tr>
 *  <tr>
 *   <td>IDLE:UNDOCKING</td>

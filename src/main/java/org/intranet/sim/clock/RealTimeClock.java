@@ -8,7 +8,7 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * @modified W.Pasman 11nov2010 to use preferred time factor.
+ * @author W.Pasman 11nov2010 to use preferred time factor.
  */
 public class RealTimeClock extends Clock {
 	public static class RealTimeClockFactory implements ClockFactory {

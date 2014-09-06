@@ -16,7 +16,7 @@ import org.intranet.sim.event.TrackingUpdateEvent;
 /**
 * A door that opens and closes.
 * Valid states:
-* <table border="1" cellspacing="0" cellpadding="2">
+* <table border="1" cellspacing="0" cellpadding="2" summary="">
 *  <tr>
 *   <th rowspan="2">State</th>
 *   <th colspan="1">Variables</th>
@@ -31,7 +31,7 @@ import org.intranet.sim.event.TrackingUpdateEvent;
 *  </tr>
 *  <tr>
 *   <td>CLOSED</td>
-*   <td/>
+*   <td></td>
 *   <td>OPENING</td>
 *   <td><i>Impossible</i></td>
 *   <td><i>Illegal</i></td>
@@ -39,15 +39,15 @@ import org.intranet.sim.event.TrackingUpdateEvent;
 *  </tr>
 *  <tr>
 *   <td>OPENING</td>
-*   <td/>
+*   <td></td>
 *   <td><i>Illegal</i></td>
-*   <td>opened(): OPENED<br/>[doorOpened()]</td>
+*   <td>opened(): OPENED<br>[doorOpened()]</td>
 *   <td><i>Illegal</i></td>
 *   <td><i>Impossible</i></td>
 *  </tr>
 *  <tr>
 *   <td>OPENED</td>
-*   <td/>
+*   <td></td>
 *   <td><i>Illegal</i></td>
 *   <td><i>Impossible</i></td>
 *   <td>close(): CLOSING</td>
@@ -55,11 +55,11 @@ import org.intranet.sim.event.TrackingUpdateEvent;
 *  </tr>
 *  <tr>
 *   <td>CLOSING</td>
-*   <td/>
+*   <td></td>
 *   <td>OPENING</td>
 *   <td><i>Impossible</i></td>
 *   <td><i>Illegal</i></td>
-*   <td>closed(): CLOSED<br/>[doorClosed()]</td>
+*   <td>closed(): CLOSED<br>[doorClosed()]</td>
 *  </tr>
 * </table> 
 * @author Neil McKellar and Chris Dailey

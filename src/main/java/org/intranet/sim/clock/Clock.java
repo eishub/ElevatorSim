@@ -14,10 +14,10 @@ import java.util.List;
  * <li>One is the FeedbackListener, which is passed to the Constructor or set
  * with {@link #setFeedbackListener}. This FeedbackListener CONTROLS the time
  * with the timeUpdate callback.
- * <li>The other one is the {@link #Listener} which allows you to listen to
+ * <li>The other one is the {link #Listener} which allows you to listen to
  * changes but not to influence the clock in the listen process.
  * </ul>
- * 
+ * TODO Link not working
  * @author Neil McKellar and Chris Dailey
  * 
  */

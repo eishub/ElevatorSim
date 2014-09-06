@@ -34,8 +34,8 @@ import elevatorenv.GOALController;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * @modified W.Pasman to use simulator preferences. #958
- * @modified W.Pasman to make separate Time Factor spinner listening to the
+ * @author W.Pasman to use simulator preferences. #958
+ * @author W.Pasman to make separate Time Factor spinner listening to the
  *           actual clock. #1354
  */
 public class SimulationArea extends JComponent {

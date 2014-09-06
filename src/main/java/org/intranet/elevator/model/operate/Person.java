@@ -23,7 +23,7 @@ import org.intranet.sim.event.TrackingUpdateEvent;
 /**
  * A Person moves around the building, calling elevators, entering elevators,
  * and leaving elevators. Person states:
- * <table border="1" cellspacing="0" cellpadding="2">
+ * <table border="1" cellspacing="0" cellpadding="2" summary="">
  * <tr>
  * <th rowspan="2">State</th>
  * <th colspan="2">Variables</th>
@@ -33,13 +33,13 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * <th>destination</th>
  * <th>currentLocation</th>
  * <th>setDestination()</th>
- * <th>CarRequestPanel<br/>
+ * <th>CarRequestPanel<br>
  * [arrivedUp/Down]</th>
- * <th>Door<br/>
+ * <th>Door<br>
  * [doorClosed]</th>
- * <th>Car<br/>
+ * <th>Car<br>
  * [docked]</th>
- * <th>Door<br/>
+ * <th>Door<br>
  * [doorOpened]</th>
  * <th>[leftCar]</th>
  * </tr>
@@ -47,8 +47,8 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * <td>Idle</td>
  * <td>null</td>
  * <td>Set</td>
- * <td>Idle if destination is same<br/>
- * pressButton(): Waiting if elevator is elsewhere<br/>
+ * <td>Idle if destination is same<br>
+ * pressButton(): Waiting if elevator is elsewhere<br>
  * enterCar(): Travelling if elevator is there</td>
  * <td><i>Impossible</i></td>
  * <td><i>Impossible</i></td>
@@ -61,7 +61,7 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * <td>Set</td>
  * <td>Set to Floor</td>
  * <td><i>Illegal?</i></td>
- * <td>enterCar(): Travelling if success<br/>
+ * <td>enterCar(): Travelling if success<br>
  * waitForDoorClose(): DoorClosing if car is full</td>
  * <td><i>Impossible</i></td>
  * <td><i>Impossible</i></td>

@@ -10,7 +10,7 @@ import org.intranet.sim.event.EventQueue;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * @modified W.Pasman added documentation.
+ * @author W.Pasman added documentation.
  */
 public interface Controller {
 	/**

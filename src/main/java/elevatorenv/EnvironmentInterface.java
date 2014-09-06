@@ -61,10 +61,10 @@ import eis.iilang.Percept;
  * environments directory.
  * 
  * @author W.Pasman 12jan2009
- * @modified W.Pasman 6oct09: Modified to conform EIS standard
- * @modified KH January 2010
- * @modified W.Pasman 1dec2010 updated to EIS0.3
- * @modified K.Hindriks 11 March 2011
+ * @author W.Pasman 6oct09: Modified to conform EIS standard
+ * @author KH January 2010
+ * @author W.Pasman 1dec2010 updated to EIS0.3
+ * @author K.Hindriks 11 March 2011
  */
 @SuppressWarnings("serial")
 public class EnvironmentInterface extends EIDefaultImpl implements
@@ -117,7 +117,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * 
 	 * @return the GOAL controller that enables control of the elevator.
 	 * 
-	 * @throws Exception
+	 * @throws eis.exceptions.NoEnvironmentException
 	 *             if there is no GOALController.
 	 */
 	private GOALController getController() throws NoEnvironmentException {
@@ -134,7 +134,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	}
 
 	/**
-	 * @returns the simulator that is selected. The simulator may be in running
+	 * @return the simulator that is selected. The simulator may be in running
 	 *          or paused state. returns null if no simulator available
 	 */
 	private Simulator getSimulator() {
@@ -152,7 +152,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * debug but there seems no alternative to the SimulationArea.getClock()
 	 * call.
 	 * 
-	 * @modified 8nov2010 removed throwing to make getClock more generally
+	 * @author 8nov2010 removed throwing to make getClock more generally
 	 *           usable
 	 * 
 	 */
@@ -228,8 +228,8 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * <p>
 	 * Executes the action goto(floornr, dir) where parameter dir should be
 	 * either up or down. This lets the elevator go to the given floornr. After
-	 * arrival, the &lt;dir> light (up or down) will be turned on, indicating to
-	 * the people on that floor that this elevator will be going in &lt;dir>
+	 * arrival, the &lt;dir&gt; light (up or down) will be turned on, indicating to
+	 * the people on that floor that this elevator will be going in &lt;dir&gt;
 	 * direction and thus suggesting that people who want in the other direction
 	 * should not enter. Note, there MAY be people entering the elevator that
 	 * travel in the other direction.
@@ -274,7 +274,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * the goto action. We do some type checking but do not do all checks here
 	 * (e.g., is floor number legal?)
 	 * 
-	 * @param action
+	 * @param action action
 	 * @return CarTarget object containing car target.
 	 * @throws IllegalArgumentException
 	 *             if action or arguments are wrong
@@ -322,7 +322,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * <ol>
 	 * <li>
 	 * If the parameter list contains the
-	 * {@link ElevatorSettings.InitKey#SIMULATION}, then we will not ask the
+	 * {link ElevatorSettings.InitKey#SIMULATION}, then we will not ask the
 	 * user to give the simulation. This is called when you call the EIS
 	 * ManageEnvironment with INIT parameter.
 	 * <li>
@@ -332,9 +332,11 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * </ol>
 	 * 
 	 * @param parameters
-	 *            list <Key,Value> pairs (both key and value are String) used
+	 *            list [Key,Value] pairs (both key and value are String) used
 	 *            for the init
 	 * @throws ManagementException
+     *
+     * TODO Link not working
 	 */
 	protected void initializeEnvironment(
 			Hashtable<Simulator.Keys, Parameter> parameters)
@@ -712,7 +714,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	}
 
 	/**
-	 * Version as set by Chris Dailey & Neil McKellar.
+	 * Version as set by Chris Dailey and Neil McKellar.
 	 */
 	public String getVersion() {
 		return "0.4";

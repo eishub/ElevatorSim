@@ -14,7 +14,7 @@ import org.intranet.sim.event.EventQueue;
 
 /**
 * Deals with obstructions.  The state transitions look like this: 
-* <table border="1" cellspacing="0" cellpadding="2">
+* <table border="1" cellspacing="0" cellpadding="2" summary="">
 *  <tr>
 *   <th rowspan="2">State</th>
 *   <th colspan="1">Variables</th>
@@ -28,24 +28,24 @@ import org.intranet.sim.event.EventQueue;
 *  </tr>
 *  <tr>
 *   <td>CLEAR</td>
-*   <td/>
-*   <td>OBSTRUCTED<br/>[sensorObstructed()]</td>
+*   <td></td>
+*   <td>OBSTRUCTED<br>[sensorObstructed()]</td>
 *   <td>UNOBSTRUCTED</td>
 *   <td><i>Impossible</i></td>
 *  </tr>
 *  <tr>
 *   <td>OBSTRUCTED</td>
-*   <td/>
+*   <td></td>
 *   <td><i>Illegal</i></td>
 *   <td>UNOBSTRUCTED</td>
 *   <td><i>Impossible</i></td>
 *  </tr>
 *  <tr>
 *   <td>UNOBSTRUCTED</td>
-*   <td/>
-*   <td>OBSTRUCTED<br/>[sensorObstructed()]</td>
+*   <td></td>
+*   <td>OBSTRUCTED<br>[sensorObstructed()]</td>
 *   <td><i>Illegal</i></td>
-*   <td>CLEAR<br/>[sensorCleared()]</td>
+*   <td>CLEAR<br>[sensorCleared()]</td>
 *  </tr>
 * </table>
 * @author Neil McKellar and Chris Dailey

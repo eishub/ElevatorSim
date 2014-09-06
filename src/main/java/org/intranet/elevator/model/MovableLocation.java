@@ -12,7 +12,7 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * A location that can move. The state of movement is kept between height and
  * destinationHeight. If they are equal, then the MovableLocation is still. If
  * they are not equal, then the MovableLocation is moving. Valid states:
- * <table border="1" cellspacing="0" cellpadding="2">
+ * <table border="1" cellspacing="0" cellpadding="2" summary="">
  * <tr>
  * <th rowspan="2">State</th>
  * <th colspan="1">Variables</th>

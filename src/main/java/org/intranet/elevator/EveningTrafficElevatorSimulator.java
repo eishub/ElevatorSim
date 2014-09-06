@@ -21,7 +21,7 @@ import org.intranet.ui.LongParameter;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * @modified W.Pasman 8nov2010 added ControllerParameter
+ * @author W.Pasman 8nov2010 added ControllerParameter
  */
 public class EveningTrafficElevatorSimulator extends Simulator {
 	private IntegerParameter floorsParameter;

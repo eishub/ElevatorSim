@@ -33,8 +33,8 @@ import eis.iilang.Percept;
  * 1.
  * 
  * @author W.Pasman
- * @modified KH
- * @modified W.Pasman nov2010 moved out of the original code base, fixed docu
+ * @author KH
+ * @author W.Pasman nov2010 moved out of the original code base, fixed docu
  */
 public class GOALController implements Controller {
 
@@ -161,7 +161,7 @@ public class GOALController implements Controller {
 	 *            if Dir="up", the elevator will light the "up" sign when it
 	 *            arrived at N. Otherwise it will light the "down" sign.
 	 * 
-	 * @throws exception
+	 * @throws java.lang.IllegalArgumentException
 	 *             if you give incorrect arguments to your command.
 	 */
 
@@ -199,7 +199,7 @@ public class GOALController implements Controller {
 	 * create list of current percepts that can be passed through EIS. Floor
 	 * numbers are integers [1,...].
 	 * <p>
-	 * Percepts that are generated:
+	 * Percepts that are generated:</p>
 	 * <ul>
 	 * <li>doorState(X) indicates that the car's doors are opening, open,
 	 * closed, closing. Only sent on change.</li>
@@ -214,7 +214,7 @@ public class GOALController implements Controller {
 	 * <li>capacity(N). Indicates that the car can hold at most N people. This
 	 * percept is sent only 1 time at start.</li>
 	 * </ul>
-	 * </p>
+	 *
 	 * 
 	 * @return list of EIS percepts.
 	 * @param carname
