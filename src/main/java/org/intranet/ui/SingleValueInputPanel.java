@@ -34,9 +34,10 @@ public final class SingleValueInputPanel extends InputPanel {
 			inputField = list;
 		} else {
 			inputField = new JTextField((String) param.getUIValue(), 10);
-			// #2257 disable editing
-			inputField.setEnabled(false);
 		}
+
+		// #2257 disable editing
+		inputField.setEnabled(false);
 
 		members.addStuffToArrays(param, inputField);
 
