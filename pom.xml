@@ -4,7 +4,7 @@
 
     <groupId>eishub</groupId>
     <artifactId>ElevatorSim</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>ElevatorSim</name>
     <description>ElevatorSim Environment</description>
     <url>http://www.github.com/eishub/ElevatorSim</url>
