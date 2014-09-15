@@ -7,19 +7,14 @@ package org.intranet.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 /**
  * @author Neil McKellar and Chris Dailey
@@ -108,21 +103,17 @@ public abstract class InputPanel extends JPanel {
 		super();
 		setLayout(new BorderLayout());
 		JPanel centered = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JButton apply = new JButton("Apply");
-		centered.add(apply);
+		// JButton apply = new JButton("Apply");
+		// centered.add(apply);
 		add(centered, BorderLayout.SOUTH);
-		apply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				members.copyUIToParameters();
-				try {
-					applyParameters();
-				} catch (Exception e) {
-					Window window = SwingUtilities
-							.windowForComponent(InputPanel.this);
-					new ExceptionDialog(window, members.getParameters(), e);
-				}
-			}
-		});
+		/**
+		 * disable apply. #2257 apply.addActionListener(new ActionListener() {
+		 * public void actionPerformed(ActionEvent ae) {
+		 * members.copyUIToParameters(); try { applyParameters(); } catch
+		 * (Exception e) { Window window = SwingUtilities
+		 * .windowForComponent(InputPanel.this); new ExceptionDialog(window,
+		 * members.getParameters(), e); } } });
+		 */
 
 		add(center, BorderLayout.CENTER);
 	}
