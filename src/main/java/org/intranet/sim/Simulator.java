@@ -249,7 +249,7 @@ public abstract class Simulator {
 		/**
 		 * Controller - the code that controls the behaviour of the cars.
 		 */
-		CONTROLLER("Controller", "GOAL Controller"),
+		CONTROLLER("Controller", "EIS Controller"),
 		/**
 		 * Time factor, to speed up the simtime 2^n compared to real time.
 		 */

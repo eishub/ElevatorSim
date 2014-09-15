@@ -125,7 +125,7 @@ public class GOALController implements Controller {
 		try {
 			env.newEntity(car.getName(), "car");
 		} catch (EntityException e) {
-			System.out.println("[GOAL Controller] " + e.getMessage());
+			System.out.println("[EIS Controller] " + e.getMessage());
 		}
 	}
 
@@ -141,7 +141,7 @@ public class GOALController implements Controller {
 	 * simple toString, used for creation of the menu item
 	 */
 	public String toString() {
-		return "GOAL Controller";
+		return "EIS Controller";
 	}
 
 	/***********************************/
@@ -199,7 +199,8 @@ public class GOALController implements Controller {
 	 * create list of current percepts that can be passed through EIS. Floor
 	 * numbers are integers [1,...].
 	 * <p>
-	 * Percepts that are generated:</p>
+	 * Percepts that are generated:
+	 * </p>
 	 * <ul>
 	 * <li>doorState(X) indicates that the car's doors are opening, open,
 	 * closed, closing. Only sent on change.</li>
