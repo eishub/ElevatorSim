@@ -20,6 +20,7 @@ import org.intranet.elevator.ThreePersonElevatorSimulator;
 import org.intranet.elevator.ThreePersonTwoElevatorSimulator;
 import org.intranet.elevator.UpToFourThenDownSimulator;
 import org.intranet.elevator.ticket492simulator;
+import org.intranet.elevator.model.Car;
 import org.intranet.elevator.model.operate.Building;
 import org.intranet.elevator.model.operate.controller.Controller;
 import org.intranet.elevator.model.operate.controller.ManualController;
@@ -65,6 +66,7 @@ import eis.iilang.Percept;
  * @author KH January 2010
  * @author W.Pasman 1dec2010 updated to EIS0.3
  * @author K.Hindriks 11 March 2011
+ * @author W.Pasman 17dec2014 updated to EIS0.5-SNAPSHOT
  */
 @SuppressWarnings("serial")
 public class EnvironmentInterface extends EIDefaultImpl implements
@@ -135,7 +137,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 
 	/**
 	 * @return the simulator that is selected. The simulator may be in running
-	 *          or paused state. returns null if no simulator available
+	 *         or paused state. returns null if no simulator available
 	 */
 	private Simulator getSimulator() {
 		try {
@@ -152,8 +154,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * debug but there seems no alternative to the SimulationArea.getClock()
 	 * call.
 	 * 
-	 * @author 8nov2010 removed throwing to make getClock more generally
-	 *           usable
+	 * @author 8nov2010 removed throwing to make getClock more generally usable
 	 * 
 	 */
 	private Clock getClock() {
@@ -181,7 +182,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		try {
 			addEntity(name, type);
 		} catch (EntityException e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			if (!getEntities().contains(name)) { // entity does not exist... try
 													// again...
 				System.out
@@ -228,11 +229,11 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * <p>
 	 * Executes the action goto(floornr, dir) where parameter dir should be
 	 * either up or down. This lets the elevator go to the given floornr. After
-	 * arrival, the &lt;dir&gt; light (up or down) will be turned on, indicating to
-	 * the people on that floor that this elevator will be going in &lt;dir&gt;
-	 * direction and thus suggesting that people who want in the other direction
-	 * should not enter. Note, there MAY be people entering the elevator that
-	 * travel in the other direction.
+	 * arrival, the &lt;dir&gt; light (up or down) will be turned on, indicating
+	 * to the people on that floor that this elevator will be going in
+	 * &lt;dir&gt; direction and thus suggesting that people who want in the
+	 * other direction should not enter. Note, there MAY be people entering the
+	 * elevator that travel in the other direction.
 	 * </p>
 	 * <p>
 	 * If the elevator is currently traveling, that travel will be cancelled and
@@ -274,7 +275,8 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * the goto action. We do some type checking but do not do all checks here
 	 * (e.g., is floor number legal?)
 	 * 
-	 * @param action action
+	 * @param action
+	 *            action
 	 * @return CarTarget object containing car target.
 	 * @throws IllegalArgumentException
 	 *             if action or arguments are wrong
@@ -321,9 +323,9 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * There are two special cases triggering automatic initialization:
 	 * <ol>
 	 * <li>
-	 * If the parameter list contains the
-	 * {link ElevatorSettings.InitKey#SIMULATION}, then we will not ask the
-	 * user to give the simulation. This is called when you call the EIS
+	 * If the parameter list contains the {link
+	 * ElevatorSettings.InitKey#SIMULATION}, then we will not ask the user to
+	 * give the simulation. This is called when you call the EIS
 	 * ManageEnvironment with INIT parameter.
 	 * <li>
 	 * If (1) holds AND all required parameters were provided, then the settings
@@ -335,8 +337,8 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 *            list [Key,Value] pairs (both key and value are String) used
 	 *            for the init
 	 * @throws ManagementException
-     *
-     * TODO Link not working
+	 *
+	 *             TODO Link not working
 	 */
 	protected void initializeEnvironment(
 			Hashtable<Simulator.Keys, Parameter> parameters)
@@ -641,6 +643,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * {@inheritDoc}
 	 */
 	public void init(Map<String, Parameter> params) throws ManagementException {
+		super.init(params);
 		Hashtable<Simulator.Keys, Parameter> parameters = new Hashtable<Simulator.Keys, Parameter>();
 		try {
 			parameters = EISConverter.EIS2KeyValue(params);
@@ -649,13 +652,18 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		}
 		// try to initialize as far as possible with given params.
 		initializeEnvironment(parameters);
-	}
 
-	/**
-	 * Supports EIS v0.2.
-	 */
-	public String requiredVersion() {
-		return "0.3";
+		// environment ready to run. Now we can announce the entities.
+		setState(EnvironmentState.PAUSED);
+		GOALController controller = getController();
+		for (Car car : controller.getCars()) {
+			try {
+				newEntity(car.getName(), "car");
+			} catch (EntityException e) {
+				throw new ManagementException("can't create entity " + car, e);
+			}
+		}
+
 	}
 
 	/**
