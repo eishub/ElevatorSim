@@ -18,7 +18,6 @@ import org.intranet.elevator.model.operate.controller.Controller;
 import org.intranet.elevator.model.operate.controller.Direction;
 import org.intranet.sim.event.EventQueue;
 
-import eis.exceptions.EntityException;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
 import eis.iilang.Percept;
@@ -94,6 +93,15 @@ public class GOALController implements Controller {
 		return null;
 	}
 
+	/**
+	 * Get available cars.
+	 * 
+	 * @return available cars
+	 */
+	public List<Car> getCars() {
+		return cars;
+	}
+
 	/***********************************/
 	/***** IMPLEMENTS CONTROLLER *******/
 	/***********************************/
@@ -122,11 +130,13 @@ public class GOALController implements Controller {
 	public void addCar(final Car car, float stoppingDistance) {
 		cars.add(car);
 		nextDirOfCar.put(car.getName(), true);
-		try {
-			env.newEntity(car.getName(), "car");
-		} catch (EntityException e) {
-			System.out.println("[EIS Controller] " + e.getMessage());
-		}
+		// this is called while constructing the building.
+		// we can notify EIS only when the building is complete
+		// try {
+		// env.newEntity(car.getName(), "car");
+		// } catch (EntityException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	/**

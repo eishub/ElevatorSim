@@ -20,6 +20,7 @@ import org.intranet.elevator.ThreePersonElevatorSimulator;
 import org.intranet.elevator.ThreePersonTwoElevatorSimulator;
 import org.intranet.elevator.UpToFourThenDownSimulator;
 import org.intranet.elevator.ticket492simulator;
+import org.intranet.elevator.model.Car;
 import org.intranet.elevator.model.operate.Building;
 import org.intranet.elevator.model.operate.controller.Controller;
 import org.intranet.elevator.model.operate.controller.ManualController;
@@ -65,7 +66,11 @@ import eis.iilang.Percept;
  * @author KH January 2010
  * @author W.Pasman 1dec2010 updated to EIS0.3
  * @author K.Hindriks 11 March 2011
+<<<<<<< HEAD
  * @author W.Pasman 30oct2014 updated to EIS0.4
+=======
+ * @author W.Pasman 17dec2014 updated to EIS0.5-SNAPSHOT
+>>>>>>> develop
  */
 @SuppressWarnings("serial")
 public class EnvironmentInterface extends EIDefaultImpl implements
@@ -181,7 +186,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		try {
 			addEntity(name, type);
 		} catch (EntityException e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			if (!getEntities().contains(name)) { // entity does not exist... try
 													// again...
 				System.out
@@ -642,6 +647,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * {@inheritDoc}
 	 */
 	public void init(Map<String, Parameter> params) throws ManagementException {
+		super.init(params);
 		Hashtable<Simulator.Keys, Parameter> parameters = new Hashtable<Simulator.Keys, Parameter>();
 		try {
 			parameters = EISConverter.EIS2KeyValue(params);
@@ -650,13 +656,17 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		}
 		// try to initialize as far as possible with given params.
 		initializeEnvironment(parameters);
-	}
 
-	/**
-	 * Supports EIS v0.2.
-	 */
-	public String requiredVersion() {
-		return "0.4";
+		// environment ready to run. Now we can announce the entities.
+		setState(EnvironmentState.PAUSED);
+		GOALController controller = getController();
+		for (Car car : controller.getCars()) {
+			try {
+				newEntity(car.getName(), "car");
+			} catch (EntityException e) {
+				throw new ManagementException("can't create entity " + car, e);
+			}
+		}
 	}
 
 	/**
