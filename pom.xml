@@ -66,7 +66,7 @@ A building with elevators and people pressing elevator buttons. The entities are
 		<dependency>
 			<groupId>eishub</groupId>
 			<artifactId>eis</artifactId>
-			<version>0.5.0</version>
+			<version>0.5.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
