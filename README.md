@@ -15,7 +15,7 @@ Dependency information
 	
 ```	
 <dependency>
-	<groupId>com.github.eishub</groupId>
+	<groupId>eishub</groupId>
 	<artifactId>ElevatorSim</artifactId>
 	<version>1.3.1-SNAPSHOT</version>
 </dependency>
