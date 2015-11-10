@@ -37,7 +37,7 @@ public final class EventQueue {
 		void eventError(Exception ex);
 	}
 
-	private List listeners = new ArrayList();
+	private List<Listener> listeners = new ArrayList<Listener>();
 
 	public void addEvent(Event event) {
 		// System.out.println("EventQueue event at currentTime=" + currentTime +
@@ -58,7 +58,7 @@ public final class EventQueue {
 		}
 		eventSet.add(event);
 
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
+		for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 			Listener listener = (Listener) i.next();
 			listener.eventAdded(event);
 		}
@@ -80,13 +80,13 @@ public final class EventQueue {
 		 * we can just proceed.
 		 */
 		eventSet.remove(event);
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
+		for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 			Listener listener = (Listener) i.next();
 			listener.eventRemoved(event);
 		}
 	}
 
-	public List getEventList() {
+	public List<Event> getEventList() {
 		return eventSet.getEvents();
 	}
 
@@ -138,7 +138,7 @@ public final class EventQueue {
 				numEventsProcessed++;
 			} catch (Exception e) {
 				e.printStackTrace();
-				for (Iterator i = listeners.iterator(); i.hasNext();) {
+				for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 					Listener l = (Listener) i.next();
 					l.eventError(e);
 				}

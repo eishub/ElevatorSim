@@ -33,10 +33,11 @@ public class EventsTest {
 	}
 
 	/**
-	 * Test that two simultaneous events can not interfere with each other.
-	 * Fails with about 50% chance.
+	 * Test that two simultaneous events can not interfere with each other. In
+	 * practice this appears to fail with about 50% chance if there is a
+	 * multithreading bug.
 	 * 
-	 * 
+	 * <p>
 	 * This tries to call {@link EventQueue#processEventsUpTo(long)} and at the
 	 * same time {@link EventQueue#removeEvent(Event)}. What should never happen
 	 * is that the event is executed while it already was removed from the
@@ -51,9 +52,10 @@ public class EventsTest {
 	 * 
 	 * @throws Throwable
 	 */
-	@Test
 	public void testMultiThreadingOnce() throws Throwable {
+		// the object under test.
 		final EventQueue eQ = new EventQueue();
+
 		final TestEvent event = new TestEvent(500);
 		final List<Throwable> errors = new ArrayList<Throwable>();
 		eQ.addEvent(event);
@@ -104,6 +106,11 @@ public class EventsTest {
 
 }
 
+/**
+ * Test event. This event can be disabled, which we do after removing it
+ * succesfully from the stack.
+ *
+ */
 class TestEvent extends Event {
 
 	private boolean disabled = false;
