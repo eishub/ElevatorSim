@@ -89,7 +89,7 @@ public final class EventQueue {
 	/**
 	 * @return COPY of event list
 	 */
-	public List<Event> getEventList() {
+	public synchronized List<Event> getEventList() {
 		return new ArrayList<Event>(eventSet);
 	}
 
