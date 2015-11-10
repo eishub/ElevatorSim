@@ -10,47 +10,9 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * Added to implement thread safety. We don't extend the original class to make
- * sure that we don't forget to synchronize some call
+ * A queue that contains future {@link Event}s. These events are actually
+ * happening when {@link #processEventsUpTo(long)} is called.
  * 
- * @author W.Pasman 22nov2010 trac #1340
- * 
- */
-class EventQueueSet {
-	private TreeSet<Event> events = new TreeSet<Event>(
-			new Event.EventTimeComparator());
-
-	synchronized boolean contains(Object e) {
-		return events.contains(e);
-	}
-
-	synchronized boolean add(Event e) {
-		return events.add(e);
-	}
-
-	synchronized boolean remove(Event e) {
-		return events.remove(e);
-	}
-
-	/**
-	 * get copy of available events.
-	 * 
-	 * @return
-	 */
-	synchronized ArrayList<Event> getEvents() {
-		return new ArrayList<Event>(events);
-	}
-
-	synchronized boolean isEmpty() {
-		return events.isEmpty();
-	}
-
-	synchronized Event first() {
-		return events.first();
-	}
-}
-
-/**
  * @author Neil McKellar and Chris Dailey
  * 
  */
@@ -63,6 +25,10 @@ public final class EventQueue {
 	private EventQueueSet eventSet = new EventQueueSet(); // new TreeSet(new
 															// Event.EventTimeComparator());
 
+	/**
+	 * Interface for listeners for events in the {@link EventQueue}.
+	 *
+	 */
 	public interface Listener {
 		void eventAdded(Event e);
 
@@ -223,5 +189,46 @@ public final class EventQueue {
 
 	public long getLastEventProcessTime() {
 		return lastEventProcessTime;
+	}
+}
+
+/**
+ * Added to implement thread safety. We don't extend the original class to make
+ * sure that we don't forget to synchronize some call
+ * 
+ * @author W.Pasman 22nov2010 trac #1340
+ * 
+ */
+class EventQueueSet {
+	private TreeSet<Event> events = new TreeSet<Event>(
+			new Event.EventTimeComparator());
+
+	synchronized boolean contains(Object e) {
+		return events.contains(e);
+	}
+
+	synchronized boolean add(Event e) {
+		return events.add(e);
+	}
+
+	synchronized boolean remove(Event e) {
+		return events.remove(e);
+	}
+
+	/**
+	 * get copy of available events.
+	 * 
+	 * @return
+	 */
+	synchronized ArrayList<Event> getEvents() {
+		return new ArrayList<Event>(events);
+	}
+
+	synchronized boolean isEmpty() {
+		return events.isEmpty();
+	}
+
+	synchronized Event first() {
+		return events.first();
 	}
 }

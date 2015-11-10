@@ -36,6 +36,7 @@ public abstract class Event {
 	 * time, perform() will be called.
 	 * 
 	 * @param newTime
+	 *            the time (ms since start) when the event will be performed.
 	 */
 	public Event(long newTime) {
 		super();
