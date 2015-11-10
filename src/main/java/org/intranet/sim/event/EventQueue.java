@@ -22,8 +22,8 @@ public final class EventQueue {
 	private long lastTime;
 	private long lastEventProcessTime;
 
-	private EventQueueSet eventSet = new EventQueueSet(); // new TreeSet(new
-															// Event.EventTimeComparator());
+	private TreeSet<Event> eventSet = new TreeSet<Event>(
+			new Event.EventTimeComparator());
 
 	/**
 	 * Interface for listeners for events in the {@link EventQueue}.
@@ -39,7 +39,7 @@ public final class EventQueue {
 
 	private List<Listener> listeners = new ArrayList<Listener>();
 
-	public void addEvent(Event event) {
+	public synchronized void addEvent(Event event) {
 		// System.out.println("EventQueue event at currentTime=" + currentTime +
 		// " for time="+event.getTime()+ ", class="+event.getClass().getName());
 		if (event.getTime() < lastTime) {
@@ -72,7 +72,7 @@ public final class EventQueue {
 	 * @param event
 	 *            is event to be removed.
 	 */
-	public void removeEvent(Event event) {
+	public synchronized void removeEvent(Event event) {
 		/**
 		 * modified, parents can not always be sure whether event is still in
 		 * the queue by the time this function is called. And it seems not to
@@ -86,8 +86,11 @@ public final class EventQueue {
 		}
 	}
 
+	/**
+	 * @return COPY of event list
+	 */
 	public List<Event> getEventList() {
-		return eventSet.getEvents();
+		return new ArrayList<Event>(eventSet);
 	}
 
 	/**
@@ -102,7 +105,7 @@ public final class EventQueue {
 	 *             When the requested time is before the last time.
 	 * @return true if events were processed
 	 */
-	public boolean processEventsUpTo(long time) {
+	public synchronized boolean processEventsUpTo(long time) {
 		if (time < lastTime) {
 			throw new RuntimeException(
 					"Requested time is earlier than last time.");
@@ -155,7 +158,7 @@ public final class EventQueue {
 		int numEventsProcessed = 0;
 		// Update any events that have incremental progress between states
 		// we draw a copy of the queue to avoid blocking the queue too long.
-		for (Event evt : eventSet.getEvents()) {
+		for (Event evt : getEventList()) {
 			if (evt instanceof IncrementalUpdateEvent) {
 				IncrementalUpdateEvent updateEvent = (IncrementalUpdateEvent) evt;
 				try {
@@ -189,46 +192,5 @@ public final class EventQueue {
 
 	public long getLastEventProcessTime() {
 		return lastEventProcessTime;
-	}
-}
-
-/**
- * Added to implement thread safety. We don't extend the original class to make
- * sure that we don't forget to synchronize some call
- * 
- * @author W.Pasman 22nov2010 trac #1340
- * 
- */
-class EventQueueSet {
-	private TreeSet<Event> events = new TreeSet<Event>(
-			new Event.EventTimeComparator());
-
-	synchronized boolean contains(Object e) {
-		return events.contains(e);
-	}
-
-	synchronized boolean add(Event e) {
-		return events.add(e);
-	}
-
-	synchronized boolean remove(Event e) {
-		return events.remove(e);
-	}
-
-	/**
-	 * get copy of available events.
-	 * 
-	 * @return
-	 */
-	synchronized ArrayList<Event> getEvents() {
-		return new ArrayList<Event>(events);
-	}
-
-	synchronized boolean isEmpty() {
-		return events.isEmpty();
-	}
-
-	synchronized Event first() {
-		return events.first();
 	}
 }

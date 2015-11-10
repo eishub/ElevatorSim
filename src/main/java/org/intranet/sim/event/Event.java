@@ -65,8 +65,8 @@ public abstract class Event {
 
 	public abstract void perform();
 
-	public static final class EventTimeComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
+	public static final class EventTimeComparator implements Comparator<Event> {
+		public int compare(Event o1, Event o2) {
 			Event e1 = (Event) o1;
 			Event e2 = (Event) o2;
 
