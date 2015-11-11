@@ -9,12 +9,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.intranet.sim.clock.RealTimeClock;
+
 /**
- * A queue that contains future {@link Event}s. These events are actually
- * happening when {@link #processEventsUpTo(long)} is called.
+ * A set containing future {@link Event}s. These events are actually happening
+ * when {@link #processEventsUpTo(long)} is called from the
+ * {@link RealTimeClock}. All elevator actions go through this queue. This
+ * process ensures that all actions run on a single thread (the real time clock)
+ * which is essential as the core code of the elevator is not thread safe (and
+ * can't be made thread safe either, see #3738).
+ * 
+ * This {@link EventQueue} is thread safe.
  * 
  * @author Neil McKellar and Chris Dailey
- * 
+ * @author W.Pasman modified for thread safety
  */
 public final class EventQueue {
 	private long currentTime = -1; // Invalid time value initially
@@ -39,6 +47,13 @@ public final class EventQueue {
 
 	private List<Listener> listeners = new ArrayList<Listener>();
 
+	/**
+	 * Add new event to the event set.
+	 * 
+	 * @param event
+	 *            new event. This event must be in the future (its time must be
+	 *            > {@link #getCurrentTime()} and not already be in the set.
+	 */
 	public synchronized void addEvent(Event event) {
 		// System.out.println("EventQueue event at currentTime=" + currentTime +
 		// " for time="+event.getTime()+ ", class="+event.getClass().getName());
@@ -67,7 +82,6 @@ public final class EventQueue {
 	/**
 	 * Remove event from the queue. Succeeds if the event is not in the queue to
 	 * start with.
-	 * 
 	 * 
 	 * @param event
 	 *            is event to be removed.
@@ -180,6 +194,9 @@ public final class EventQueue {
 		listeners.remove(listener);
 	}
 
+	/**
+	 * @return The current time, or the last time an event was processed.
+	 */
 	public long getCurrentTime() {
 		if (currentTime == -1)
 			return lastTime;
@@ -195,8 +212,8 @@ public final class EventQueue {
 	}
 
 	/**
-	 * as addEvent but sets the time of the event so that it will be evaluated
-	 * asap.
+	 * as {@link #addEvent(Event)} but sets the time of the event so that it
+	 * will be evaluated asap.
 	 * 
 	 * @param event
 	 */
