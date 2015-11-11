@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.intranet.sim.clock.RealTimeClock;
 import org.intranet.sim.event.EventQueue;
 
 /**
@@ -78,10 +79,13 @@ public final class Car extends MovableLocation {
 		this.name = name;
 	}
 
+	/**
+	 * Not thread safe. Only call from {@link RealTimeClock} thread.
+	 * 
+	 * @param destination
+	 *            new {@link Floor} to go to.
+	 */
 	public void setDestination(Floor destination) {
-		if (destination == null) {
-			throw new NullPointerException("destination");
-		}
 		this.destination = destination;
 		if (location == null)
 			setDestinationHeight(destination.getHeight());
@@ -93,6 +97,9 @@ public final class Car extends MovableLocation {
 		return getTravelTime(travelDistance);
 	}
 
+	/**
+	 * Not thread safe. Only call from {@link RealTimeClock} thread.
+	 */
 	public void undock() {
 		if (location == null)
 			throw new IllegalStateException("Must be docked to undock");

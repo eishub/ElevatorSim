@@ -193,4 +193,15 @@ public final class EventQueue {
 	public long getLastEventProcessTime() {
 		return lastEventProcessTime;
 	}
+
+	/**
+	 * as addEvent but sets the time of the event so that it will be evaluated
+	 * asap.
+	 * 
+	 * @param event
+	 */
+	public synchronized void insertEvent(Event event) {
+		Event newTimedEvent = event.setTime(getCurrentTime() + 1);
+		addEvent(newTimedEvent);
+	}
 }

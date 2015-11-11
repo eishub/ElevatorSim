@@ -78,4 +78,13 @@ public abstract class Event {
 			return (diff > 0) ? 1 : -1;
 		}
 	}
+
+	/**
+	 * Create copy of Event, with new given time.
+	 * 
+	 * @param newTime
+	 */
+	public Event setTime(long newTime) {
+		throw new UnsupportedOperationException();
+	}
 }
