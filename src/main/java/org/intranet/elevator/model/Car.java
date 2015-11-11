@@ -67,7 +67,7 @@ public final class Car extends MovableLocation {
 	private Floor location;
 	private Floor destination;
 	private FloorRequestPanel panel = new FloorRequestPanel();
-	private List listeners = new ArrayList();
+	private List<Listener> listeners = new ArrayList<Listener>();
 
 	public interface Listener {
 		void docked();
@@ -147,8 +147,8 @@ public final class Car extends MovableLocation {
 	}
 
 	private void fireDockedEvent() {
-		List listenersCopy = new ArrayList(listeners);
-		for (Iterator i = listenersCopy.iterator(); i.hasNext();) {
+		List<Listener> listenersCopy = new ArrayList<Listener>(listeners);
+		for (Iterator<Listener> i = listenersCopy.iterator(); i.hasNext();) {
 			Listener l = (Listener) i.next();
 			l.docked();
 		}
