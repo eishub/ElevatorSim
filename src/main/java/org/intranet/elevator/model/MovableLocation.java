@@ -120,6 +120,11 @@ public abstract class MovableLocation extends Location {
 		}
 	}
 
+	/**
+	 * This check prevents mid-travel direction changes.
+	 * 
+	 * @param h
+	 */
 	private void checkDirectionChange(float h) {
 		boolean areMoving = getHeight() != destinationHeight;
 		if (areMoving) {

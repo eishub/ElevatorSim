@@ -16,7 +16,9 @@ import org.intranet.elevator.model.CarEntrance;
 import org.intranet.elevator.model.Floor;
 import org.intranet.elevator.model.operate.controller.Controller;
 import org.intranet.elevator.model.operate.controller.Direction;
+import org.intranet.sim.event.Event;
 import org.intranet.sim.event.EventQueue;
+import org.intranet.sim.event.NewDestinationEvent;
 
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
@@ -189,7 +191,10 @@ public class GOALController implements Controller {
 
 		Floor nextFloor = floors.get(floor - 1);
 		nextDirOfCar.put(carname, dir.equals("up"));
-		car.setDestination(nextFloor);
+
+		Event event = new NewDestinationEvent(car, nextFloor, 0);
+		evtQueue.insertEvent(event);
+		// car.setDestination(nextFloor);
 	}
 
 	/***********************************/

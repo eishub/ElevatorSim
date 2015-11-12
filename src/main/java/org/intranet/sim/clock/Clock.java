@@ -9,7 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * There seem to be TWO types of listeners here.
+ * Contains the basic Clock functionality of the simulator. Just stores the
+ * actual time and handles listeners. See {@link RealTimeClock} for the actual
+ * clock.
+ * <p>
+ * There are TWO types of listeners here.
  * <ul>
  * <li>One is the FeedbackListener, which is passed to the Constructor or set
  * with {@link #setFeedbackListener}. This FeedbackListener CONTROLS the time
@@ -18,6 +22,7 @@ import java.util.List;
  * changes but not to influence the clock in the listen process.
  * </ul>
  * TODO Link not working
+ * 
  * @author Neil McKellar and Chris Dailey
  * 
  */
@@ -30,6 +35,12 @@ public abstract class Clock {
 	protected long simulationTime;
 
 	public interface Listener {
+		/**
+		 * Informs about elapsed time since start
+		 * 
+		 * @param time
+		 *            time in ms since start
+		 */
 		void timeUpdate(long time);
 
 		void stateUpdate(boolean running);
@@ -45,6 +56,12 @@ public abstract class Clock {
 	}
 
 	public interface FeedbackListener {
+		/**
+		 * Informs about elapsed time since start
+		 * 
+		 * @param time
+		 *            time in ms since start
+		 */
 		long timeUpdate(long time);
 	}
 
@@ -53,6 +70,9 @@ public abstract class Clock {
 		setFeedbackListener(c);
 	}
 
+	/**
+	 * @return the simulation time in ms from start
+	 */
 	public final long getSimulationTime() {
 		return simulationTime;
 	}
@@ -79,6 +99,13 @@ public abstract class Clock {
 		}
 	}
 
+	/**
+	 * 
+	 * @param t
+	 *            the simulation time in ms from start. Notice that the
+	 *            simulation time is the real time multiplied with the
+	 *            acceleration factor
+	 */
 	protected final void setSimulationTime(long t) {
 		simulationTime = feedbackListener.timeUpdate(t);
 		for (Iterator i = listeners.iterator(); i.hasNext();) {

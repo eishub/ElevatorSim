@@ -36,6 +36,7 @@ public abstract class Event {
 	 * time, perform() will be called.
 	 * 
 	 * @param newTime
+	 *            the time (ms since start) when the event will be performed.
 	 */
 	public Event(long newTime) {
 		super();
@@ -64,8 +65,8 @@ public abstract class Event {
 
 	public abstract void perform();
 
-	public static final class EventTimeComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
+	public static final class EventTimeComparator implements Comparator<Event> {
+		public int compare(Event o1, Event o2) {
 			Event e1 = (Event) o1;
 			Event e2 = (Event) o2;
 
@@ -76,5 +77,14 @@ public abstract class Event {
 			}
 			return (diff > 0) ? 1 : -1;
 		}
+	}
+
+	/**
+	 * Create copy of Event, with new given time.
+	 * 
+	 * @param newTime
+	 */
+	public Event setTime(long newTime) {
+		throw new UnsupportedOperationException();
 	}
 }

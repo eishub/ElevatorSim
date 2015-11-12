@@ -9,50 +9,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-/**
- * Added to implement thread safety. We don't extend the original class to make
- * sure that we don't forget to synchronize some call
- * 
- * @author W.Pasman 22nov2010 trac #1340
- * 
- */
-class EventQueueSet {
-	private TreeSet<Event> events = new TreeSet<Event>(
-			new Event.EventTimeComparator());
-
-	synchronized boolean contains(Object e) {
-		return events.contains(e);
-	}
-
-	synchronized boolean add(Event e) {
-		return events.add(e);
-	}
-
-	synchronized boolean remove(Event e) {
-		return events.remove(e);
-	}
-
-	/**
-	 * get copy of available events.
-	 * 
-	 * @return
-	 */
-	synchronized ArrayList<Event> getEvents() {
-		return new ArrayList<Event>(events);
-	}
-
-	synchronized boolean isEmpty() {
-		return events.isEmpty();
-	}
-
-	synchronized Event first() {
-		return events.first();
-	}
-}
+import org.intranet.sim.clock.RealTimeClock;
 
 /**
+ * A set containing future {@link Event}s. These events are actually happening
+ * when {@link #processEventsUpTo(long)} is called from the
+ * {@link RealTimeClock}. All elevator actions go through this queue. This
+ * process ensures that all actions run on a single thread (the real time clock)
+ * which is essential as the core code of the elevator is not thread safe (and
+ * can't be made thread safe either, see #3738).
+ * 
+ * This {@link EventQueue} is thread safe.
+ * 
  * @author Neil McKellar and Chris Dailey
- * 
+ * @author W.Pasman modified for thread safety
  */
 public final class EventQueue {
 	private long currentTime = -1; // Invalid time value initially
@@ -60,9 +30,13 @@ public final class EventQueue {
 	private long lastTime;
 	private long lastEventProcessTime;
 
-	private EventQueueSet eventSet = new EventQueueSet(); // new TreeSet(new
-															// Event.EventTimeComparator());
+	private TreeSet<Event> eventSet = new TreeSet<Event>(
+			new Event.EventTimeComparator());
 
+	/**
+	 * Interface for listeners for events in the {@link EventQueue}.
+	 *
+	 */
 	public interface Listener {
 		void eventAdded(Event e);
 
@@ -71,9 +45,16 @@ public final class EventQueue {
 		void eventError(Exception ex);
 	}
 
-	private List listeners = new ArrayList();
+	private List<Listener> listeners = new ArrayList<Listener>();
 
-	public void addEvent(Event event) {
+	/**
+	 * Add new event to the event set.
+	 * 
+	 * @param event
+	 *            new event. This event must be in the future (its time must be
+	 *            > {@link #getCurrentTime()} and not already be in the set.
+	 */
+	public synchronized void addEvent(Event event) {
 		// System.out.println("EventQueue event at currentTime=" + currentTime +
 		// " for time="+event.getTime()+ ", class="+event.getClass().getName());
 		if (event.getTime() < lastTime) {
@@ -92,7 +73,7 @@ public final class EventQueue {
 		}
 		eventSet.add(event);
 
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
+		for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 			Listener listener = (Listener) i.next();
 			listener.eventAdded(event);
 		}
@@ -102,11 +83,10 @@ public final class EventQueue {
 	 * Remove event from the queue. Succeeds if the event is not in the queue to
 	 * start with.
 	 * 
-	 * 
 	 * @param event
 	 *            is event to be removed.
 	 */
-	public void removeEvent(Event event) {
+	public synchronized void removeEvent(Event event) {
 		/**
 		 * modified, parents can not always be sure whether event is still in
 		 * the queue by the time this function is called. And it seems not to
@@ -114,14 +94,17 @@ public final class EventQueue {
 		 * we can just proceed.
 		 */
 		eventSet.remove(event);
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
+		for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 			Listener listener = (Listener) i.next();
 			listener.eventRemoved(event);
 		}
 	}
 
-	public List getEventList() {
-		return eventSet.getEvents();
+	/**
+	 * @return COPY of event list
+	 */
+	public synchronized List<Event> getEventList() {
+		return new ArrayList<Event>(eventSet);
 	}
 
 	/**
@@ -136,7 +119,7 @@ public final class EventQueue {
 	 *             When the requested time is before the last time.
 	 * @return true if events were processed
 	 */
-	public boolean processEventsUpTo(long time) {
+	public synchronized boolean processEventsUpTo(long time) {
 		if (time < lastTime) {
 			throw new RuntimeException(
 					"Requested time is earlier than last time.");
@@ -172,7 +155,7 @@ public final class EventQueue {
 				numEventsProcessed++;
 			} catch (Exception e) {
 				e.printStackTrace();
-				for (Iterator i = listeners.iterator(); i.hasNext();) {
+				for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
 					Listener l = (Listener) i.next();
 					l.eventError(e);
 				}
@@ -189,7 +172,7 @@ public final class EventQueue {
 		int numEventsProcessed = 0;
 		// Update any events that have incremental progress between states
 		// we draw a copy of the queue to avoid blocking the queue too long.
-		for (Event evt : eventSet.getEvents()) {
+		for (Event evt : getEventList()) {
 			if (evt instanceof IncrementalUpdateEvent) {
 				IncrementalUpdateEvent updateEvent = (IncrementalUpdateEvent) evt;
 				try {
@@ -211,6 +194,9 @@ public final class EventQueue {
 		listeners.remove(listener);
 	}
 
+	/**
+	 * @return The current time, or the last time an event was processed.
+	 */
 	public long getCurrentTime() {
 		if (currentTime == -1)
 			return lastTime;
@@ -223,5 +209,16 @@ public final class EventQueue {
 
 	public long getLastEventProcessTime() {
 		return lastEventProcessTime;
+	}
+
+	/**
+	 * as {@link #addEvent(Event)} but sets the time of the event so that it
+	 * will be evaluated asap.
+	 * 
+	 * @param event
+	 */
+	public synchronized void insertEvent(Event event) {
+		Event newTimedEvent = event.setTime(getCurrentTime() + 1);
+		addEvent(newTimedEvent);
 	}
 }

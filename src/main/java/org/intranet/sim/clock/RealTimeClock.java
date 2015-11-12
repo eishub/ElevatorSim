@@ -7,6 +7,8 @@ package org.intranet.sim.clock;
 import org.intranet.sim.Simulator;
 
 /**
+ * A clock that actually runs on a real time thread.
+ * 
  * @author Neil McKellar and Chris Dailey
  * @author W.Pasman 11nov2010 to use preferred time factor.
  */
