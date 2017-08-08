@@ -413,7 +413,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements SimulationApp
 	}
 
 	@Override
-	protected synchronized Percept performEntityAction(String entity, Action action) throws ActException {
+	protected Percept performEntityAction(String entity, Action action) throws ActException {
 		// there is only 1 action: goto. So we proceed to execute that
 		CarTarget target;
 		try {
@@ -441,7 +441,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements SimulationApp
 	 * @version 4 now uses entity (=== car name) instead of agent name to comply
 	 *          with EIS.
 	 */
-	public synchronized LinkedList<Percept> getAllPerceptsFromEntity(String entity) throws PerceiveException {
+	public LinkedList<Percept> getAllPerceptsFromEntity(String entity) throws PerceiveException {
 		try {
 			// use substring to get rid of the "car" prefix
 			return getController().sendPercepts(entity.substring(3), entity, getClock().getTimeConversion());
