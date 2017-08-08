@@ -23,11 +23,15 @@ public class RealTimeClock extends Clock {
 	private Thread animationThread;
 	private double realTime2SimTime = 1;
 
-	/** Modified W.Pasman 11nov2010 to use preferred accelFactor */
+	/**
+	 * Modified W.Pasman 11nov2010 to use preferred accelFactor.
+	 * 
+	 * @param c
+	 *            a listener for the clock
+	 */
 	public RealTimeClock(FeedbackListener c) {
 		super(c);
-		setTimeConversion(Simulator.simulatorprefs.getInt(
-				Simulator.Keys.TIMEFACTOR.toString(), 0));
+		setTimeConversion(Simulator.simulatorprefs.getInt(Simulator.Keys.TIMEFACTOR.toString(), 0));
 	}
 
 	public synchronized void start() {

@@ -54,8 +54,7 @@ public abstract class Event {
 
 	public String toString() {
 		String fullClassName = getClass().getName();
-		String shortClassName = fullClassName.substring(fullClassName
-				.lastIndexOf('.') + 1);
+		String shortClassName = fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
 		return shortClassName + ": " + Long.toString(time);
 	}
 
@@ -83,6 +82,8 @@ public abstract class Event {
 	 * Create copy of Event, with new given time.
 	 * 
 	 * @param newTime
+	 *            the new time to use
+	 * @return {@link Event} caused by the setTime.
 	 */
 	public Event setTime(long newTime) {
 		throw new UnsupportedOperationException();

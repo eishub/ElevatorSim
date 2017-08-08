@@ -35,8 +35,8 @@ import elevatorenv.GOALController;
 /**
  * @author Neil McKellar and Chris Dailey
  * @author W.Pasman to use simulator preferences. #958
- * @author W.Pasman to make separate Time Factor spinner listening to the
- *           actual clock. #1354
+ * @author W.Pasman to make separate Time Factor spinner listening to the actual
+ *         clock. #1354
  */
 public class SimulationArea extends JComponent {
 
@@ -45,8 +45,7 @@ public class SimulationArea extends JComponent {
 	private JComponent bView;
 	private Statistics statistics;
 	private JComponent leftPane = new JPanel();
-	private JSplitPane rightSplitPane = new JSplitPane(
-			JSplitPane.VERTICAL_SPLIT);
+	private JSplitPane rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 	private JPanel bottomPanel = new JPanel(new BorderLayout());
 	ClockDisplay clockDisplay = new ClockDisplay();
 	public Clock clock = null; // HACK 5jan09 to get access to clock to enable
@@ -82,12 +81,11 @@ public class SimulationArea extends JComponent {
 
 	private void createLeftPane(final SimulationApplication simApp) {
 		leftPane.setLayout(new BorderLayout());
-		SingleValueInputPanel ip = new SingleValueInputPanel(
-				sim.getParameters(), new InputPanel.Listener() {
-					public void parametersApplied() {
-						applyParameters(simApp);
-					}
-				});
+		SingleValueInputPanel ip = new SingleValueInputPanel(sim.getParameters(), new InputPanel.Listener() {
+			public void parametersApplied() {
+				applyParameters(simApp);
+			}
+		});
 		leftPane.add(ip, BorderLayout.NORTH);
 		statistics = new Statistics();
 		leftPane.add(statistics, BorderLayout.CENTER);
@@ -100,6 +98,7 @@ public class SimulationArea extends JComponent {
 	 * Apply them to the sim.
 	 * 
 	 * @param simApp
+	 *            the {@link SimulationApplication} to apply the parameters to
 	 */
 	public void applyParameters(SimulationApplication simApp) {
 		sim.initialize(new RealTimeClock.RealTimeClockFactory());
@@ -148,8 +147,7 @@ public class SimulationArea extends JComponent {
 	 * 
 	 * @param state
 	 */
-	private void stateChange(SimulationApplication simApp,
-			EnvironmentState state) {
+	private void stateChange(SimulationApplication simApp, EnvironmentState state) {
 		if (simApp instanceof EnvironmentInterface) {
 			((EnvironmentInterface) simApp).notifyEvent(state);
 		}
@@ -228,8 +226,7 @@ public class SimulationArea extends JComponent {
 		// if we get here, we need to notify GOAL about the new run state. #1591
 		boolean readyToRun = sim.getCurrentController() instanceof GOALController;
 		System.out.println(sim.getCurrentController());
-		stateChange(simApp, readyToRun ? EnvironmentState.PAUSED
-				: EnvironmentState.INITIALIZING);
+		stateChange(simApp, readyToRun ? EnvironmentState.PAUSED : EnvironmentState.INITIALIZING);
 	}
 
 	public void dispose() {
@@ -283,8 +280,7 @@ class TimeFactorDial extends JPanel implements Clock.Listener {
 				if (!sim.isInitializied())
 					return;
 
-				int factor = ((Number) spinnerNumberModel.getValue())
-						.intValue();
+				int factor = ((Number) spinnerNumberModel.getValue()).intValue();
 				// CHECK should we save the new value? I am tempted to say no
 				// as user probably prefers 0 as initial value
 				RealTimeClock rtClock = (RealTimeClock) sim.getClock();
