@@ -30,8 +30,7 @@ public final class EventQueue {
 	private long lastTime;
 	private long lastEventProcessTime;
 
-	private TreeSet<Event> eventSet = new TreeSet<Event>(
-			new Event.EventTimeComparator());
+	private TreeSet<Event> eventSet = new TreeSet<Event>(new Event.EventTimeComparator());
 
 	/**
 	 * Interface for listeners for events in the {@link EventQueue}.
@@ -52,24 +51,21 @@ public final class EventQueue {
 	 * 
 	 * @param event
 	 *            new event. This event must be in the future (its time must be
-	 *            > {@link #getCurrentTime()} and not already be in the set.
+	 *            &gt; {@link #getCurrentTime()} and not already be in the set.
 	 */
 	public synchronized void addEvent(Event event) {
 		// System.out.println("EventQueue event at currentTime=" + currentTime +
 		// " for time="+event.getTime()+ ", class="+event.getClass().getName());
 		if (event.getTime() < lastTime) {
 			throw new IllegalArgumentException(
-					"Event occurs *before* the last time we processed: "
-							+ event.getTime() + " < " + lastTime);
+					"Event occurs *before* the last time we processed: " + event.getTime() + " < " + lastTime);
 		}
 		if ((currentTime != -1) && (event.getTime() < currentTime)) {
 			throw new IllegalArgumentException(
-					"Event occurs *before* the current time: "
-							+ event.getTime() + " < " + currentTime);
+					"Event occurs *before* the current time: " + event.getTime() + " < " + currentTime);
 		}
 		if (eventSet.contains(event)) {
-			throw new IllegalArgumentException(
-					"Cannot re-add an Event to the queue!");
+			throw new IllegalArgumentException("Cannot re-add an Event to the queue!");
 		}
 		eventSet.add(event);
 
@@ -121,8 +117,7 @@ public final class EventQueue {
 	 */
 	public synchronized boolean processEventsUpTo(long time) {
 		if (time < lastTime) {
-			throw new RuntimeException(
-					"Requested time is earlier than last time.");
+			throw new RuntimeException("Requested time is earlier than last time.");
 		}
 
 		int numEventsProcessed = 0;
@@ -203,7 +198,8 @@ public final class EventQueue {
 		// Wouter: hacked: things may get a bit asynchronous and we have to deal
 		// with that somehow...
 		// throw new
-		// IllegalStateException("Current time is invalid when not processing events");
+		// IllegalStateException("Current time is invalid when not processing
+		// events");
 		return currentTime;
 	}
 
@@ -216,6 +212,7 @@ public final class EventQueue {
 	 * will be evaluated asap.
 	 * 
 	 * @param event
+	 *            the event to be inserted
 	 */
 	public synchronized void insertEvent(Event event) {
 		Event newTimedEvent = event.setTime(getCurrentTime() + 1);

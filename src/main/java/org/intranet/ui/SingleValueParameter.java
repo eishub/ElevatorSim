@@ -17,9 +17,11 @@ import org.intranet.sim.Simulator;
  * @author Neil McKellar and Chris Dailey
  * 
  */
+@SuppressWarnings("serial")
 public abstract class SingleValueParameter extends Parameter {
 	/**
 	 * @param desc
+	 *            the simulator settings
 	 */
 	public SingleValueParameter(Simulator.Keys desc) {
 		super(desc);

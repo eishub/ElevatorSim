@@ -61,6 +61,7 @@ public abstract class Clock {
 		 * 
 		 * @param time
 		 *            time in ms since start
+		 * @return unknown
 		 */
 		long timeUpdate(long time);
 	}

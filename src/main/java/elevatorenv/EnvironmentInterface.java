@@ -73,15 +73,11 @@ import eis.iilang.Percept;
 >>>>>>> develop
  */
 @SuppressWarnings("serial")
-public class EnvironmentInterface extends EIDefaultImpl implements
-		SimulationApplication {
+public class EnvironmentInterface extends EIDefaultImpl implements SimulationApplication {
 
 	private Image iconImage;
 	ApplicationUI theUI = null;
 
-	/**
-	 * Main method facilitates running the elevator simulator stand-alone.
-	 */
 	public static void main(String[] args) {
 		new EnvironmentInterface();
 	}
@@ -100,8 +96,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * because user can change the controller at any time via the GUI. #1591.
 	 */
 	@Override
-	public boolean isStateTransitionValid(EnvironmentState oldState,
-			EnvironmentState newState) {
+	public boolean isStateTransitionValid(EnvironmentState oldState, EnvironmentState newState) {
 		return true;
 	}
 
@@ -127,16 +122,14 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 *             if there is no GOALController.
 	 */
 	private GOALController getController() throws NoEnvironmentException {
-		Simulator sim = ((SimulationArea) (theUI.simulationArea))
-				.getSimulator();
+		Simulator sim = ((SimulationArea) (theUI.simulationArea)).getSimulator();
 		if (sim != null) {
 			Controller controller = sim.getCurrentController();
 			if (controller != null && controller instanceof GOALController) {
 				return (GOALController) controller;
 			}
 		}
-		throw new NoEnvironmentException(
-				"To control the simulator you must select the GOAL controller.");
+		throw new NoEnvironmentException("To control the simulator you must select the GOAL controller.");
 	}
 
 	/**
@@ -179,6 +172,13 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * idea of having this private is that only the environment itself can call
 	 * this. However the GOALController is not a derived class of environment so
 	 * that does not work.
+	 * 
+	 * @param entity
+	 *            the new entity
+	 * @param type
+	 *            the type of the new entity
+	 * @throws EntityException
+	 *             if entity already exists.
 	 **/
 	public void newEntity(String entity, String type) throws EntityException {
 		String name = "car" + entity;
@@ -189,8 +189,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 			e.printStackTrace();
 			if (!getEntities().contains(name)) { // entity does not exist... try
 													// again...
-				System.out
-						.println("Continuing with adding entity without type.");
+				System.out.println("Continuing with adding entity without type.");
 				addEntity(name);
 			} else { // entity does exist, assume type exception due to bug
 				notifyNewEntity(name);
@@ -255,8 +254,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * @param target
 	 *            is the target for the car.
 	 */
-	public void actiongoto(String entity, CarTarget target)
-			throws ActException, NoEnvironmentException {
+	public void actiongoto(String entity, CarTarget target) throws ActException, NoEnvironmentException {
 		GOALController controller;
 
 		controller = getController();
@@ -266,11 +264,9 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 			 * EIS returns a DOUBLE even though an INT was inserted. Uses
 			 * substring to get rid of the "car" prefix.
 			 */
-			controller.executeGoto(entity.substring(3), target.getFloor(),
-					target.getDirection());
+			controller.executeGoto(entity.substring(3), target.getFloor(), target.getDirection());
 		} catch (IllegalArgumentException e) {
-			throw new ActException(ActException.FAILURE, "Action goto failed.",
-					e);
+			throw new ActException(ActException.FAILURE, "Action goto failed.", e);
 		}
 	}
 
@@ -285,34 +281,26 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * @throws IllegalArgumentException
 	 *             if action or arguments are wrong
 	 */
-	CarTarget getTarget(Action action) throws IllegalArgumentException {
+	private CarTarget getTarget(Action action) throws IllegalArgumentException {
 		if (!action.getName().equals("goto")) {
-			throw new IllegalArgumentException("Unknown action "
-					+ action.getName());
+			throw new IllegalArgumentException("Unknown action " + action.getName());
 		}
 		LinkedList<Parameter> params = action.getParameters();
 		if (params.size() != 2) {
-			throw new IllegalArgumentException(
-					"goto takes 2 arguments but got " + params);
+			throw new IllegalArgumentException("goto takes 2 arguments but got " + params);
 		}
 
 		if (!(params.get(0) instanceof Numeral)) {
-			throw new IllegalArgumentException(
-					"goto requires number as first argument but got "
-							+ params.get(0));
+			throw new IllegalArgumentException("goto requires number as first argument but got " + params.get(0));
 		}
 		Numeral floor = (Numeral) params.get(0);
 
 		if (!(params.get(1) instanceof Identifier)) {
-			throw new IllegalArgumentException(
-					"goto requires String as second argument but got "
-							+ params.get(1));
+			throw new IllegalArgumentException("goto requires String as second argument but got " + params.get(1));
 		}
 		String dir = ((Identifier) params.get(1)).getValue();
 		if (!(dir.equals("up") || dir.equals("down"))) {
-			throw new IllegalArgumentException(
-					"goto requires 'up' or 'down' as second argument but got "
-							+ dir);
+			throw new IllegalArgumentException("goto requires 'up' or 'down' as second argument but got " + dir);
 		}
 
 		return new CarTarget(floor.getValue().intValue(), dir);
@@ -326,15 +314,14 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * 
 	 * There are two special cases triggering automatic initialization:
 	 * <ol>
-	 * <li>
-	 * If the parameter list contains the {link
+	 * <li>If the parameter list contains the {link
 	 * ElevatorSettings.InitKey#SIMULATION}, then we will not ask the user to
 	 * give the simulation. This is called when you call the EIS
 	 * ManageEnvironment with INIT parameter.
-	 * <li>
-	 * If (1) holds AND all required parameters were provided, then the settings
-	 * are automatically applied, making the environment ready to run right
-	 * away. What the required parameters are depends on the selected simulation
+	 * <li>If (1) holds AND all required parameters were provided, then the
+	 * settings are automatically applied, making the environment ready to run
+	 * right away. What the required parameters are depends on the selected
+	 * simulation
 	 * </ol>
 	 * 
 	 * @param parameters
@@ -344,9 +331,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 *
 	 *             TODO Link not working
 	 */
-	protected void initializeEnvironment(
-			Hashtable<Simulator.Keys, Parameter> parameters)
-			throws ManagementException {
+	protected void initializeEnvironment(Hashtable<Simulator.Keys, Parameter> parameters) throws ManagementException {
 
 		boolean simulation_was_selected = false;
 		if (parameters.containsKey(Simulator.Keys.SIMULATION)) {
@@ -362,13 +347,11 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		// ElevatorSettings.initializePreferredSettings(parameters);
 
 		// multiple is disabled for now.
-		theUI.handleSimulationSelected(
-				getSimulator(ElevatorSettings.getSimulation()), this, false);
+		theUI.handleSimulationSelected(getSimulator(ElevatorSettings.getSimulation()), this, false);
 
 		// all parameters available then apply the parameters and start the env.
 		ArrayList<Simulator.Keys> required = getSimulator().getParameterKeys();
-		if (simulation_was_selected
-				&& parameters.keySet().containsAll(required)) {
+		if (simulation_was_selected && parameters.keySet().containsAll(required)) {
 			((SimulationArea) (theUI.simulationArea)).applyParameters(this);
 		}
 	}
@@ -378,12 +361,11 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * passes them one by one.
 	 * 
 	 * @param parameters
+	 *            the settings for the simulator
 	 * @throws IllegalArgumentException
 	 *             if argument not Numeral or Identifier.
 	 */
-	protected void setPreferences(
-			Hashtable<Simulator.Keys, Parameter> parameters)
-			throws IllegalArgumentException {
+	protected void setPreferences(Hashtable<Simulator.Keys, Parameter> parameters) throws IllegalArgumentException {
 		for (Simulator.Keys key : parameters.keySet()) {
 			Parameter p = parameters.get(key);
 			Object value;
@@ -393,8 +375,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 				value = ((Identifier) p).getValue();
 			} else {
 				throw new IllegalArgumentException(
-						"Expected Numeral or Identifier but got " + p
-								+ " of type " + p.getClass());
+						"Expected Numeral or Identifier but got " + p + " of type " + p.getClass());
 			}
 			key.setPreference(value);
 		}
@@ -404,30 +385,6 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	/****************************************************/
 	/************** EIS interface implementation ********/
 	/****************************************************/
-	/**
-	 * {@inheritDoc}
-	 */
-	// @Override
-	// public EnvironmentState getState() {
-	// /**
-	// * Once the user configured the environment, we have to switch the state
-	// * to PAUSED. That is why we override getState.
-	// */
-	// EnvironmentState state = super.getState();
-	// if (state == EnvironmentState.INITIALIZING) {
-	// if (readyToRun()) {
-	// try {
-	// setState(EnvironmentState.PAUSED);
-	// } catch (ManagementException e) {
-	// System.out
-	// .println("ElevatorEnv bug: failed state transition");
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-	//
-	// return super.getState();
-	// }
 
 	@Override
 	protected boolean isSupportedByEnvironment(Action action) {
@@ -443,9 +400,9 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		/**
 		 * Tristan wrote about this: to check whether the action is supported by
 		 * the entity-type. Note that if one of these methods returns false the
-		 * action-mechanism automatically throws an Exception.
-		 * "there are types of entities with different capabilities"
-		 * "Entities without legs cannot go"
+		 * action-mechanism automatically throws an Exception. "there are types
+		 * of entities with different capabilities" "Entities without legs
+		 * cannot go"
 		 */
 		return true;
 	}
@@ -460,23 +417,19 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	}
 
 	@Override
-	protected Percept performEntityAction(String entity, Action action)
-			throws ActException {
+	protected Percept performEntityAction(String entity, Action action) throws ActException {
 		// there is only 1 action: goto. So we proceed to execute that
 		CarTarget target;
 		try {
 			target = getTarget(action);
 		} catch (IllegalArgumentException e) {
-			throw new ActException(ActException.FAILURE,
-					"Action could not be performed.", e);
+			throw new ActException(ActException.FAILURE, "Action could not be performed.", e);
 		}
 		try {
 			actiongoto(entity, target);
 		} catch (NoEnvironmentException e) {
-			throw new ActException(
-					ActException.FAILURE,
-					"BUG: There is no environment so this call should not have been made.",
-					e);
+			throw new ActException(ActException.FAILURE,
+					"BUG: There is no environment so this call should not have been made.", e);
 		}
 		return null;
 	}
@@ -492,15 +445,12 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * @version 4 now uses entity (=== car name) instead of agent name to comply
 	 *          with EIS.
 	 */
-	public LinkedList<Percept> getAllPerceptsFromEntity(String entity)
-			throws PerceiveException {
+	public LinkedList<Percept> getAllPerceptsFromEntity(String entity) throws PerceiveException {
 		try {
 			// use substring to get rid of the "car" prefix
-			return getController().sendPercepts(entity.substring(3), entity,
-					getClock().getTimeConversion());
+			return getController().sendPercepts(entity.substring(3), entity, getClock().getTimeConversion());
 		} catch (Exception e) {
-			throw new PerceiveException(
-					"Exception occured during getPerceptsFrom Entity:" + e, e);
+			throw new PerceiveException("Exception occured during getPerceptsFrom Entity:" + e, e);
 		}
 	}
 
@@ -526,8 +476,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 */
 	private void close() throws ManagementException {
 		Clock clock = getClock();
-		if (clock != null && clock instanceof RealTimeClock
-				&& clock.isRunning()) {
+		if (clock != null && clock instanceof RealTimeClock && clock.isRunning()) {
 			((RealTimeClock) clock).pause();
 		}
 		deleteCars();
@@ -559,8 +508,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	private void closeUI() {
 		if (theUI != null) {
 			// TRAC 710: save old position and size of the main window
-			ElevatorSettings.setWindowParams(theUI.getX(), theUI.getY(),
-					theUI.getWidth(), theUI.getHeight());
+			ElevatorSettings.setWindowParams(theUI.getX(), theUI.getY(), theUI.getWidth(), theUI.getHeight());
 
 			theUI.dispose();
 			theUI.setVisible(false);
@@ -577,11 +525,10 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 *             if simulation not running under GOAL controller or not
 	 *             running at all.
 	 */
-	void pauseRun() throws ManagementException {
+	private void pauseRun() throws ManagementException {
 		Clock theclock = getClock();
 		if (theclock == null) {
-			throw new ManagementException(
-					"Pausing failed: the environment was not initialized.");
+			throw new ManagementException("Pausing failed: the environment was not initialized.");
 		}
 		if (theclock.isRunning()) {
 			theclock.pause();
@@ -601,8 +548,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	private void continueRun() throws ManagementException {
 		Clock theclock = getClock();
 		if (theclock == null) {
-			throw new ManagementException(
-					"continue failed: environment was not initialized.");
+			throw new ManagementException("continue failed: environment was not initialized.");
 		}
 		if (!theclock.isRunning()) {
 			theclock.start();
@@ -610,9 +556,6 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		setState(EnvironmentState.RUNNING);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void start() throws ManagementException {
 		// 3 cases:
@@ -627,25 +570,16 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void pause() throws ManagementException {
 		pauseRun();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void kill() throws ManagementException {
 		close();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void init(Map<String, Parameter> params) throws ManagementException {
 		super.init(params);
 		Hashtable<Simulator.Keys, Parameter> parameters = new Hashtable<Simulator.Keys, Parameter>();
@@ -708,20 +642,19 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 	 * get the Simulator given its {@link Simulator#getDescription()}
 	 * 
 	 * @param simulatorName
+	 *            name of the simulator to get
 	 * @return the Simulator having this name as description. Throws if no such
 	 *         name
 	 * @throws IllegalArgumentException
 	 *             if there is no simulator with given name.
 	 */
-	public Simulator getSimulator(String simulatorName)
-			throws IllegalArgumentException {
+	public Simulator getSimulator(String simulatorName) throws IllegalArgumentException {
 		for (Simulator sim : getSimulations()) {
 			if (sim.getDescription().equals(ElevatorSettings.getSimulation())) {
 				return sim;
 			}
 		}
-		throw new IllegalArgumentException("No Simulator exists with the name "
-				+ simulatorName);
+		throw new IllegalArgumentException("No Simulator exists with the name " + simulatorName);
 	}
 
 	/**
@@ -733,8 +666,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements
 
 	public Image getImageIcon() {
 		if (iconImage == null) {
-			URL iconImageURL = ElevatorSimulationApplication.class
-					.getResource("icon.gif");
+			URL iconImageURL = ElevatorSimulationApplication.class.getResource("icon.gif");
 			iconImage = Toolkit.getDefaultToolkit().createImage(iconImageURL);
 		}
 		return iconImage;

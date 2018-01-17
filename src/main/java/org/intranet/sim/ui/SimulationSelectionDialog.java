@@ -20,8 +20,7 @@ import org.intranet.sim.Simulator;
 public class SimulationSelectionDialog extends JDialog {
 	Simulator selected_simulation = null; // will be set when user selected
 
-	public SimulationSelectionDialog(JFrame owner,
-			SimulationApplication simApp, final SimulationSelection.Listener l) {
+	public SimulationSelectionDialog(JFrame owner, SimulationApplication simApp, final SimulationSelection.Listener l) {
 
 		super(owner, "Select a Simulation");
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -32,8 +31,7 @@ public class SimulationSelectionDialog extends JDialog {
 		// to pass on the event and also add an extra action (dispose this
 		// dialog).
 		SimulationSelection.Listener newListener = new SimulationSelection.Listener() {
-			public void simulationSelected(Simulator sim,
-					SimulationApplication app, boolean multiple) {
+			public void simulationSelected(Simulator sim, SimulationApplication app, boolean multiple) {
 				selected_simulation = sim;
 				l.simulationSelected(sim, app, multiple);
 				dispose();
@@ -47,6 +45,8 @@ public class SimulationSelectionDialog extends JDialog {
 
 	/**
 	 * get the selected simulation
+	 * 
+	 * @return {@link Simulator}
 	 */
 	public Simulator getSelectedSimulation() {
 		return selected_simulation;

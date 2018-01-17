@@ -197,12 +197,10 @@ public final class Person extends ModelElement {
 		callButton.addArrivalListener(arrivalListener);
 
 		/** hack to handle already open doors. See #492 */
-		for (Iterator i = ((Floor) currentLocation).getCarEntrances(); i
-				.hasNext();) {
+		for (Iterator i = ((Floor) currentLocation).getCarEntrances(); i.hasNext();) {
 			CarEntrance thisEntrance = (CarEntrance) i.next();
 			if (thisEntrance.getDoor().getState() != Door.State.CLOSED
-					&& ((thisEntrance.isUp() && up) || (!up && thisEntrance
-							.isDown()))) {
+					&& ((thisEntrance.isUp() && up) || (!up && thisEntrance.isDown()))) {
 				payAttentionToEntrance(thisEntrance, up);
 			}
 		}
@@ -301,16 +299,12 @@ public final class Person extends ModelElement {
 			DoorSensor sensor = entrance.getDoorSensor();
 			Car car = (Car) door.getTo();
 			// if door is open && sensor is !obstructed && not at capacity
-			if (door.getState() != Door.State.CLOSED
-					&& sensor.getState() != DoorSensor.State.OBSTRUCTED
-					&& !car.isAtCapacity()
-					&& !entrance.arePeopleWaitingToGetOut()
-					&& up == entrance.isUp()) {
+			if (door.getState() != Door.State.CLOSED && sensor.getState() != DoorSensor.State.OBSTRUCTED
+					&& !car.isAtCapacity() && !entrance.arePeopleWaitingToGetOut() && up == entrance.isUp()) {
 				stopPayingAttention();
 				beginEnterCar(entrance);
 				return;
-			} else if (sensor.getState() == DoorSensor.State.OBSTRUCTED
-					|| entrance.arePeopleWaitingToGetOut()) {
+			} else if (sensor.getState() == DoorSensor.State.OBSTRUCTED || entrance.arePeopleWaitingToGetOut()) {
 				numCandidateEntrances++;
 			}
 		}
@@ -335,8 +329,7 @@ public final class Person extends ModelElement {
 	private void beginEnterCar(final CarEntrance entrance) {
 		entrance.getDoorSensor().obstruct();
 		long currentTime = eventQueue.getCurrentTime();
-		Event enteringCarEvent = new TrackingUpdateEvent(currentTime, 0.0f,
-				currentTime + 2000, 100.0f) {
+		Event enteringCarEvent = new TrackingUpdateEvent(currentTime, 0.0f, currentTime + 2000, 100.0f) {
 			public void updateTime() {
 				percentMoved = (int) currentValue(eventQueue.getCurrentTime());
 			}
@@ -357,23 +350,20 @@ public final class Person extends ModelElement {
 
 	private void endWaiting() {
 		if (startWaitTime == -1)
-			throw new IllegalStateException(
-					"Can't end waiting when not already waiting.");
+			throw new IllegalStateException("Can't end waiting when not already waiting.");
 		totalWaitingTime += eventQueue.getCurrentTime() - startWaitTime;
 		startWaitTime = -1;
 	}
 
 	private void beginTravel() {
 		if (startTravelTime != -1)
-			throw new IllegalStateException(
-					"Can't begin travelling while already travelling");
+			throw new IllegalStateException("Can't begin travelling while already travelling");
 		startTravelTime = eventQueue.getCurrentTime();
 	}
 
 	private void endTravel() {
 		if (startTravelTime == -1)
-			throw new IllegalStateException(
-					"Can't end travel when not already travelling.");
+			throw new IllegalStateException("Can't end travel when not already travelling.");
 		totalTravelTime += eventQueue.getCurrentTime() - startTravelTime;
 		startTravelTime = -1;
 	}
@@ -423,8 +413,7 @@ public final class Person extends ModelElement {
 		car.addListener(new Car.Listener() {
 			public void docked() {
 				if (destination == car.getLocation()) {
-					final Door arrivalDoor = destination.getCarEntranceForCar(
-							car).getDoor();
+					final Door arrivalDoor = destination.getCarEntranceForCar(car).getDoor();
 					car.removeListener(this);
 					waitForDoorOpen(arrivalDoor);
 				}
@@ -440,12 +429,10 @@ public final class Person extends ModelElement {
 	 */
 	private void movePerson(Location destination) {
 		if (destination == null)
-			throw new IllegalArgumentException(
-					"Cannot move to a null destination.");
+			throw new IllegalArgumentException("Cannot move to a null destination.");
 
 		if (destination.isAtCapacity())
-			throw new IllegalStateException("Cannot move person when "
-					+ destination.getClass().getSimpleName()
+			throw new IllegalStateException("Cannot move person when " + destination.getClass().getSimpleName()
 					+ " is at capacity: " + destination.getCapacity() + ".");
 
 		if (currentLocation != null)
@@ -457,19 +444,16 @@ public final class Person extends ModelElement {
 	}
 
 	private void waitForDoorOpen(final Door arrivalDoor) {
-		final CarEntrance entrance = destination
-				.getCarEntranceForCar(currentLocation);
+		final CarEntrance entrance = destination.getCarEntranceForCar(currentLocation);
 		entrance.waitToEnterDoor(new CarEntrance.DoorWaitListener() {
 			public void doorAvailable() {
 				entrance.getDoorSensor().obstruct();
 				// TODO: Deal with the floor being at capacity.
 				percentMoved = 0;
-				eventQueue.addEvent(new TrackingUpdateEvent(eventQueue
-						.getCurrentTime(), 0,
+				eventQueue.addEvent(new TrackingUpdateEvent(eventQueue.getCurrentTime(), 0,
 						eventQueue.getCurrentTime() + 2000, 100) {
 					public void updateTime() {
-						percentMoved = (int) currentValue(eventQueue
-								.getCurrentTime());
+						percentMoved = (int) currentValue(eventQueue.getCurrentTime());
 					}
 
 					public void perform() {

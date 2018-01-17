@@ -177,8 +177,7 @@ public class GOALController implements Controller {
 	 *             if you give incorrect arguments to your command.
 	 */
 
-	public void executeGoto(String carname, int floor, String dir)
-			throws IllegalArgumentException {
+	public void executeGoto(String carname, int floor, String dir) throws IllegalArgumentException {
 		if (!(dir.equals("up") || dir.equals("down")))
 			throw new IllegalArgumentException("dir should be 'up' or 'down'");
 		Car car = getCar(carname);
@@ -186,8 +185,7 @@ public class GOALController implements Controller {
 			throw new IllegalArgumentException("unknown car " + carname);
 		List<Floor> floors = car.getFloorRequestPanel().getServicedFloors();
 		if (floor < 1 || floor > floors.size())
-			throw new IllegalArgumentException("floor " + floor
-					+ " does not exist");
+			throw new IllegalArgumentException("floor " + floor + " does not exist");
 
 		Floor nextFloor = floors.get(floor - 1);
 		nextDirOfCar.put(carname, dir.equals("up"));
@@ -238,11 +236,10 @@ public class GOALController implements Controller {
 	 *            same as entity name but without the leading "car").
 	 * @param entity
 	 *            is the name of the car in EIS.
-	 * @param entity
+	 * @param timefactor
 	 *            is the current time factor of the realtime clock.
 	 */
-	public synchronized LinkedList<Percept> sendPercepts(String carname,
-			String entity, int timefactor) {
+	public synchronized LinkedList<Percept> sendPercepts(String carname, String entity, int timefactor) {
 		Car car = getCar(carname);
 		Percept percept;
 		String newDoorState;
@@ -257,14 +254,12 @@ public class GOALController implements Controller {
 
 		// at a floor? Then give atFloor and doorState
 		if (floor != null) {
-			percept = new Percept("atFloor",
-					new Numeral(floor.getFloorNumber()));
+			percept = new Percept("atFloor", new Numeral(floor.getFloorNumber()));
 			percept.setSource(entity);
 			percepts.add(percept);
 
 			CarEntrance entrance = floor.getCarEntranceForCar(car);
-			newDoorState = entrance.getDoor().getState().toString()
-					.toLowerCase();
+			newDoorState = entrance.getDoor().getState().toString().toLowerCase();
 		} else {
 			newDoorState = "closed";
 		}
@@ -277,22 +272,19 @@ public class GOALController implements Controller {
 		}
 
 		// HACK see #1357.
-		percepts.add(new Percept("carPosition", new Numeral(1. + car
-				.getHeight() / 10.)));
+		percepts.add(new Percept("carPosition", new Numeral(1. + car.getHeight() / 10.)));
 
 		// see also #767 and #763
 
 		// find out which buttons are on now.
 		for (Floor f : car.getFloorRequestPanel().getServicedFloors()) {
 			if (f.getCallPanel().isUp()) {
-				percept = new Percept("fButtonOn", new Numeral(
-						f.getFloorNumber()), new Identifier("up"));
+				percept = new Percept("fButtonOn", new Numeral(f.getFloorNumber()), new Identifier("up"));
 				percept.setSource(entity);
 				percepts.add(percept);
 			}
 			if (f.getCallPanel().isDown()) {
-				percept = new Percept("fButtonOn", new Numeral(
-						f.getFloorNumber()), new Identifier("down"));
+				percept = new Percept("fButtonOn", new Numeral(f.getFloorNumber()), new Identifier("down"));
 				percept.setSource(entity);
 				percepts.add(percept);
 			}
