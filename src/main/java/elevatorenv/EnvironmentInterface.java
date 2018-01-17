@@ -66,11 +66,8 @@ import eis.iilang.Percept;
  * @author KH January 2010
  * @author W.Pasman 1dec2010 updated to EIS0.3
  * @author K.Hindriks 11 March 2011
-<<<<<<< HEAD
  * @author W.Pasman 30oct2014 updated to EIS0.4
-=======
  * @author W.Pasman 17dec2014 updated to EIS0.5-SNAPSHOT
->>>>>>> develop
  */
 @SuppressWarnings("serial")
 public class EnvironmentInterface extends EIDefaultImpl implements SimulationApplication {
