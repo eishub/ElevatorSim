@@ -17,6 +17,6 @@ Dependency information
 <dependency>
 	<groupId>eishub</groupId>
 	<artifactId>ElevatorSim</artifactId>
-	<version>1.3.2</version>
+	<version>1.4.0</version>
 </dependency>
 ```
