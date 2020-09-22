@@ -4,106 +4,92 @@
 */
 package org.intranet.elevator.model;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.event.EventQueue;
 
 /**
-* @author Neil McKellar and Chris Dailey
-*/
-public final class Floor
-  extends Location
-{
-  private int number;
-  // distance from the ground
-  private float ceiling;  // relative to the floor's height
-  private CarRequestPanel callPanel = new CarRequestPanel();
-  private List carEntrances = new ArrayList();
+ * @author Neil McKellar and Chris Dailey
+ */
+public final class Floor extends Location {
+	private final int number;
+	// distance from the ground
+	private final float ceiling; // relative to the floor's height
+	private final CarRequestPanel callPanel = new CarRequestPanel();
+	private final List<CarEntrance> carEntrances = new LinkedList<>();
 
-  // TODO: Make a sequence diagram with all the passing off of notification
-  private CarEntrance.CarEntranceListener carEntranceListener =
-    new CarEntrance.CarEntranceListener()
-  {
-    public void arrivedUp(CarEntrance entrance)
-    {
-      callPanel.arrivedUp(entrance);
-    }
+	// TODO: Make a sequence diagram with all the passing off of notification
+	private final CarEntrance.CarEntranceListener carEntranceListener = new CarEntrance.CarEntranceListener() {
+		@Override
+		public void arrivedUp(final CarEntrance entrance) {
+			Floor.this.callPanel.arrivedUp(entrance);
+		}
 
-    public void arrivedDown(CarEntrance entrance)
-    {
-      callPanel.arrivedDown(entrance);
-    }
-  };
+		@Override
+		public void arrivedDown(final CarEntrance entrance) {
+			Floor.this.callPanel.arrivedDown(entrance);
+		}
+	};
 
-  public Floor(EventQueue eQ, int number, float height, float ceiling)
-  {
-    super(eQ, height, 500);
-    this.number = number;
-    this.ceiling = ceiling;
-  }
-  
-  public int getFloorNumber()
-  {
-    return number;
-  }
-  
-  public float getCeiling()
-  {
-    return ceiling;
-  }
-  
-  public float getAbsoluteCeiling()
-  {
-    return getHeight() + ceiling;
-  }
-  
-  public CarRequestPanel getCallPanel()
-  {
-    return callPanel;
-  }
+	public Floor(final EventQueue eQ, final int number, final float height, final float ceiling) {
+		super(eQ, height, 500);
+		this.number = number;
+		this.ceiling = ceiling;
+	}
 
-  public void createCarEntrance(Location destination)
-  {
-    carEntrances.add(new CarEntrance(eventQueue, this, destination,
-      carEntranceListener));
-  }
+	public int getFloorNumber() {
+		return this.number;
+	}
 
-  public Iterator getCarEntrances()
-  {
-    return carEntrances.iterator();
-  }
+	public float getCeiling() {
+		return this.ceiling;
+	}
 
-  public CarEntrance getOpenCarEntrance(boolean up)
-  {
-    for (Iterator i = carEntrances.iterator(); i.hasNext(); )
-    {
-      CarEntrance carEntrance = (CarEntrance)i.next();
-      if (carEntrance.getDoor().isOpen())
-      {
-        if (up && carEntrance.isUp())
-          return carEntrance;
-        if (!up && carEntrance.isDown())
-          return carEntrance;
-      }
-    }
-    return null;
-  }
+	public float getAbsoluteCeiling() {
+		return getHeight() + this.ceiling;
+	}
 
-  public CarEntrance getCarEntranceForCar(Location destination)
-  {
-    for (Iterator i = carEntrances.iterator(); i.hasNext(); )
-    {
-      CarEntrance carEntrance = (CarEntrance)i.next();
-      if (carEntrance.getDoor().getTo() == destination)
-        return carEntrance;
-    }
-    return null;
-  }
-  
-  public String toString()
-  {
-    return "Floor" + number + "@" + getHeight();
-  }
+	public CarRequestPanel getCallPanel() {
+		return this.callPanel;
+	}
+
+	public void createCarEntrance(final Location destination) {
+		this.carEntrances.add(new CarEntrance(this.eventQueue, this, destination, this.carEntranceListener));
+	}
+
+	public Iterator<CarEntrance> getCarEntrances() {
+		return this.carEntrances.iterator();
+	}
+
+	public CarEntrance getOpenCarEntrance(final boolean up) {
+		for (final CarEntrance carEntrance2 : this.carEntrances) {
+			final CarEntrance carEntrance = carEntrance2;
+			if (carEntrance.getDoor().isOpen()) {
+				if (up && carEntrance.isUp()) {
+					return carEntrance;
+				}
+				if (!up && carEntrance.isDown()) {
+					return carEntrance;
+				}
+			}
+		}
+		return null;
+	}
+
+	public CarEntrance getCarEntranceForCar(final Location destination) {
+		for (final CarEntrance carEntrance2 : this.carEntrances) {
+			final CarEntrance carEntrance = carEntrance2;
+			if (carEntrance.getDoor().getTo() == destination) {
+				return carEntrance;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "Floor" + this.number + "@" + getHeight();
+	}
 }

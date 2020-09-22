@@ -8,7 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -19,8 +19,6 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -28,208 +26,192 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.intranet.ui.MultipleValueParameter;
+import org.intranet.ui.Parameter;
 import org.intranet.ui.SingleValueParameter;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
-class ResultsTable
-  extends JPanel
-{
-  private JScrollPane jsp;
-  final private TableCellRenderer tcRenderer;
+class ResultsTable extends JPanel {
+	private static final long serialVersionUID = 1L;
+	private JScrollPane jsp;
+	final private TableCellRenderer tcRenderer;
 
-  static interface ResultsTableListener
-  {
-    void cellSelected(List params);
-  }
+	interface ResultsTableListener {
+		void cellSelected(List<Parameter> params);
+	}
 
-  private List listeners = new ArrayList();
-  void addResultsTableListener(ResultsTableListener rtl)
-  {
-    listeners.add(rtl);
-  }
+	private final List<ResultsTableListener> listeners = new LinkedList<>();
 
-  public ResultsTable(final MultipleValueParameter primaryVar,
-    final MultipleValueParameter secondaryVar, final ResultsGrid grid)
-  {
-    super(new BorderLayout());
-    jsp = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    final JTable jtable = new JTable();
-    tcRenderer = jtable.getDefaultRenderer(Float.class);
-    jsp.setViewportView(jtable);
-    add(jsp, BorderLayout.CENTER);
-    if (primaryVar == null)
-      jtable.setTableHeader(null);
+	void addResultsTableListener(final ResultsTableListener rtl) {
+		this.listeners.add(rtl);
+	}
 
-    final List primaryParameters = primaryVar == null ? new ArrayList() :
-      primaryVar.getParameterList();
-    final List secondaryParameters = secondaryVar == null ? new ArrayList() :
-      secondaryVar.getParameterList();
+	public ResultsTable(final MultipleValueParameter primaryVar, final MultipleValueParameter secondaryVar,
+			final ResultsGrid grid) {
+		super(new BorderLayout());
+		this.jsp = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		final JTable jtable = new JTable();
+		this.tcRenderer = jtable.getDefaultRenderer(Float.class);
+		this.jsp.setViewportView(jtable);
+		add(this.jsp, BorderLayout.CENTER);
+		if (primaryVar == null) {
+			jtable.setTableHeader(null);
+		}
 
-    add(new JLabel(primaryVar == null ? "" : primaryVar.getDescription(),
-        SwingConstants.CENTER), BorderLayout.NORTH);
-    Icon icon = new VTextIcon(this,
-      secondaryVar == null ? "" : secondaryVar.getDescription(),
-      VTextIcon.ROTATE_LEFT);
-    add(new JLabel(icon), BorderLayout.WEST);
+		final List<Parameter> primaryParameters = primaryVar == null ? new ArrayList<>(0)
+				: primaryVar.getParameterList();
+		final List<Parameter> secondaryParameters = secondaryVar == null ? new ArrayList<>(0)
+				: secondaryVar.getParameterList();
 
-    TableModel dtm = new ResultsGridTableModel(primaryParameters, grid, secondaryParameters);
+		add(new JLabel(primaryVar == null ? "" : primaryVar.getDescription(), SwingConstants.CENTER),
+				BorderLayout.NORTH);
+		final Icon icon = new VTextIcon(this, secondaryVar == null ? "" : secondaryVar.getDescription(),
+				VTextIcon.ROTATE_LEFT);
+		add(new JLabel(icon), BorderLayout.WEST);
 
-    jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
-    {
-      public void valueChanged(ListSelectionEvent listSelEvt)
-      {
-        int row = jtable.getSelectedRow();
-        int column = jtable.getSelectedColumn();
-        if (!listSelEvt.getValueIsAdjusting() || row == -1 || column == -1)
-          return;
-        List parameters = grid.getParameters(column, row);
-        for (Iterator i = listeners.iterator(); i.hasNext(); )
-        {
-          ResultsTableListener rtl = (ResultsTableListener)i.next();
-          rtl.cellSelected(parameters);
-        }
-      }
-    });
+		final TableModel dtm = new ResultsGridTableModel(primaryParameters, grid, secondaryParameters);
 
-    jtable.setModel(dtm);
+		jtable.getSelectionModel().addListSelectionListener(listSelEvt -> {
+			final int row = jtable.getSelectedRow();
+			final int column = jtable.getSelectedColumn();
+			if (!listSelEvt.getValueIsAdjusting() || row == -1 || column == -1) {
+				return;
+			}
+			final List<Parameter> parameters = grid.getParameters(column, row);
+			for (final ResultsTableListener rtl : ResultsTable.this.listeners) {
+				rtl.cellSelected(parameters);
+			}
+		});
 
-    TableCellRenderer customRenderer = new ResultsTableRenderer(tcRenderer,
-        grid.getMin(), grid.getMax());
-    TableColumnModel colModel = jtable.getColumnModel();
-    for (int i = 0; i < colModel.getColumnCount(); i++)
-      colModel.getColumn(i).setCellRenderer(customRenderer);
+		jtable.setModel(dtm);
 
-    if (!secondaryParameters.isEmpty())
-    {
-      JTable rowTable = new JTable(new ResultsRowTableModel(secondaryParameters));
-      TableColumn column = rowTable.getColumnModel().getColumn(0);
-      column.setPreferredWidth(50);
-      column.setMaxWidth(50);
-      rowTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-      rowTable.setBackground(jsp.getBackground());
-      JViewport jvp = new JViewport();
-      jvp.setPreferredSize(rowTable.getMaximumSize());
-      jvp.setMaximumSize(rowTable.getMaximumSize());
-      jvp.setView(rowTable);
-      jsp.setRowHeader(jvp);
-    }
-    // TODO: Label for statistic choice
-  }
+		final TableCellRenderer customRenderer = new ResultsTableRenderer(this.tcRenderer, grid.getMin(),
+				grid.getMax());
+		final TableColumnModel colModel = jtable.getColumnModel();
+		for (int i = 0; i < colModel.getColumnCount(); i++) {
+			colModel.getColumn(i).setCellRenderer(customRenderer);
+		}
 
-  static private int interpolate(float percent, int min, int max)
-  {
-    int result;
-    result = (int)(((max - min) * percent) + min);
-    return result;
-  }
+		if (!secondaryParameters.isEmpty()) {
+			final JTable rowTable = new JTable(new ResultsRowTableModel(secondaryParameters));
+			final TableColumn column = rowTable.getColumnModel().getColumn(0);
+			column.setPreferredWidth(50);
+			column.setMaxWidth(50);
+			rowTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			rowTable.setBackground(this.jsp.getBackground());
+			final JViewport jvp = new JViewport();
+			jvp.setPreferredSize(rowTable.getMaximumSize());
+			jvp.setMaximumSize(rowTable.getMaximumSize());
+			jvp.setView(rowTable);
+			this.jsp.setRowHeader(jvp);
+		}
+		// TODO: Label for statistic choice
+	}
 
-  static private float computePercentage(float f, float min, float max)
-  {
-    if (max - min == 0)
-      return 0.0f;
-    return (f - min) / (max - min);
-  }
-  
-  private static final class ResultsRowTableModel
-    extends AbstractTableModel
-  {
-    private List params;
-    public ResultsRowTableModel(List secondaryParameters)
-    {
-      super();
-      params = secondaryParameters;
-    }
+	static private int interpolate(final float percent, final int min, final int max) {
+		int result;
+		result = (int) (((max - min) * percent) + min);
+		return result;
+	}
 
-    public int getRowCount()
-    {
-      return params.size();
-//      return params.isEmpty() ? 1 : params.size();
-    }
+	static private float computePercentage(final float f, final float min, final float max) {
+		if (max - min == 0) {
+			return 0.0f;
+		}
+		return (f - min) / (max - min);
+	}
 
-    public int getColumnCount()
-    {
-      return params.isEmpty() ? 0 : 1;
-    }
+	private static final class ResultsRowTableModel extends AbstractTableModel {
+		private static final long serialVersionUID = 1L;
+		private final List<Parameter> params;
 
-    public Object getValueAt(int row, int column)
-    {
-      SingleValueParameter p = (SingleValueParameter)params.get(row);
-      return p.getUIValue();
-    }
-  
-  }
+		public ResultsRowTableModel(final List<Parameter> secondaryParameters) {
+			super();
+			this.params = secondaryParameters;
+		}
 
-  private static final class ResultsGridTableModel
-    extends AbstractTableModel
-  {
-    private final List primaryParameters;
-    private final ResultsGrid grid;
-    private final List secondaryParameters;
+		@Override
+		public int getRowCount() {
+			return this.params.size();
+		}
 
-    private ResultsGridTableModel(List primaryParameters, ResultsGrid grid,
-        List secondaryParameters)
-    {
-      super();
-      this.primaryParameters = primaryParameters;
-      this.grid = grid;
-      this.secondaryParameters = secondaryParameters;
-    }
+		@Override
+		public int getColumnCount() {
+			return this.params.isEmpty() ? 0 : 1;
+		}
 
-    public int getColumnCount()
-    {
-      return primaryParameters.isEmpty() ? 1 : primaryParameters.size();
-    }
+		@Override
+		public Object getValueAt(final int row, final int column) {
+			final SingleValueParameter p = (SingleValueParameter) this.params.get(row);
+			return p.getUIValue();
+		}
 
-    public int getRowCount()
-    {
-      return secondaryParameters.isEmpty() ? 1 : secondaryParameters.size();
-    }
+	}
 
-    public Object getValueAt(int row, int column)
-    {
-      return grid.getResult(column, row);
-    }
+	private static final class ResultsGridTableModel extends AbstractTableModel {
+		private static final long serialVersionUID = 1L;
+		private final List<Parameter> primaryParameters;
+		private final ResultsGrid grid;
+		private final List<Parameter> secondaryParameters;
 
-    public String getColumnName(int col)
-    {
-      return primaryParameters.isEmpty() ? "Value" : grid.getColumnName(col);
-    }
-  }
+		private ResultsGridTableModel(final List<Parameter> primaryParameters, final ResultsGrid grid,
+				final List<Parameter> secondaryParameters) {
+			super();
+			this.primaryParameters = primaryParameters;
+			this.grid = grid;
+			this.secondaryParameters = secondaryParameters;
+		}
 
-  private static class ResultsTableRenderer implements TableCellRenderer
-  {
-    private Color minColor = Color.WHITE;
-    private Color maxColor = Color.RED;
-    private TableCellRenderer tcRenderer;
-    private float min;
-    private float max;
-    
-    public ResultsTableRenderer(TableCellRenderer defaultRenderer,
-        float min, float max)
-    {
-      super();
-      tcRenderer = defaultRenderer;
-      this.min = min;
-      this.max = max;
-    }
+		@Override
+		public int getColumnCount() {
+			return this.primaryParameters.isEmpty() ? 1 : this.primaryParameters.size();
+		}
 
-    public Component getTableCellRendererComponent(JTable jtable, Object value,
-        boolean isSelected, boolean hasFocus, int row, int column)
-    {
-      Component c = tcRenderer.getTableCellRendererComponent(jtable, value,
-          isSelected, hasFocus, row, column);
-      Number floatValue = (Number)value;
-      float percent = computePercentage(floatValue.floatValue(), min, max);
-      int red = interpolate(percent, minColor.getRed(), maxColor.getRed());
-      int green = interpolate(percent, minColor.getGreen(), maxColor.getGreen());
-      int blue = interpolate(percent, minColor.getBlue(), maxColor.getBlue());
-      Color valueColor = new Color(red, green, blue);
-      c.setBackground(valueColor);
-      return c;
-    }
-  } 
+		@Override
+		public int getRowCount() {
+			return this.secondaryParameters.isEmpty() ? 1 : this.secondaryParameters.size();
+		}
+
+		@Override
+		public Object getValueAt(final int row, final int column) {
+			return this.grid.getResult(column, row);
+		}
+
+		@Override
+		public String getColumnName(final int col) {
+			return this.primaryParameters.isEmpty() ? "Value" : this.grid.getColumnName(col);
+		}
+	}
+
+	private static class ResultsTableRenderer implements TableCellRenderer {
+		private final Color minColor = Color.WHITE;
+		private final Color maxColor = Color.RED;
+		private final TableCellRenderer tcRenderer;
+		private final float min;
+		private final float max;
+
+		public ResultsTableRenderer(final TableCellRenderer defaultRenderer, final float min, final float max) {
+			super();
+			this.tcRenderer = defaultRenderer;
+			this.min = min;
+			this.max = max;
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(final JTable jtable, final Object value,
+				final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+			final Component c = this.tcRenderer.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row,
+					column);
+			final Number floatValue = (Number) value;
+			final float percent = computePercentage(floatValue.floatValue(), this.min, this.max);
+			final int red = interpolate(percent, this.minColor.getRed(), this.maxColor.getRed());
+			final int green = interpolate(percent, this.minColor.getGreen(), this.maxColor.getGreen());
+			final int blue = interpolate(percent, this.minColor.getBlue(), this.maxColor.getBlue());
+			final Color valueColor = new Color(red, green, blue);
+			c.setBackground(valueColor);
+			return c;
+		}
+	}
 }

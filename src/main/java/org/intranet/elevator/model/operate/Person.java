@@ -124,38 +124,36 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * <td><i>Impossible</i></td>
  * </tr>
  * </table>
- * 
+ *
  * @author Neil McKellar and Chris Dailey
  */
 public final class Person extends ModelElement {
 	private Floor destination;
 	private Location currentLocation;
 	private int percentMoved = -1;
-
-	private Map sensorListenerMap = new HashMap();
-	private Map doorListenerMap = new HashMap();
+	private final Map<DoorSensor.Listener, DoorSensor> sensorListenerMap = new HashMap<>();
+	private final Map<Door.Listener, Door> doorListenerMap = new HashMap<>();
 	private CarRequestPanel.ArrivalListener arrivalListener;
-
 	private long totalWaitingTime;
 	private long startWaitTime = -1;
 	private long totalTravelTime;
 	private long startTravelTime = -1;
 
-	Person(EventQueue eQ, Location startLocation) {
+	Person(final EventQueue eQ, final Location startLocation) {
 		super(eQ);
 		// TODO: Deal with the start location being at capacity.
 		movePerson(startLocation);
 	}
 
-	public void setDestination(Floor newDestination) {
-		if (newDestination == currentLocation) {
-			destination = null;
+	public void setDestination(final Floor newDestination) {
+		if (newDestination == this.currentLocation) {
+			this.destination = null;
 			return;
 		}
-		destination = newDestination;
-		int currentFloorNumber = ((Floor) currentLocation).getFloorNumber();
-		int destinationFloorNumber = newDestination.getFloorNumber();
-		boolean up = destinationFloorNumber > currentFloorNumber;
+		this.destination = newDestination;
+		final int currentFloorNumber = ((Floor) this.currentLocation).getFloorNumber();
+		final int destinationFloorNumber = newDestination.getFloorNumber();
+		final boolean up = destinationFloorNumber > currentFloorNumber;
 
 		beginWaiting();
 		startPayingAttention(up);
@@ -163,42 +161,45 @@ public final class Person extends ModelElement {
 	}
 
 	/**
-	 * Check each arriving car, to see if it can bring us in <up> direction
-	 * Connect listener to {@link CarRequestPanel.ArrivalListener} and checks
-	 * each arrival. Note that we can not then enter right away, as car may be
-	 * full, people have to get out, others will want to get in,etc. Therefore
-	 * an arrival triggers setup of another listener to wait for our chance.
+	 * Check each arriving car, to see if it can bring us in <up> direction Connect
+	 * listener to {@link CarRequestPanel.ArrivalListener} and checks each arrival.
+	 * Note that we can not then enter right away, as car may be full, people have
+	 * to get out, others will want to get in,etc. Therefore an arrival triggers
+	 * setup of another listener to wait for our chance.
 	 * <p>
 	 * Note, this function does NOT let the person press a call button, it only
 	 * watches arriving cars and tries to enter them.
 	 * </p>
-	 * 
-	 * @param up
-	 *            is true if we want to go up, false if down.
+	 *
+	 * @param up is true if we want to go up, false if down.
 	 */
 	private void startPayingAttention(final boolean up) {
-		Floor here = (Floor) currentLocation;
+		final Floor here = (Floor) this.currentLocation;
 		final CarRequestPanel callButton = here.getCallPanel();
-		arrivalListener = new CarRequestPanel.ArrivalListener() {
-			public void arrivedUp(CarEntrance entrance) {
-				if (!up)
+		this.arrivalListener = new CarRequestPanel.ArrivalListener() {
+			@Override
+			public void arrivedUp(final CarEntrance entrance) {
+				if (!up) {
 					return;
+				}
 				payAttentionToEntrance(entrance, up);
 				tryToEnterCar(up);
 			}
 
-			public void arrivedDown(CarEntrance entrance) {
-				if (up)
+			@Override
+			public void arrivedDown(final CarEntrance entrance) {
+				if (up) {
 					return;
+				}
 				payAttentionToEntrance(entrance, up);
 				tryToEnterCar(up);
 			}
 		};
-		callButton.addArrivalListener(arrivalListener);
+		callButton.addArrivalListener(this.arrivalListener);
 
 		/** hack to handle already open doors. See #492 */
-		for (Iterator i = ((Floor) currentLocation).getCarEntrances(); i.hasNext();) {
-			CarEntrance thisEntrance = (CarEntrance) i.next();
+		for (final Iterator<CarEntrance> i = ((Floor) this.currentLocation).getCarEntrances(); i.hasNext();) {
+			final CarEntrance thisEntrance = i.next();
 			if (thisEntrance.getDoor().getState() != Door.State.CLOSED
 					&& ((thisEntrance.isUp() && up) || (!up && thisEntrance.isDown()))) {
 				payAttentionToEntrance(thisEntrance, up);
@@ -210,94 +211,96 @@ public final class Person extends ModelElement {
 	 * Check if there is some car in given direction. This call is normally
 	 * triggered by a car arriving on this floor, which is connected to the
 	 * {@link CarRequestPanel.ArrivalListener} in {@link #startPayingAttention}
-	 * 
-	 * @param entrance
-	 *            is the car entrance to be checked
-	 * @param up
-	 *            is true if we want up, false if down.
+	 *
+	 * @param entrance is the car entrance to be checked
+	 * @param up       is true if we want up, false if down.
 	 */
-	private void payAttentionToEntrance(CarEntrance entrance, final boolean up) {
+	private void payAttentionToEntrance(final CarEntrance entrance, final boolean up) {
 		final DoorSensor sensor = entrance.getDoorSensor();
 		final Door door = entrance.getDoor();
 		// pay attention to unobstructed
 		final DoorSensor.Listener sensorListener = new DoorSensor.Listener() {
+			@Override
 			public void sensorCleared() {
 			}
 
+			@Override
 			public void sensorObstructed() {
 			}
 
+			@Override
 			public void sensorUnobstructed() {
 				tryToEnterCar(up);
 			}
 		};
 		sensor.addListener(sensorListener);
-		sensorListenerMap.put(sensorListener, sensor);
+		this.sensorListenerMap.put(sensorListener, sensor);
 		// pay attention to doorClosed
-		Door.Listener doorListener = new Door.Listener() {
+		final Door.Listener doorListener = new Door.Listener() {
+			@Override
 			public void doorOpened() {
 				tryToEnterCar(up);
 			}
 
+			@Override
 			public void doorClosed() {
 				// stop paying attention to this entrance
 				sensor.removeListener(sensorListener);
-				sensorListenerMap.remove(sensorListener);
+				Person.this.sensorListenerMap.remove(sensorListener);
 				door.removeListener(this);
-				doorListenerMap.remove(this);
+				Person.this.doorListenerMap.remove(this);
 			}
 		};
 		door.addListener(doorListener, false);
-		doorListenerMap.put(doorListener, door);
+		this.doorListenerMap.put(doorListener, door);
 	}
 
 	private void stopPayingAttention() {
-		Floor here = (Floor) currentLocation;
+		final Floor here = (Floor) this.currentLocation;
 		final CarRequestPanel callButton = here.getCallPanel();
-		callButton.removeArrivalListener(arrivalListener);
-		arrivalListener = null;
+		callButton.removeArrivalListener(this.arrivalListener);
+		this.arrivalListener = null;
 
-		for (Iterator i = sensorListenerMap.keySet().iterator(); i.hasNext();) {
-			DoorSensor.Listener listener = (DoorSensor.Listener) i.next();
-			DoorSensor sensor = (DoorSensor) sensorListenerMap.get(listener);
+		for (final Object element : this.sensorListenerMap.keySet()) {
+			final DoorSensor.Listener listener = (DoorSensor.Listener) element;
+			final DoorSensor sensor = this.sensorListenerMap.get(listener);
 			sensor.removeListener(listener);
 		}
-		sensorListenerMap.clear();
+		this.sensorListenerMap.clear();
 
-		for (Iterator i = doorListenerMap.keySet().iterator(); i.hasNext();) {
-			Door.Listener listener = (Door.Listener) i.next();
-			Door door = (Door) doorListenerMap.get(listener);
+		for (final Object element : this.doorListenerMap.keySet()) {
+			final Door.Listener listener = (Door.Listener) element;
+			final Door door = this.doorListenerMap.get(listener);
 			door.removeListener(listener);
 		}
-		doorListenerMap.clear();
+		this.doorListenerMap.clear();
 	}
 
 	/**
 	 * Try to enter the given car. Just fails if there is someone blocking the
-	 * entrance, door not open, car full, etc. If there is no car where we can
-	 * enter in (maybe after letting some people out), then the call panel is
-	 * operated to call a new car.
+	 * entrance, door not open, car full, etc. If there is no car where we can enter
+	 * in (maybe after letting some people out), then the call panel is operated to
+	 * call a new car.
 	 * <p>
 	 * The idea is to keep calling this. This is done from
 	 * {@link #payAttentionToEntrance(CarEntrance, boolean)} where
 	 * {@link DoorSensor.Listener#sensorUnobstructed()} is used to trigger these
 	 * calls.
 	 * </p>
-	 * 
-	 * @param up
-	 *            the direction we want to travel in. true if we want to go up,
-	 *            false if down.
+	 *
+	 * @param up the direction we want to travel in. true if we want to go up, false
+	 *           if down.
 	 */
-	private void tryToEnterCar(boolean up) {
-		Floor here = (Floor) currentLocation;
+	private void tryToEnterCar(final boolean up) {
+		final Floor here = (Floor) this.currentLocation;
 		final CarRequestPanel callButton = here.getCallPanel();
 		int numCandidateEntrances = 0;
 
-		for (Iterator i = here.getCarEntrances(); i.hasNext();) {
-			CarEntrance entrance = (CarEntrance) i.next();
-			Door door = entrance.getDoor();
-			DoorSensor sensor = entrance.getDoorSensor();
-			Car car = (Car) door.getTo();
+		for (final Iterator<CarEntrance> i = here.getCarEntrances(); i.hasNext();) {
+			final CarEntrance entrance = i.next();
+			final Door door = entrance.getDoor();
+			final DoorSensor sensor = entrance.getDoorSensor();
+			final Car car = (Car) door.getTo();
 			// if door is open && sensor is !obstructed && not at capacity
 			if (door.getState() != Door.State.CLOSED && sensor.getState() != DoorSensor.State.OBSTRUCTED
 					&& !car.isAtCapacity() && !entrance.arePeopleWaitingToGetOut() && up == entrance.isUp()) {
@@ -309,84 +312,92 @@ public final class Person extends ModelElement {
 			}
 		}
 
-		if (numCandidateEntrances > 0)
+		if (numCandidateEntrances > 0) {
 			return;
+		}
 
-		if (up && !callButton.isUp())
+		if (up && !callButton.isUp()) {
 			callButton.pressUp();
-		if (!up && !callButton.isDown())
+		}
+		if (!up && !callButton.isDown()) {
 			callButton.pressDown();
+		}
 	}
 
 	/**
-	 * Perform the entering of the car by this person. Places the movement event
-	 * on the event queue and the action to be performed when the event has been
-	 * played out.
-	 * 
-	 * @param entrance
-	 *            is the CarEntrance to take.
+	 * Perform the entering of the car by this person. Places the movement event on
+	 * the event queue and the action to be performed when the event has been played
+	 * out.
+	 *
+	 * @param entrance is the CarEntrance to take.
 	 */
 	private void beginEnterCar(final CarEntrance entrance) {
 		entrance.getDoorSensor().obstruct();
-		long currentTime = eventQueue.getCurrentTime();
-		Event enteringCarEvent = new TrackingUpdateEvent(currentTime, 0.0f, currentTime + 2000, 100.0f) {
+		final long currentTime = this.eventQueue.getCurrentTime();
+		final Event enteringCarEvent = new TrackingUpdateEvent(currentTime, 0.0f, currentTime + 2000, 100.0f) {
+			@Override
 			public void updateTime() {
-				percentMoved = (int) currentValue(eventQueue.getCurrentTime());
+				Person.this.percentMoved = (int) currentValue(Person.this.eventQueue.getCurrentTime());
 			}
 
+			@Override
 			public void perform() {
-				percentMoved = -1;
+				Person.this.percentMoved = -1;
 				enterCar(entrance);
 				entrance.getDoorSensor().unobstruct();
 			}
 		};
-		eventQueue.addEvent(enteringCarEvent);
+		this.eventQueue.addEvent(enteringCarEvent);
 	}
 
 	private void beginWaiting() {
-		if (startWaitTime == -1)
-			startWaitTime = eventQueue.getCurrentTime();
+		if (this.startWaitTime == -1) {
+			this.startWaitTime = this.eventQueue.getCurrentTime();
+		}
 	}
 
 	private void endWaiting() {
-		if (startWaitTime == -1)
+		if (this.startWaitTime == -1) {
 			throw new IllegalStateException("Can't end waiting when not already waiting.");
-		totalWaitingTime += eventQueue.getCurrentTime() - startWaitTime;
-		startWaitTime = -1;
+		}
+		this.totalWaitingTime += this.eventQueue.getCurrentTime() - this.startWaitTime;
+		this.startWaitTime = -1;
 	}
 
 	private void beginTravel() {
-		if (startTravelTime != -1)
+		if (this.startTravelTime != -1) {
 			throw new IllegalStateException("Can't begin travelling while already travelling");
-		startTravelTime = eventQueue.getCurrentTime();
+		}
+		this.startTravelTime = this.eventQueue.getCurrentTime();
 	}
 
 	private void endTravel() {
-		if (startTravelTime == -1)
+		if (this.startTravelTime == -1) {
 			throw new IllegalStateException("Can't end travel when not already travelling.");
-		totalTravelTime += eventQueue.getCurrentTime() - startTravelTime;
-		startTravelTime = -1;
+		}
+		this.totalTravelTime += this.eventQueue.getCurrentTime() - this.startTravelTime;
+		this.startTravelTime = -1;
 	}
 
 	public long getTotalWaitingTime() {
-		return totalWaitingTime;
+		return this.totalWaitingTime;
 	}
 
 	public long getTotalTravelTime() {
-		return totalTravelTime;
+		return this.totalTravelTime;
 	}
 
 	public long getTotalTime() {
-		return totalWaitingTime + totalTravelTime;
+		return this.totalWaitingTime + this.totalTravelTime;
 	}
 
 	public Floor getDestination() {
-		return destination;
+		return this.destination;
 	}
 
 	/**
-	 * When a person arrives at the destination, this is all the processing that
-	 * has to happen.
+	 * When a person arrives at the destination, this is all the processing that has
+	 * to happen.
 	 */
 	private void leaveCar() {
 		endTravel();
@@ -394,13 +405,12 @@ public final class Person extends ModelElement {
 
 	/**
 	 * The person enters the car through the specified entrance. This method is
-	 * called after the TrackingUpdateEvent that animates moving the person to
-	 * the elevator car has completed.
-	 * 
-	 * @param carEntrance
-	 *            The entrance to the car.
+	 * called after the TrackingUpdateEvent that animates moving the person to the
+	 * elevator car has completed.
+	 *
+	 * @param carEntrance The entrance to the car.
 	 */
-	private void enterCar(CarEntrance carEntrance) {
+	private void enterCar(final CarEntrance carEntrance) {
 		final Door departureDoor = carEntrance.getDoor();
 		final Car car = (Car) departureDoor.getTo();
 
@@ -408,12 +418,13 @@ public final class Person extends ModelElement {
 
 		endWaiting();
 		beginTravel();
-		car.getFloorRequestPanel().requestFloor(destination);
+		car.getFloorRequestPanel().requestFloor(this.destination);
 		// setup for getting out of the car
 		car.addListener(new Car.Listener() {
+			@Override
 			public void docked() {
-				if (destination == car.getLocation()) {
-					final Door arrivalDoor = destination.getCarEntranceForCar(car).getDoor();
+				if (Person.this.destination == car.getLocation()) {
+					final Door arrivalDoor = Person.this.destination.getCarEntranceForCar(car).getDoor();
 					car.removeListener(this);
 					waitForDoorOpen(arrivalDoor);
 				}
@@ -423,54 +434,58 @@ public final class Person extends ModelElement {
 
 	/**
 	 * Move the person to the specified destination.
-	 * 
-	 * @param destination
-	 *            Where the person moves to.
+	 *
+	 * @param destination Where the person moves to.
 	 */
-	private void movePerson(Location destination) {
-		if (destination == null)
+	private void movePerson(final Location destination) {
+		if (destination == null) {
 			throw new IllegalArgumentException("Cannot move to a null destination.");
+		}
 
-		if (destination.isAtCapacity())
+		if (destination.isAtCapacity()) {
 			throw new IllegalStateException("Cannot move person when " + destination.getClass().getSimpleName()
 					+ " is at capacity: " + destination.getCapacity() + ".");
+		}
 
-		if (currentLocation != null)
-			currentLocation.personLeaves(this);
+		if (this.currentLocation != null) {
+			this.currentLocation.personLeaves(this);
+		}
 		// personEnters() is guaranteed to succeed
 		// because capacity was checked above.
 		destination.personEnters(this);
-		currentLocation = destination;
+		this.currentLocation = destination;
 	}
 
 	private void waitForDoorOpen(final Door arrivalDoor) {
-		final CarEntrance entrance = destination.getCarEntranceForCar(currentLocation);
-		entrance.waitToEnterDoor(new CarEntrance.DoorWaitListener() {
-			public void doorAvailable() {
-				entrance.getDoorSensor().obstruct();
-				// TODO: Deal with the floor being at capacity.
-				percentMoved = 0;
-				eventQueue.addEvent(new TrackingUpdateEvent(eventQueue.getCurrentTime(), 0,
-						eventQueue.getCurrentTime() + 2000, 100) {
-					public void updateTime() {
-						percentMoved = (int) currentValue(eventQueue.getCurrentTime());
-					}
+		final CarEntrance entrance = this.destination.getCarEntranceForCar(this.currentLocation);
+		entrance.waitToEnterDoor(() -> {
+			entrance.getDoorSensor().obstruct();
+			// TODO: Deal with the floor being at capacity.
+			Person.this.percentMoved = 0;
+			Person.this.eventQueue.addEvent(new TrackingUpdateEvent(Person.this.eventQueue.getCurrentTime(), 0,
+					Person.this.eventQueue.getCurrentTime() + 2000, 100) {
+				@Override
+				public void updateTime() {
+					Person.this.percentMoved = (int) currentValue(Person.this.eventQueue.getCurrentTime());
+				}
 
-					public void perform() {
-						percentMoved = -1;
-						movePerson(destination);
-						entrance.getDoorSensor().unobstruct();
-						destination = null;
-					}
-				});
-			}
+				@Override
+				public void perform() {
+					Person.this.percentMoved = -1;
+					movePerson(Person.this.destination);
+					entrance.getDoorSensor().unobstruct();
+					Person.this.destination = null;
+				}
+			});
 		});
-		Door.Listener doorListener = new Door.Listener() {
+		final Door.Listener doorListener = new Door.Listener() {
+			@Override
 			public void doorOpened() {
 				arrivalDoor.removeListener(this);
 				leaveCar();
 			}
 
+			@Override
 			public void doorClosed() {
 			}
 		};
@@ -478,6 +493,6 @@ public final class Person extends ModelElement {
 	}
 
 	public int getPercentMoved() {
-		return percentMoved;
+		return this.percentMoved;
 	}
 }

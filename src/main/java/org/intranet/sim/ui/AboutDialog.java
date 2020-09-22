@@ -27,55 +27,52 @@ import org.intranet.sim.SimulationApplication;
  * @author Neil McKellar and Chris Dailey
  *
  */
-public class AboutDialog extends JDialog
-{
+public class AboutDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
 
-  public AboutDialog(JFrame owner, SimulationApplication simApp)
-  {
-    super(owner, "About " + simApp.getApplicationName());
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    
-    JPanel aboutPanel = new JPanel();
-    aboutPanel.setLayout(new GridLayout(0, 1));
-    aboutPanel.add(new JLabel(simApp.getApplicationName(), SwingConstants.CENTER));
-    aboutPanel.add(new JLabel("Version " + simApp.getVersion(), SwingConstants.CENTER));
-    aboutPanel.add(new JLabel(simApp.getCopyright(), SwingConstants.CENTER));
-    getContentPane().add(aboutPanel, BorderLayout.NORTH);
-    
-    JScrollPane scrollPane = createLicensePane();
-    getContentPane().add(scrollPane, BorderLayout.CENTER);
+	public AboutDialog(final JFrame owner, final SimulationApplication simApp) {
+		super(owner, "About " + simApp.getApplicationName());
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    setSize(owner.getWidth()*3/4, owner.getHeight()*2/3);
-    setLocationRelativeTo(owner); // centers the dialog in the parent window
-    setVisible(true);
-  }
+		final JPanel aboutPanel = new JPanel();
+		aboutPanel.setLayout(new GridLayout(0, 1));
+		aboutPanel.add(new JLabel(simApp.getApplicationName(), SwingConstants.CENTER));
+		aboutPanel.add(new JLabel("Version " + simApp.getVersion(), SwingConstants.CENTER));
+		aboutPanel.add(new JLabel(simApp.getCopyright(), SwingConstants.CENTER));
+		getContentPane().add(aboutPanel, BorderLayout.NORTH);
 
-  private JScrollPane createLicensePane()
-  {
-    // scrollable license text area
-    JTextArea textArea = new JTextArea();
-    textArea.setFont(new Font("Monospaced",Font.PLAIN,12));
-    JScrollPane scrollPane = new JScrollPane(textArea);
-    // get license text
-    InputStream lgplStream = ClassLoader.getSystemResourceAsStream("lgpl.txt");
-    InputStreamReader lgplReader = new InputStreamReader(lgplStream);
-    BufferedReader bufferedReader = new BufferedReader(lgplReader);
-    for (;;)
-    {
-      try
-      {
-        String line = bufferedReader.readLine();
-        if (line == null) break;
-        textArea.append(line);
-        textArea.append("\n");
-      } catch (IOException e)
-      {
-        textArea.append("Unable to find license file.");
-        break;
-      }
-    }
-    textArea.setCaretPosition(0);  // set us back at the top
-    return scrollPane;
-  }
+		final JScrollPane scrollPane = createLicensePane();
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+		setSize(owner.getWidth() * 3 / 4, owner.getHeight() * 2 / 3);
+		setLocationRelativeTo(owner); // centers the dialog in the parent window
+		setVisible(true);
+	}
+
+	private JScrollPane createLicensePane() {
+		// scrollable license text area
+		final JTextArea textArea = new JTextArea();
+		textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		final JScrollPane scrollPane = new JScrollPane(textArea);
+		// get license text
+		final InputStream lgplStream = ClassLoader.getSystemResourceAsStream("lgpl.txt");
+		final InputStreamReader lgplReader = new InputStreamReader(lgplStream);
+		final BufferedReader bufferedReader = new BufferedReader(lgplReader);
+		for (;;) {
+			try {
+				final String line = bufferedReader.readLine();
+				if (line == null) {
+					break;
+				}
+				textArea.append(line);
+				textArea.append("\n");
+			} catch (final IOException e) {
+				textArea.append("Unable to find license file.");
+				break;
+			}
+		}
+		textArea.setCaretPosition(0); // set us back at the top
+		return scrollPane;
+	}
 
 }

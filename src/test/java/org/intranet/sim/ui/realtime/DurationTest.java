@@ -10,10 +10,8 @@ import org.junit.Test;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public class DurationTest {
-
 	@Test
 	public final void testMsFormat() {
 		assertEquals("00.123", Duration.format(123));
@@ -46,7 +44,6 @@ public class DurationTest {
 
 	@Test
 	public final void testYearFormat() {
-		assertEquals("4 year 3 month 5 day 04:03:45.123",
-				Duration.format(134366625123L));
+		assertEquals("4 year 3 month 5 day 04:03:45.123", Duration.format(134366625123L));
 	}
 }

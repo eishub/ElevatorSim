@@ -40,23 +40,27 @@ import org.intranet.sim.event.TrackingUpdateEvent;
  * Note that <code>arrive()</code> is like an event that is picked up by the
  * subclass, as it is an abstract method.
  * </p>
- * 
+ *
  * @author Neil McKellar and Chris Dailey
  */
 public abstract class MovableLocation extends Location {
-	MovableLocation(EventQueue eQ, float height, int capacity) {
+	MovableLocation(final EventQueue eQ, final float height, final int capacity) {
 		super(eQ, height, capacity);
-		destinationHeight = height;
+		this.destinationHeight = height;
 		eQ.addListener(new EventQueue.Listener() {
-			public void eventAdded(Event e) {
+			@Override
+			public void eventAdded(final Event e) {
 			}
 
-			public void eventError(Exception ex) {
+			@Override
+			public void eventError(final Exception ex) {
 			}
 
-			public void eventRemoved(Event e) {
-				if (e == arrivalEvent)
-					arrivalEvent = null;
+			@Override
+			public void eventRemoved(final Event e) {
+				if (e == MovableLocation.this.arrivalEvent) {
+					MovableLocation.this.arrivalEvent = null;
+				}
 			}
 		});
 	}
@@ -67,35 +71,36 @@ public abstract class MovableLocation extends Location {
 	private Event arrivalEvent;
 
 	public final float getTotalDistance() {
-		return totalDistance;
+		return this.totalDistance;
 	}
 
 	public final int getNumTravels() {
-		return numTravels;
+		return this.numTravels;
 	}
 
-	public final float getTravelTime(float distance) {
+	public final float getTravelTime(final float distance) {
 		return Math.abs(distance / getRatePerSecond());
 	}
 
-	public final void setHeight(float newHeight) {
-		totalDistance += Math.abs(newHeight - getHeight());
+	@Override
+	public final void setHeight(final float newHeight) {
+		this.totalDistance += Math.abs(newHeight - getHeight());
 		super.setHeight(newHeight);
 	}
 
-	protected final void setDestinationHeight(float h) {
-		if (arrivalEvent != null) {
-			eventQueue.removeEvent(arrivalEvent);
-			arrivalEvent = null;
+	protected final void setDestinationHeight(final float h) {
+		if (this.arrivalEvent != null) {
+			this.eventQueue.removeEvent(this.arrivalEvent);
+			this.arrivalEvent = null;
 		}
 
-		// checkDirectionChange(h);
-		destinationHeight = h;
+		this.destinationHeight = h;
 
-		if (getHeight() == h)
+		if (getHeight() == h) {
 			arrive();
-		else
+		} else {
 			travel();
+		}
 	}
 
 	protected abstract void arrive();
@@ -103,63 +108,36 @@ public abstract class MovableLocation extends Location {
 	protected abstract float getRatePerSecond();
 
 	private class ArrivalEvent extends TrackingUpdateEvent {
-		public ArrivalEvent(float departureHeight, long departureTime,
-				long arrivalTime) {
-			super(departureTime, departureHeight, arrivalTime,
-					destinationHeight);
+		public ArrivalEvent(final float departureHeight, final long departureTime, final long arrivalTime) {
+			super(departureTime, departureHeight, arrivalTime, MovableLocation.this.destinationHeight);
 		}
 
+		@Override
 		public void perform() {
-			setHeight(destinationHeight);
-			numTravels++;
+			setHeight(MovableLocation.this.destinationHeight);
+			MovableLocation.this.numTravels++;
 			arrive();
 		}
 
+		@Override
 		public void updateTime() {
-			setHeight(currentValue(eventQueue.getCurrentTime()));
-		}
-	}
-
-	/**
-	 * This check prevents mid-travel direction changes.
-	 * 
-	 * @param h
-	 */
-	private void checkDirectionChange(float h) {
-		boolean areMoving = getHeight() != destinationHeight;
-		if (areMoving) {
-			boolean oldUp = destinationHeight > getHeight();
-			boolean newUp = h > getHeight();
-			if (oldUp != newUp) {
-				System.err
-						.println("MovableLocation.setDestination: destinationHeight="
-								+ destinationHeight
-								+ ", currentHeight="
-								+ getHeight() + ", new destHeight=" + h);
-				// TODO : Make fault-tolerant -- remove assignments from list
-				// and give them back to the building for re-assignment
-				// TODO : Or rejecting the destination
-				throw new IllegalArgumentException(
-						"Can't change directions in mid-travel.");
-			}
+			setHeight(currentValue(MovableLocation.this.eventQueue.getCurrentTime()));
 		}
 	}
 
 	private void travel() {
-		float ratePerMillisecond = getRatePerSecond() / 1000;
-		long arrivalTime = eventQueue.getCurrentTime()
-				+ (long) (Math.abs(getHeight() - destinationHeight) / ratePerMillisecond);
-		long departureTime = eventQueue.getCurrentTime();
-		float departureHeight = getHeight();
+		final float ratePerMillisecond = getRatePerSecond() / 1000;
+		final long arrivalTime = this.eventQueue.getCurrentTime()
+				+ (long) (Math.abs(getHeight() - this.destinationHeight) / ratePerMillisecond);
+		final long departureTime = this.eventQueue.getCurrentTime();
+		final float departureHeight = getHeight();
 		// create and remember IncrementalUpdateEvent(arrivalTime)
-		arrivalEvent = new ArrivalEvent(departureHeight, departureTime,
-				arrivalTime);
+		this.arrivalEvent = new ArrivalEvent(departureHeight, departureTime, arrivalTime);
 		try {
-			eventQueue.addEvent(arrivalEvent);
-		} catch (IllegalArgumentException iae) {
-			System.err
-					.println("MovableLocation.travel():eventQueue.getCurrentTime()="
-							+ eventQueue.getCurrentTime());
+			this.eventQueue.addEvent(this.arrivalEvent);
+		} catch (final IllegalArgumentException iae) {
+			System.err.println(
+					"MovableLocation.travel():eventQueue.getCurrentTime()=" + this.eventQueue.getCurrentTime());
 			System.err.println("departureTime=" + departureTime);
 			System.err.println("arrivalTime  =" + arrivalTime);
 			throw iae;

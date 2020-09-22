@@ -4,62 +4,63 @@
  */
 package org.intranet.ui;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public final class ChoiceParameter extends SingleValueParameter {
+	private static final long serialVersionUID = 1L;
 	private Object value;
-	private List legalValues;
-	private Class type;
+	private final List<?> legalValues;
+	private final Class<?> type;
 
-	public ChoiceParameter(Simulator.Keys key, List legalValues,
-			Object defaultValue, Class expectedType) {
+	public ChoiceParameter(final Simulator.Keys key, final List<?> legalValues, final Object defaultValue,
+			final Class<?> expectedType) {
 		super(key);
-		value = defaultValue;
+		this.value = defaultValue;
 		this.legalValues = legalValues;
-		type = expectedType;
+		this.type = expectedType;
 	}
 
-	public List getLegalValues() {
-		return legalValues;
+	public List<?> getLegalValues() {
+		return this.legalValues;
 	}
 
-	public Class getType() {
-		return type;
+	public Class<?> getType() {
+		return this.type;
 	}
 
-	public void setValueFromUI(Object param) {
-		for (Iterator i = legalValues.iterator(); i.hasNext();) {
-			Object next = i.next();
+	@Override
+	public void setValueFromUI(final Object param) {
+		for (final Object next : this.legalValues) {
 			if (next.toString().equals(param.toString())) {
-				value = next;
+				this.value = next;
 				return;
 			}
 		}
 		throw new IllegalArgumentException("Parameter is not a legal value.");
 	}
 
+	@Override
 	public Object getUIValue() {
-		return value.toString();
+		return this.value.toString();
 	}
 
 	public Object getChoiceValue() {
-		return value;
+		return this.value;
 	}
 
-	public List getValues(String min, String max, String inc) {
+	@Override
+	public List<Object> getValues(final String min, final String max, final String inc) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public Object clone() {
-		ChoiceParameter cp = new ChoiceParameter(getKey(), legalValues, value,
-				type);
+		final ChoiceParameter cp = new ChoiceParameter(getKey(), this.legalValues, this.value, this.type);
 		return cp;
 	}
 }

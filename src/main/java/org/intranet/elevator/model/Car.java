@@ -5,7 +5,7 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.clock.RealTimeClock;
@@ -60,40 +60,40 @@ import org.intranet.sim.event.EventQueue;
  * <td><i>Impossible</i></td>
  * </tr>
  * </table>
- * 
+ *
  * @author Neil McKellar and Chris Dailey
  */
 public final class Car extends MovableLocation {
-	private String name;
+	private final String name;
 	private Floor location;
 	private Floor destination;
-	private FloorRequestPanel panel = new FloorRequestPanel();
-	private List<Listener> listeners = new ArrayList<Listener>();
+	private final FloorRequestPanel panel = new FloorRequestPanel();
+	private final List<Listener> listeners = new LinkedList<>();
 
 	public interface Listener {
 		void docked();
 	}
 
-	public Car(EventQueue eQ, String name, float height, int capacity) {
+	public Car(final EventQueue eQ, final String name, final float height, final int capacity) {
 		super(eQ, height, capacity);
 		this.name = name;
 	}
 
 	/**
 	 * Not thread safe. Only call from {@link RealTimeClock} thread.
-	 * 
-	 * @param destination
-	 *            new {@link Floor} to go to.
+	 *
+	 * @param destination new {@link Floor} to go to.
 	 */
-	public void setDestination(Floor destination) {
+	public void setDestination(final Floor destination) {
 		this.destination = destination;
-		if (location == null)
+		if (this.location == null) {
 			setDestinationHeight(destination.getHeight());
+		}
 	}
 
-	public float getTravelTime(Floor floor) {
-		float floorHeight = floor.getHeight();
-		float travelDistance = floorHeight - getHeight();
+	public float getTravelTime(final Floor floor) {
+		final float floorHeight = floor.getHeight();
+		final float travelDistance = floorHeight - getHeight();
 		return getTravelTime(travelDistance);
 	}
 
@@ -101,68 +101,73 @@ public final class Car extends MovableLocation {
 	 * Not thread safe. Only call from {@link RealTimeClock} thread.
 	 */
 	public void undock() {
-		if (location == null)
+		if (this.location == null) {
 			throw new IllegalStateException("Must be docked to undock");
+		}
 
-		location = null;
-		if (destination != null)
-			setDestinationHeight(destination.getHeight());
+		this.location = null;
+		if (this.destination != null) {
+			setDestinationHeight(this.destination.getHeight());
+		}
 	}
 
 	public Floor getDestination() {
-		return destination;
+		return this.destination;
 	}
 
 	public Floor getLocation() {
-		return location;
+		return this.location;
 	}
 
-	public void addListener(Listener listener) {
-		listeners.add(listener);
+	public void addListener(final Listener listener) {
+		this.listeners.add(listener);
 	}
 
-	public void removeListener(Listener listener) {
-		listeners.remove(listener);
+	public void removeListener(final Listener listener) {
+		this.listeners.remove(listener);
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public FloorRequestPanel getFloorRequestPanel() {
-		return panel;
+		return this.panel;
 	}
 
 	public Floor getFloorAt() {
-		if (destination == null && location == null)
-			return panel.getFloorAt(getHeight());
+		if (this.destination == null && this.location == null) {
+			return this.panel.getFloorAt(getHeight());
+		}
 		return null;
 	}
 
-	public final float getRatePerSecond() {
+	@Override
+	public float getRatePerSecond() {
 		return (float) (1000 * 10.0 / 4030.0);
 	}
 
+	@Override
 	protected void arrive() {
-		if (destination == null) {
+		if (this.destination == null) {
 			throw new IllegalStateException("already arrived, destination=null");
 		}
-		location = destination;
-		destination = null;
-		panel.requestFulfilled(location);
+		this.location = this.destination;
+		this.destination = null;
+		this.panel.requestFulfilled(this.location);
 		fireDockedEvent();
 	}
 
 	private void fireDockedEvent() {
-		List<Listener> listenersCopy = new ArrayList<Listener>(listeners);
-		for (Iterator<Listener> i = listenersCopy.iterator(); i.hasNext();) {
-			Listener l = (Listener) i.next();
+		final List<Listener> listenersCopy = new ArrayList<>(this.listeners);
+		for (final Listener listener : listenersCopy) {
+			final Listener l = listener;
 			l.docked();
 		}
 	}
 
-	// Wouter: added to ease debugging.
+	@Override
 	public String toString() {
-		return name;
+		return this.name;
 	}
 }

@@ -4,53 +4,58 @@
  */
 package org.intranet.elevator.model;
 
-import junit.framework.TestCase;
-
 import org.intranet.sim.event.Event;
 import org.intranet.sim.event.EventQueue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.TestCase;
+
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public class MovableLocationTest extends TestCase {
-
 	private EventQueue eQ;
 	private MovableLocation movableLocation;
 	private boolean hasError;
 	private boolean hasArrived;
 
+	@Override
 	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
-		hasError = false;
-		hasArrived = false;
-		eQ = new EventQueue();
-		eQ.addListener(new EventQueue.Listener() {
-			public void eventAdded(Event e) {
+		this.hasError = false;
+		this.hasArrived = false;
+		this.eQ = new EventQueue();
+		this.eQ.addListener(new EventQueue.Listener() {
+			@Override
+			public void eventAdded(final Event e) {
 			}
 
-			public void eventRemoved(Event e) {
+			@Override
+			public void eventRemoved(final Event e) {
 			}
 
-			public void eventError(Exception ex) {
-				hasError = true;
+			@Override
+			public void eventError(final Exception ex) {
+				MovableLocationTest.this.hasError = true;
 			}
 		});
-		movableLocation = new MovableLocation(eQ, 0.0f, 10) {
+		this.movableLocation = new MovableLocation(this.eQ, 0.0f, 10) {
+			@Override
 			public float getRatePerSecond() {
 				return 2.0f;
 			}
 
+			@Override
 			protected void arrive() {
-				hasArrived = true;
+				MovableLocationTest.this.hasArrived = true;
 			}
 		};
 	}
 
+	@Override
 	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -58,63 +63,66 @@ public class MovableLocationTest extends TestCase {
 
 	@Test
 	public void testBasic() {
-		assertFalse(hasArrived);
-		assertFalse(hasError);
-		assertTrue(movableLocation.getTotalDistance() == 0.0f);
-		assertTrue(movableLocation.getNumTravels() == 0);
+		assertFalse(this.hasArrived);
+		assertFalse(this.hasError);
+		assertTrue(this.movableLocation.getTotalDistance() == 0.0f);
+		assertTrue(this.movableLocation.getNumTravels() == 0);
 
-		eQ.addEvent(new Event(0) {
+		this.eQ.addEvent(new Event(0) {
+			@Override
 			public void perform() {
-				movableLocation.setDestinationHeight(3.0f);
+				MovableLocationTest.this.movableLocation.setDestinationHeight(3.0f);
 			}
 		});
 
-		eQ.processEventsUpTo(1000);
-		float rememberHeight = movableLocation.getHeight();
+		this.eQ.processEventsUpTo(1000);
+		final float rememberHeight = this.movableLocation.getHeight();
 		// prove that the loc has moved
 		assertTrue(rememberHeight != 0.0f);
-		assertFalse(hasArrived);
-		assertFalse(hasError);
-		assertTrue(movableLocation.getTotalDistance() != 0.0f);
-		assertTrue(movableLocation.getNumTravels() == 0);
+		assertFalse(this.hasArrived);
+		assertFalse(this.hasError);
+		assertTrue(this.movableLocation.getTotalDistance() != 0.0f);
+		assertTrue(this.movableLocation.getNumTravels() == 0);
 
-		eQ.processEventsUpTo(2000);
+		this.eQ.processEventsUpTo(2000);
 		// prove that loc has moved again
-		assertTrue(movableLocation.getHeight() != rememberHeight);
-		assertTrue(hasArrived);
-		assertFalse(hasError);
-		assertTrue(movableLocation.getTotalDistance() != 0.0f);
-		assertTrue(movableLocation.getNumTravels() != 0);
+		assertTrue(this.movableLocation.getHeight() != rememberHeight);
+		assertTrue(this.hasArrived);
+		assertFalse(this.hasError);
+		assertTrue(this.movableLocation.getTotalDistance() != 0.0f);
+		assertTrue(this.movableLocation.getNumTravels() != 0);
 	}
 
 	@Test
 	public void testMoveOppositeDirection() {
-		assertFalse(hasArrived);
-		assertFalse(hasError);
-		assertTrue(movableLocation.getTotalDistance() == 0.0f);
-		assertTrue(movableLocation.getNumTravels() == 0);
+		assertFalse(this.hasArrived);
+		assertFalse(this.hasError);
+		assertTrue(this.movableLocation.getTotalDistance() == 0.0f);
+		assertTrue(this.movableLocation.getNumTravels() == 0);
 
-		eQ.addEvent(new Event(0) {
+		this.eQ.addEvent(new Event(0) {
+			@Override
 			public void perform() {
-				movableLocation.setDestinationHeight(3.0f);
+				MovableLocationTest.this.movableLocation.setDestinationHeight(3.0f);
 			}
 		});
-		eQ.addEvent(new Event(1001) {
+		this.eQ.addEvent(new Event(1001) {
+			@Override
 			public void perform() {
-				movableLocation.setDestinationHeight(1.0f);
+				MovableLocationTest.this.movableLocation.setDestinationHeight(1.0f);
 			}
 		});
 
-		eQ.processEventsUpTo(1000);
-		float rememberHeight = movableLocation.getHeight();
+		this.eQ.processEventsUpTo(1000);
+		final float rememberHeight = this.movableLocation.getHeight();
 		// prove that the loc has moved
 		assertTrue(rememberHeight != 0.0f);
-		assertFalse(hasError);
-		assertFalse(hasArrived);
+		assertFalse(this.hasError);
+		assertFalse(this.hasArrived);
 
-		eQ.processEventsUpTo(2000);
+		this.eQ.processEventsUpTo(2000);
 		// assertTrue(hasError);
-		assertTrue(hasArrived);
-		assertEquals(1.0f, movableLocation.getHeight());
+		assertTrue(this.hasArrived);
+		assertEquals(1.0f, this.movableLocation.getHeight());
 	}
 }

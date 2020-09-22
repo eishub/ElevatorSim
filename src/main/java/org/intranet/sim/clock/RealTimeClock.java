@@ -8,13 +8,14 @@ import org.intranet.sim.Simulator;
 
 /**
  * A clock that actually runs on a real time thread.
- * 
+ *
  * @author Neil McKellar and Chris Dailey
  * @author W.Pasman 11nov2010 to use preferred time factor.
  */
 public class RealTimeClock extends Clock {
 	public static class RealTimeClockFactory implements ClockFactory {
-		public Clock createClock(FeedbackListener cl) {
+		@Override
+		public Clock createClock(final FeedbackListener cl) {
 			return new RealTimeClock(cl);
 		}
 	}
@@ -25,50 +26,54 @@ public class RealTimeClock extends Clock {
 
 	/**
 	 * Modified W.Pasman 11nov2010 to use preferred accelFactor.
-	 * 
-	 * @param c
-	 *            a listener for the clock
+	 *
+	 * @param c a listener for the clock
 	 */
-	public RealTimeClock(FeedbackListener c) {
+	public RealTimeClock(final FeedbackListener c) {
 		super(c);
 		setTimeConversion(Simulator.simulatorprefs.getInt(Simulator.Keys.TIMEFACTOR.toString(), 0));
 	}
 
+	@Override
 	public synchronized void start() {
-		if (isRunning())
+		if (isRunning()) {
 			throw new IllegalStateException("Can't start while already running");
+		}
 		setRunningState(true);
-		animationLoop = new AnimationLoop();
-		animationThread = new Thread(animationLoop);
-		animationThread.start();
+		this.animationLoop = new AnimationLoop();
+		this.animationThread = new Thread(this.animationLoop);
+		this.animationThread.start();
 	}
 
+	@Override
 	public synchronized void pause() {
-		if (!isRunning())
+		if (!isRunning()) {
 			throw new IllegalStateException("Can't pause while not running");
-		animationLoop.stop();
-		if (animationThread != Thread.currentThread()) {
+		}
+		this.animationLoop.stop();
+		if (this.animationThread != Thread.currentThread()) {
 			try {
-				animationThread.join();
-			} catch (InterruptedException e) {
+				this.animationThread.join();
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		animationThread = null;
-		animationLoop = null;
+		this.animationThread = null;
+		this.animationLoop = null;
 		setRunningState(false);
 	}
 
 	@Override
-	public void setTimeConversion(int factor) {
+	public void setTimeConversion(final int factor) {
 		super.setTimeConversion(factor);
-		realTime2SimTime = Math.pow(2, accelFactor);
+		this.realTime2SimTime = Math.pow(2, this.accelFactor);
 
 	}
 
 	class AnimationLoop implements Runnable {
 		private boolean running = true;
 
+		@Override
 		public void run() {
 			// The primary concept here is that the ideal real-time intervals
 			// are always the same. The code increments the real-time values to
@@ -78,34 +83,37 @@ public class RealTimeClock extends Clock {
 			final long realTimeIncrement = 100;
 			long targetRealTime = System.currentTimeMillis();
 			long simulationTime = getSimulationTime();
-			while (running) {
+			while (this.running) {
 				setSimulationTime(simulationTime);
 				targetRealTime += realTimeIncrement;
 
-				long sleepTime = targetRealTime - System.currentTimeMillis();
-				if (sleepTime > 0)
+				final long sleepTime = targetRealTime - System.currentTimeMillis();
+				if (sleepTime > 0) {
 					sleep(sleepTime);
+				}
 
-				simulationTime += (long) (realTimeIncrement * realTime2SimTime);
+				simulationTime += (long) (realTimeIncrement * RealTimeClock.this.realTime2SimTime);
 			}
 			setSimulationTime(simulationTime);
 		}
 
-		private void sleep(long sleepTime) {
+		private void sleep(final long sleepTime) {
 			try {
 				Thread.sleep(sleepTime);
-			} catch (InterruptedException ie) {
+			} catch (final InterruptedException ie) {
 				// Ignore it and let the loop go around again
 			}
 		}
 
 		public void stop() {
-			running = false;
+			this.running = false;
 		}
 	}
 
+	@Override
 	public synchronized void dispose() {
-		if (isRunning())
+		if (isRunning()) {
 			pause();
+		}
 	}
 }

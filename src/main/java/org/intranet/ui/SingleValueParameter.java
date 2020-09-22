@@ -15,39 +15,39 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
-@SuppressWarnings("serial")
 public abstract class SingleValueParameter extends Parameter {
+	private static final long serialVersionUID = 1L;
+
 	/**
-	 * @param desc
-	 *            the simulator settings
+	 * @param desc the simulator settings
 	 */
-	public SingleValueParameter(Simulator.Keys desc) {
+	public SingleValueParameter(final Simulator.Keys desc) {
 		super(desc);
 	}
 
+	@Override
 	public Object clone() {
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(this);
 			oos.close();
-			byte[] bytes = baos.toByteArray();
-			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			Object obj = ois.readObject();
+			final byte[] bytes = baos.toByteArray();
+			final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+			final ObjectInputStream ois = new ObjectInputStream(bais);
+			final Object obj = ois.readObject();
 			ois.close();
 			return obj;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public abstract List getValues(String min, String max, String inc);
+	public abstract List<Object> getValues(String min, String max, String inc);
 
 	// SOON: setValueFromUI() should always receive a String
 	public abstract void setValueFromUI(Object param);

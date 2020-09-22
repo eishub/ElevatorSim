@@ -4,17 +4,16 @@
  */
 package org.intranet.elevator.model;
 
-import junit.framework.TestCase;
-
 import org.intranet.sim.event.Event;
 import org.intranet.sim.event.EventQueue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.TestCase;
+
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public class TestCar extends TestCase {
 	private EventQueue eQ;
@@ -23,35 +22,40 @@ public class TestCar extends TestCase {
 	private Floor floorThree;
 	private boolean hasError;
 
+	@Override
 	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
-		hasError = false;
-		eQ = new EventQueue();
-		eQ.addListener(new EventQueue.Listener() {
-			public void eventAdded(Event e) {
+		this.hasError = false;
+		this.eQ = new EventQueue();
+		this.eQ.addListener(new EventQueue.Listener() {
+			@Override
+			public void eventAdded(final Event e) {
 			}
 
-			public void eventRemoved(Event e) {
+			@Override
+			public void eventRemoved(final Event e) {
 			}
 
-			public void eventError(Exception ex) {
-				hasError = true;
+			@Override
+			public void eventError(final Exception ex) {
+				TestCar.this.hasError = true;
 			}
 		});
-		car = new Car(eQ, "testCar", 0.0f, 10);
-		floorTwo = new Floor(eQ, 2, 2.0f, 1.0f);
-		floorThree = new Floor(eQ, 3, 3.0f, 1.0f);
-		car.getFloorRequestPanel().addServicedFloor(floorTwo);
-		car.getFloorRequestPanel().addServicedFloor(floorThree);
+		this.car = new Car(this.eQ, "testCar", 0.0f, 10);
+		this.floorTwo = new Floor(this.eQ, 2, 2.0f, 1.0f);
+		this.floorThree = new Floor(this.eQ, 3, 3.0f, 1.0f);
+		this.car.getFloorRequestPanel().addServicedFloor(this.floorTwo);
+		this.car.getFloorRequestPanel().addServicedFloor(this.floorThree);
 	}
 
+	@Override
 	@After
 	protected void tearDown() throws Exception {
-		eQ = null;
-		car = null;
-		floorTwo = null;
-		floorThree = null;
+		this.eQ = null;
+		this.car = null;
+		this.floorTwo = null;
+		this.floorThree = null;
 		super.tearDown();
 	}
 
@@ -59,7 +63,7 @@ public class TestCar extends TestCase {
 	public final void testDockedToIdle() {
 		idleToDocked();
 
-		car.undock();
+		this.car.undock();
 		assertCar(2.0f, null, null);
 	}
 
@@ -67,24 +71,24 @@ public class TestCar extends TestCase {
 	public final void testDockedToTravelling() {
 		idleToDocked();
 
-		setDestination(floorThree, 1201);
+		setDestination(this.floorThree, 1201);
 		undock(1202);
-		eQ.processEventsUpTo(1203);
-		assertCar(2.002f, null, floorThree);
+		this.eQ.processEventsUpTo(1203);
+		assertCar(2.002f, null, this.floorThree);
 
-		eQ.processEventsUpTo(1800);
-		assertCar(3.0f, floorThree, null);
+		this.eQ.processEventsUpTo(1800);
+		assertCar(3.0f, this.floorThree, null);
 	}
 
 	@Test
 	public final void testBadDirectionChange() {
 		idleToDocked();
 
-		setDestination(floorThree, 1201);
+		setDestination(this.floorThree, 1201);
 		undock(1202);
-		setDestination(floorTwo, 1300);
-		assertFalse(hasError);
-		eQ.processEventsUpTo(1400);
+		setDestination(this.floorTwo, 1300);
+		assertFalse(this.hasError);
+		this.eQ.processEventsUpTo(1400);
 		// assertTrue(hasError);
 		// It's now allowed to change direction while traveling.
 	}
@@ -93,33 +97,35 @@ public class TestCar extends TestCase {
 	public final void testDockedToDocked() {
 		idleToDocked();
 
-		setDestination(floorTwo, 1201);
-		eQ.processEventsUpTo(1203);
-		assertCar(2.0f, floorTwo, floorTwo);
+		setDestination(this.floorTwo, 1201);
+		this.eQ.processEventsUpTo(1203);
+		assertCar(2.0f, this.floorTwo, this.floorTwo);
 		undock(1205);
-		eQ.processEventsUpTo(1206);
-		assertCar(2.0f, floorTwo, null);
+		this.eQ.processEventsUpTo(1206);
+		assertCar(2.0f, this.floorTwo, null);
 	}
 
-	private void assertCar(float height, Floor location, Floor destination) {
-		assertNotNull(car);
-		assertEquals(height, car.getHeight(), 0.001);
-		assertEquals(location, car.getLocation());
-		assertEquals(destination, car.getDestination());
+	private void assertCar(final float height, final Floor location, final Floor destination) {
+		assertNotNull(this.car);
+		assertEquals(height, this.car.getHeight(), 0.001);
+		assertEquals(location, this.car.getLocation());
+		assertEquals(destination, this.car.getDestination());
 	}
 
-	private void setDestination(final Floor destination, long time) {
-		eQ.addEvent(new Event(time) {
+	private void setDestination(final Floor destination, final long time) {
+		this.eQ.addEvent(new Event(time) {
+			@Override
 			public void perform() {
-				car.setDestination(destination);
+				TestCar.this.car.setDestination(destination);
 			}
 		});
 	}
 
-	private void undock(long time) {
-		eQ.addEvent(new Event(time) {
+	private void undock(final long time) {
+		this.eQ.addEvent(new Event(time) {
+			@Override
 			public void perform() {
-				car.undock();
+				TestCar.this.car.undock();
 			}
 		});
 	}
@@ -127,11 +133,11 @@ public class TestCar extends TestCase {
 	private void idleToDocked() {
 		assertCar(0.0f, null, null);
 
-		setDestination(floorTwo, 0);
-		eQ.processEventsUpTo(1);
-		assertCar(0.002f, null, floorTwo);
+		setDestination(this.floorTwo, 0);
+		this.eQ.processEventsUpTo(1);
+		assertCar(0.002f, null, this.floorTwo);
 
-		eQ.processEventsUpTo(1200);
-		assertCar(2.0f, floorTwo, null);
+		this.eQ.processEventsUpTo(1200);
+		assertCar(2.0f, this.floorTwo, null);
 	}
 }

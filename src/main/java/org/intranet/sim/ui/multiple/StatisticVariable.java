@@ -6,27 +6,32 @@ package org.intranet.sim.ui.multiple;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
-public class StatisticVariable
-{
-  private String tableName;
-  private String functionName;
-  private String statisticName;
+public class StatisticVariable {
+	private final String tableName;
+	private final String functionName;
+	private final String statisticName;
 
-  StatisticVariable(String table, String function, String statistic)
-  {
-    tableName = table;
-    functionName = function;
-    statisticName = statistic;
-  }
+	StatisticVariable(final String table, final String function, final String statistic) {
+		this.tableName = table;
+		this.functionName = function;
+		this.statisticName = statistic;
+	}
 
-  public String toString()
-  {
-    return tableName + " " + functionName + " " + statisticName;
-  }
+	@Override
+	public String toString() {
+		return this.tableName + " " + this.functionName + " " + this.statisticName;
+	}
 
-  public String getTableName() { return tableName; }
-  public String getStatisticName() { return statisticName; }
-  public String getFunctionName() { return functionName; }
+	public String getTableName() {
+		return this.tableName;
+	}
+
+	public String getStatisticName() {
+		return this.statisticName;
+	}
+
+	public String getFunctionName() {
+		return this.functionName;
+	}
 }

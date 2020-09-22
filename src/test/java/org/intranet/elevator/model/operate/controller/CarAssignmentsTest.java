@@ -20,11 +20,10 @@ import org.junit.Test;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public class CarAssignmentsTest {
 	private EventQueue eQ;
-	private List floors;
+	private List<Floor> floors;
 	private Floor floor1;
 	private Floor floor2;
 	private Floor floor3;
@@ -41,65 +40,64 @@ public class CarAssignmentsTest {
 
 	@Before
 	public void setUp() throws Exception {
+		this.eQ = new EventQueue();
 
-		eQ = new EventQueue();
+		this.floor1 = new Floor(this.eQ, 1, 0, 10);
+		this.floor2 = new Floor(this.eQ, 2, 10, 20);
+		this.floor3 = new Floor(this.eQ, 3, 20, 30);
+		this.floor4 = new Floor(this.eQ, 4, 30, 40);
 
-		floor1 = new Floor(eQ, 1, 0, 10);
-		floor2 = new Floor(eQ, 2, 10, 20);
-		floor3 = new Floor(eQ, 3, 20, 30);
-		floor4 = new Floor(eQ, 4, 30, 40);
+		this.floors = new ArrayList<>(4);
+		this.floors.add(this.floor1);
+		this.floors.add(this.floor2);
+		this.floors.add(this.floor3);
+		this.floors.add(this.floor4);
 
-		floors = new ArrayList();
-		floors.add(floor1);
-		floors.add(floor2);
-		floors.add(floor3);
-		floors.add(floor4);
+		this.base = new Assignment(this.floor1, Direction.NONE);
 
-		base = new Assignment(floor1, Direction.NONE);
+		this.up1 = new Assignment(this.floor1, Direction.UP);
+		this.up2 = new Assignment(this.floor2, Direction.UP);
+		this.up3 = new Assignment(this.floor3, Direction.UP);
+		this.up4 = new Assignment(this.floor4, Direction.UP);
 
-		up1 = new Assignment(floor1, Direction.UP);
-		up2 = new Assignment(floor2, Direction.UP);
-		up3 = new Assignment(floor3, Direction.UP);
-		up4 = new Assignment(floor4, Direction.UP);
-
-		down1 = new Assignment(floor1, Direction.DOWN);
-		down2 = new Assignment(floor2, Direction.DOWN);
-		down3 = new Assignment(floor3, Direction.DOWN);
-		down4 = new Assignment(floor4, Direction.DOWN);
+		this.down1 = new Assignment(this.floor1, Direction.DOWN);
+		this.down2 = new Assignment(this.floor2, Direction.DOWN);
+		this.down3 = new Assignment(this.floor3, Direction.DOWN);
+		this.down4 = new Assignment(this.floor4, Direction.DOWN);
 	}
 
 	@Test
 	final public void testCarAssignments() {
-		CarAssignments a = new CarAssignments();
+		final CarAssignments a = new CarAssignments();
 		assertNotNull(a);
 	}
 
 	@Test
 	final public void testAddToNull() {
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, up1);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.up1);
 
 		// confirm that list contains up1
-		assertTrue(a.contains(up1));
+		assertTrue(a.contains(this.up1));
 		// confirm that it *only* contains up1
-		Iterator i = a.iterator();
+		final Iterator<Assignment> i = a.iterator();
 		assertTrue(i.hasNext());
-		assertEquals(up1, i.next());
+		assertEquals(this.up1, i.next());
 		assertFalse(i.hasNext());
 	}
 
 	@Test
 	final public void testAddTwice() {
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, up1);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.up1);
 		// confirm that list contains up1
-		assertTrue(a.contains(up1));
+		assertTrue(a.contains(this.up1));
 		// add it again - should have no effect
-		a.addAssignment(floors, base, up1);
+		a.addAssignment(this.floors, this.base, this.up1);
 		// confirm that it *only* contains up1 (once)
-		Iterator i = a.iterator();
+		final Iterator<Assignment> i = a.iterator();
 		assertTrue(i.hasNext());
-		assertEquals(up1, i.next());
+		assertEquals(this.up1, i.next());
 		assertFalse(i.hasNext());
 	}
 
@@ -108,13 +106,13 @@ public class CarAssignmentsTest {
 		// base = 1NONE
 		// add: 3UP, 2UP
 		// list order should be: 2UP, 3UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, up3);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.up3);
 		// add in front of up3
-		a.addAssignment(floors, base, up2);
-		Iterator i = a.iterator();
-		assertEquals(up2, i.next());
-		assertEquals(up3, i.next());
+		a.addAssignment(this.floors, this.base, this.up2);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.up2, i.next());
+		assertEquals(this.up3, i.next());
 	}
 
 	@Test
@@ -125,13 +123,13 @@ public class CarAssignmentsTest {
 		// base = 1NONE
 		// add: 2DOWN, 3DOWN
 		// list order should be: 3DOWN, 2DOWN
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, down2);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.down2);
 		// add in front of down2
-		a.addAssignment(floors, base, down3);
-		Iterator i = a.iterator();
-		assertEquals(down3, i.next());
-		assertEquals(down2, i.next());
+		a.addAssignment(this.floors, this.base, this.down3);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down3, i.next());
+		assertEquals(this.down2, i.next());
 	}
 
 	@Test
@@ -139,13 +137,13 @@ public class CarAssignmentsTest {
 		// base = 3DOWN
 		// add: 4UP, 2DOWN
 		// list order should be: 2DOWN, 4UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, down3, up4);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.down3, this.up4);
 		// add in front of up4
-		a.addAssignment(floors, down3, down2);
-		Iterator i = a.iterator();
-		assertEquals(down2, i.next());
-		assertEquals(up4, i.next());
+		a.addAssignment(this.floors, this.down3, this.down2);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down2, i.next());
+		assertEquals(this.up4, i.next());
 	}
 
 	@Test
@@ -153,13 +151,13 @@ public class CarAssignmentsTest {
 		// base: 2UP
 		// add: 1DOWN, 3UP
 		// list order should be: 3UP, 1DOWN
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, up2, down1);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.up2, this.down1);
 		// add in front of down1
-		a.addAssignment(floors, up2, up3);
-		Iterator i = a.iterator();
-		assertEquals(up3, i.next());
-		assertEquals(down1, i.next());
+		a.addAssignment(this.floors, this.up2, this.up3);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.up3, i.next());
+		assertEquals(this.down1, i.next());
 	}
 
 	@Test
@@ -167,13 +165,13 @@ public class CarAssignmentsTest {
 		// base = 3DOWN
 		// add: 2UP, 1UP
 		// list order should be: 1UP, 2UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, down3, up2);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.down3, this.up2);
 		// add in front of up2
-		a.addAssignment(floors, down3, up1);
-		Iterator i = a.iterator();
-		assertEquals(up1, i.next());
-		assertEquals(up2, i.next());
+		a.addAssignment(this.floors, this.down3, this.up1);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.up1, i.next());
+		assertEquals(this.up2, i.next());
 	}
 
 	@Test
@@ -181,13 +179,13 @@ public class CarAssignmentsTest {
 		// base = 3DOWN
 		// add: 1DOWN, 2DOWN
 		// list order should be: 2DOWN, 1DOWN
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, down3, down1);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.down3, this.down1);
 		// add in front of down1
-		a.addAssignment(floors, down3, down2);
-		Iterator i = a.iterator();
-		assertEquals(down2, i.next());
-		assertEquals(down1, i.next());
+		a.addAssignment(this.floors, this.down3, this.down2);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down2, i.next());
+		assertEquals(this.down1, i.next());
 	}
 
 	@Test
@@ -195,13 +193,13 @@ public class CarAssignmentsTest {
 		// base = 1UP
 		// add: 3UP, 2UP
 		// list order should be: 2UP, 3UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, up1, up3);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.up1, this.up3);
 		// add in front of up3
-		a.addAssignment(floors, up1, up2);
-		Iterator i = a.iterator();
-		assertEquals(up2, i.next());
-		assertEquals(up3, i.next());
+		a.addAssignment(this.floors, this.up1, this.up2);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.up2, i.next());
+		assertEquals(this.up3, i.next());
 	}
 
 	@Test
@@ -209,13 +207,13 @@ public class CarAssignmentsTest {
 		// base = 1UP
 		// add: 2DOWN, 3DOWN
 		// list order should be: 3DOWN, 2DOWN
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, up1, down2);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.up1, this.down2);
 		// add in front of down2
-		a.addAssignment(floors, up1, down3);
-		Iterator i = a.iterator();
-		assertEquals(down3, i.next());
-		assertEquals(down2, i.next());
+		a.addAssignment(this.floors, this.up1, this.down3);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down3, i.next());
+		assertEquals(this.down2, i.next());
 	}
 
 	@Test
@@ -223,13 +221,13 @@ public class CarAssignmentsTest {
 		// math in maxStops() checks value of topFloor when base.Direction =
 		// DOWN
 		// this test confirms that the math is correct
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, down4, down2);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.down4, this.down2);
 		// add in front of down2
-		a.addAssignment(floors, down4, down3);
-		Iterator i = a.iterator();
-		assertEquals(down3, i.next());
-		assertEquals(down2, i.next());
+		a.addAssignment(this.floors, this.down4, this.down3);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down3, i.next());
+		assertEquals(this.down2, i.next());
 	}
 
 	@Test
@@ -237,13 +235,13 @@ public class CarAssignmentsTest {
 		// math in maxStops() checks value of topFloor when dest.Direction =
 		// DOWN
 		// this test confirms that math is correct
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, up2, down3);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.up2, this.down3);
 		// add in front of down3
-		a.addAssignment(floors, up2, down4);
-		Iterator i = a.iterator();
-		assertEquals(down4, i.next());
-		assertEquals(down3, i.next());
+		a.addAssignment(this.floors, this.up2, this.down4);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down4, i.next());
+		assertEquals(this.down3, i.next());
 	}
 
 	@Test
@@ -251,17 +249,17 @@ public class CarAssignmentsTest {
 		// base = 3UP
 		// add: 4UP, 2UP, 3DOWN, 1UP
 		// list order should be: 4UP, 3DOWN, 1UP, 2UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, up3, up4);
-		a.addAssignment(floors, up3, up2);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.up3, this.up4);
+		a.addAssignment(this.floors, this.up3, this.up2);
 		// add in front of up2
-		a.addAssignment(floors, up3, down3);
-		a.addAssignment(floors, up3, up1);
-		Iterator i = a.iterator();
-		assertEquals(up4, i.next());
-		assertEquals(down3, i.next());
-		assertEquals(up1, i.next());
-		assertEquals(up2, i.next());
+		a.addAssignment(this.floors, this.up3, this.down3);
+		a.addAssignment(this.floors, this.up3, this.up1);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.up4, i.next());
+		assertEquals(this.down3, i.next());
+		assertEquals(this.up1, i.next());
+		assertEquals(this.up2, i.next());
 	}
 
 	@Test
@@ -269,48 +267,48 @@ public class CarAssignmentsTest {
 		// base = 2DOWN
 		// add: 1DOWN, 3DOWN, 2UP, 4DOWN
 		// list order should be: 1DOWN, 2UP, 4DOWN, 3DOWN
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, down2, down1);
-		a.addAssignment(floors, down2, down3);
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.down2, this.down1);
+		a.addAssignment(this.floors, this.down2, this.down3);
 		// add in front of down3
-		a.addAssignment(floors, down2, up2);
-		a.addAssignment(floors, down2, down4);
-		Iterator i = a.iterator();
-		assertEquals(down1, i.next());
-		assertEquals(up2, i.next());
-		assertEquals(down4, i.next());
-		assertEquals(down3, i.next());
+		a.addAssignment(this.floors, this.down2, this.up2);
+		a.addAssignment(this.floors, this.down2, this.down4);
+		final Iterator<Assignment> i = a.iterator();
+		assertEquals(this.down1, i.next());
+		assertEquals(this.up2, i.next());
+		assertEquals(this.down4, i.next());
+		assertEquals(this.down3, i.next());
 	}
 
 	@Test
 	final public void testGetCurrent() {
-		CarAssignments a = new CarAssignments();
+		final CarAssignments a = new CarAssignments();
 		assertEquals(null, a.getCurrentAssignment());
-		a.addAssignment(floors, base, up1);
-		assertEquals(up1, a.getCurrentAssignment());
+		a.addAssignment(this.floors, this.base, this.up1);
+		assertEquals(this.up1, a.getCurrentAssignment());
 	}
 
 	@Test
 	final public void testIncluding() {
 		// test that iteratorIncluding() includes new assignment
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, up1);
-		Iterator i = a.iteratorIncluding(floors, base, up2);
-		assertEquals(up1, i.next());
-		assertEquals(up2, i.next());
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.up1);
+		final Iterator<Assignment> i = a.iteratorIncluding(this.floors, this.base, this.up2);
+		assertEquals(this.up1, i.next());
+		assertEquals(this.up2, i.next());
 	}
 
 	@Test
 	final public void testRemove() {
 		// add: 1UP, 2UP
 		// after remove: *only* 2UP
-		CarAssignments a = new CarAssignments();
-		a.addAssignment(floors, base, up1);
-		a.addAssignment(floors, base, up2);
-		assertTrue(a.contains(up1));
-		assertTrue(a.contains(up2));
-		a.removeAssignment(up1);
-		assertFalse(a.contains(up1));
-		assertTrue(a.contains(up2));
+		final CarAssignments a = new CarAssignments();
+		a.addAssignment(this.floors, this.base, this.up1);
+		a.addAssignment(this.floors, this.base, this.up2);
+		assertTrue(a.contains(this.up1));
+		assertTrue(a.contains(this.up2));
+		a.removeAssignment(this.up1);
+		assertFalse(a.contains(this.up1));
+		assertTrue(a.contains(this.up2));
 	}
 }

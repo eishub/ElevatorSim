@@ -12,23 +12,24 @@ import org.intranet.sim.clock.Clock;
  * @author Neil McKellar and Chris Dailey
  */
 public class ClockDisplay extends JLabel {
+	private static final long serialVersionUID = 1L;
 	private static final int NUMERIC_FORMAT = 0;
 	private static final int DURATION_FORMAT = 1;
-	private int format = DURATION_FORMAT;
+	private final int format = DURATION_FORMAT;
 
 	// LATER: May need a way to remove the listener
-	private Clock.Listener listener = new Clock.Listener() {
+	private final Clock.Listener listener = new Clock.Listener() {
 		@Override
-		public void timeUpdate(long time) {
+		public void timeUpdate(final long time) {
 			updateTime(time);
 		}
 
 		@Override
-		public void stateUpdate(boolean running) {
+		public void stateUpdate(final boolean running) {
 		}
 
 		@Override
-		public void timeFactorUpdate(int timeFactor) {
+		public void timeFactorUpdate(final int timeFactor) {
 		}
 	};
 
@@ -36,17 +37,18 @@ public class ClockDisplay extends JLabel {
 		super();
 	}
 
-	void setClock(Clock clock) {
-		clock.addListener(listener);
+	void setClock(final Clock clock) {
+		clock.addListener(this.listener);
 		updateTime(clock.getSimulationTime());
 	}
 
-	private void updateTime(long time) {
-		if (format == NUMERIC_FORMAT)
+	private void updateTime(final long time) {
+		if (this.format == NUMERIC_FORMAT) {
 			setText(Long.toString(time));
-		else if (format == DURATION_FORMAT)
+		} else if (this.format == DURATION_FORMAT) {
 			setText(Duration.format(time));
-		else
+		} else {
 			throw new IllegalArgumentException("bad duration format");
+		}
 	}
 }

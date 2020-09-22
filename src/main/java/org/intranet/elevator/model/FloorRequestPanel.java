@@ -4,50 +4,48 @@
  */
 package org.intranet.elevator.model;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
+ *
  */
 public class FloorRequestPanel {
-	
-	private final List<Floor> floors = new ArrayList<Floor>();
-	private final List<Floor> requestedFloors = new ArrayList<Floor>();
-	private final List<Listener> listeners = new ArrayList<Listener>();
+	private final List<Floor> floors = new LinkedList<>();
+	private final List<Floor> requestedFloors = new LinkedList<>();
+	private final List<Listener> listeners = new LinkedList<>();
 
 	public final void addServicedFloor(final Floor floor) {
-		floors.add(floor);
+		this.floors.add(floor);
 	}
 
 	public final Iterator<Floor> getServicedFloorsI() {
-		return floors.iterator();
+		return this.floors.iterator();
 	}
 
-	public final Floor getFloorAt(float height) {
-		for (Iterator<Floor> i = floors.iterator(); i.hasNext();) {
-			Floor f = i.next();
-			if (f.getHeight() == height)
+	public final Floor getFloorAt(final float height) {
+		for (final Floor f : this.floors) {
+			if (f.getHeight() == height) {
 				return f;
+			}
 		}
 		return null;
 	}
 
 	public List<Floor> getServicedFloors() {
-		return floors;
+		return this.floors;
 	}
 
 	public List<Floor> getRequestedFloors() {
-		return requestedFloors;
+		return this.requestedFloors;
 	}
 
 	Floor getMaxFloor() {
 		Floor maxFloor = null;
 		float floorHeight = Float.MIN_VALUE;
-		for (Iterator<Floor> i = floors.iterator(); i.hasNext();) {
-			Floor f = i.next();
+		for (final Floor f : this.floors) {
 			if (f.getHeight() > floorHeight) {
 				floorHeight = f.getHeight();
 				maxFloor = f;
@@ -59,8 +57,7 @@ public class FloorRequestPanel {
 	Floor getMinFloor() {
 		Floor minFloor = null;
 		float floorHeight = Float.MAX_VALUE;
-		for (Iterator<Floor> i = floors.iterator(); i.hasNext();) {
-			Floor f = i.next();
+		for (final Floor f : this.floors) {
 			if (f.getHeight() < floorHeight) {
 				floorHeight = f.getHeight();
 				minFloor = f;
@@ -70,31 +67,30 @@ public class FloorRequestPanel {
 	}
 
 	// called by Person
-	public final void requestFloor(Floor floor) {
-		if (!floors.contains(floor))
-			throw new IllegalArgumentException(
-					"Cannot request unreachable floors.");
-		if (!requestedFloors.contains(floor)) {
-			requestedFloors.add(floor);
-			for (Iterator<Listener> i = listeners.iterator(); i.hasNext();) {
-				Listener listener = i.next();
+	public final void requestFloor(final Floor floor) {
+		if (!this.floors.contains(floor)) {
+			throw new IllegalArgumentException("Cannot request unreachable floors.");
+		}
+		if (!this.requestedFloors.contains(floor)) {
+			this.requestedFloors.add(floor);
+			for (final Listener listener : this.listeners) {
 				listener.floorRequested(floor);
 			}
 		}
 	}
 
-	final void requestFulfilled(Floor floor) {
-		if (!floors.contains(floor))
-			throw new IllegalArgumentException(
-					"Cannot fulfill request for unreachable floor.  " + floor);
-		requestedFloors.remove(floor);
+	final void requestFulfilled(final Floor floor) {
+		if (!this.floors.contains(floor)) {
+			throw new IllegalArgumentException("Cannot fulfill request for unreachable floor.  " + floor);
+		}
+		this.requestedFloors.remove(floor);
 	}
 
-	public static interface Listener {
+	public interface Listener {
 		void floorRequested(Floor floor);
 	}
 
-	public void addListener(Listener l) {
-		listeners.add(l);
+	public void addListener(final Listener l) {
+		this.listeners.add(l);
 	}
 }

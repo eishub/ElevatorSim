@@ -15,13 +15,13 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public class SimulationSelectionDialog extends JDialog {
-	Simulator selected_simulation = null; // will be set when user selected
+	private static final long serialVersionUID = 1L;
+	private Simulator selected_simulation = null; // will be set when user selected
 
-	public SimulationSelectionDialog(JFrame owner, SimulationApplication simApp, final SimulationSelection.Listener l) {
-
+	public SimulationSelectionDialog(final JFrame owner, final SimulationApplication simApp,
+			final SimulationSelection.Listener l) {
 		super(owner, "Select a Simulation");
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setModal(true); // Added W.Pasman 9nov2010, we need an answer before
@@ -30,14 +30,12 @@ public class SimulationSelectionDialog extends JDialog {
 		// selected. This listener intercepts the SimulationSelection listener
 		// to pass on the event and also add an extra action (dispose this
 		// dialog).
-		SimulationSelection.Listener newListener = new SimulationSelection.Listener() {
-			public void simulationSelected(Simulator sim, SimulationApplication app, boolean multiple) {
-				selected_simulation = sim;
-				l.simulationSelected(sim, app, multiple);
-				dispose();
-			}
+		final SimulationSelection.Listener newListener = (sim, app, multiple) -> {
+			SimulationSelectionDialog.this.selected_simulation = sim;
+			l.simulationSelected(sim, app, multiple);
+			dispose();
 		};
-		SimulationSelection sel = new SimulationSelection(simApp, newListener);
+		final SimulationSelection sel = new SimulationSelection(simApp, newListener);
 		getContentPane().add(sel, BorderLayout.CENTER);
 		setSize(320, 200);
 		setVisible(true);
@@ -45,10 +43,10 @@ public class SimulationSelectionDialog extends JDialog {
 
 	/**
 	 * get the selected simulation
-	 * 
+	 *
 	 * @return {@link Simulator}
 	 */
 	public Simulator getSelectedSimulation() {
-		return selected_simulation;
+		return this.selected_simulation;
 	}
 }

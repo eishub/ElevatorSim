@@ -11,50 +11,53 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
- * 
  */
 public class IntegerParameter extends SingleValueParameter {
-	int value;
+	private static final long serialVersionUID = 1L;
+	private int value;
 
-	public IntegerParameter(Simulator.Keys simkey, int defaultValue) {
+	public IntegerParameter(final Simulator.Keys simkey, final int defaultValue) {
 		super(simkey);
-		value = defaultValue;
+		this.value = defaultValue;
 	}
 
 	public int getIntegerValue() {
-		return value;
+		return this.value;
 	}
 
-	void setIntegerValue(int newValue) {
-		value = newValue;
+	void setIntegerValue(final int newValue) {
+		this.value = newValue;
 	}
 
-	public void setValueFromUI(Object param) {
+	@Override
+	public void setValueFromUI(final Object param) {
 		setIntegerValue(Integer.parseInt((String) param));
 	}
 
+	@Override
 	public Object getUIValue() {
-		return Integer.toString(value);
+		return Integer.toString(this.value);
 	}
 
-	public List getValues(String min, String max, String inc) {
+	@Override
+	public List<Object> getValues(final String min, final String max, final String inc) {
 		int minInteger = Integer.parseInt(min);
 		int maxInteger = Integer.parseInt(max);
-		int incInteger = Integer.parseInt(inc);
+		final int incInteger = Integer.parseInt(inc);
 
 		if (minInteger > maxInteger) {
-			int temp = minInteger;
+			final int temp = minInteger;
 			minInteger = maxInteger;
 			maxInteger = temp;
 		}
 
-		int capacity = (maxInteger - minInteger) / incInteger + 1;
-		List intValues = new ArrayList(capacity);
+		final int capacity = (maxInteger - minInteger) / incInteger + 1;
+		final List<Object> intValues = new ArrayList<>(capacity);
 
 		// populate the array list with strings representing the values
-		for (int val = minInteger; val <= maxInteger; val += incInteger)
+		for (int val = minInteger; val <= maxInteger; val += incInteger) {
 			intValues.add(Integer.toString(val));
+		}
 
 		return intValues;
 	}

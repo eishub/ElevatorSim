@@ -8,15 +8,12 @@ import org.intranet.sim.event.EventQueue;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
-public abstract class ModelElement
-{
-  protected final EventQueue eventQueue;
+public abstract class ModelElement {
+	protected final EventQueue eventQueue;
 
-  protected ModelElement(EventQueue eQ)
-  {
-    super();
-    eventQueue = eQ;
-  }
+	protected ModelElement(final EventQueue eQ) {
+		super();
+		this.eventQueue = eQ;
+	}
 }

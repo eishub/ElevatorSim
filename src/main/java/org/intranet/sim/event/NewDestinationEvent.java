@@ -12,14 +12,12 @@ import org.intranet.sim.clock.RealTimeClock;
  * {@link ConcurrentModificationException}s. These cab happen if another event ,
  * triggered by the {@link RealTimeClock}, fire at the same time as your call to
  * {@link Car#setDestination(org.intranet.elevator.model.Floor)}.
- *
  */
 public class NewDestinationEvent extends Event {
+	private final Floor destination;
+	private final Car car;
 
-	private Floor destination;
-	private Car car;
-
-	public NewDestinationEvent(Car car, Floor dest, long newTime) {
+	public NewDestinationEvent(final Car car, final Floor dest, final long newTime) {
 		super(newTime);
 		this.destination = dest;
 		this.car = car;
@@ -27,11 +25,11 @@ public class NewDestinationEvent extends Event {
 
 	@Override
 	public void perform() {
-		car.setDestination(destination);
+		this.car.setDestination(this.destination);
 	}
 
 	@Override
-	public Event setTime(long newTime) {
-		return new NewDestinationEvent(car, destination, newTime);
+	public Event setTime(final long newTime) {
+		return new NewDestinationEvent(this.car, this.destination, newTime);
 	}
 }

@@ -4,32 +4,45 @@
  */
 package org.intranet.statistics;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
-public class Table
-{
-  private String name;
-  public Table(String[] rows, String tblName)
-  {
-    super();
-    rowNames = rows;
-    name = tblName;
-  }
-  public void addColumn(Column c)
-  {
-    columns.add(c);
-  }
-  private String rowNames[];
-  public int getRowCount() { return rowNames.length; }
-  public String getRowName(int i) { return rowNames[i]; }
+public class Table {
+	private final String name;
+	private final List<Column> columns = new LinkedList<>();
 
-  public String getName() { return name; }
-  private List columns = new ArrayList();
-  public int getColumnCount() { return columns.size(); }
-  public Column getColumn(int i) { return (Column)columns.get(i); }
+	public Table(final String[] rows, final String tblName) {
+		super();
+		this.rowNames = rows;
+		this.name = tblName;
+	}
+
+	public void addColumn(final Column c) {
+		this.columns.add(c);
+	}
+
+	private final String rowNames[];
+
+	public int getRowCount() {
+		return this.rowNames.length;
+	}
+
+	public String getRowName(final int i) {
+		return this.rowNames[i];
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getColumnCount() {
+		return this.columns.size();
+	}
+
+	public Column getColumn(final int i) {
+		return this.columns.get(i);
+	}
 }

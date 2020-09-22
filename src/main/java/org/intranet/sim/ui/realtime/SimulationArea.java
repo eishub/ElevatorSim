@@ -6,8 +6,6 @@ package org.intranet.sim.ui.realtime;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -16,16 +14,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.intranet.sim.Model;
 import org.intranet.sim.SimulationApplication;
 import org.intranet.sim.Simulator;
-import org.intranet.sim.Simulator.SimulatorListener;
 import org.intranet.sim.clock.Clock;
 import org.intranet.sim.clock.RealTimeClock;
-import org.intranet.ui.InputPanel;
 import org.intranet.ui.SingleValueInputPanel;
 
 import eis.iilang.EnvironmentState;
@@ -39,24 +33,23 @@ import elevatorenv.GOALController;
  *         clock. #1354
  */
 public class SimulationArea extends JComponent {
-
+	private static final long serialVersionUID = 1L;
 	public JButton startButton = new JButton(); // TRAC 824
 	private Simulator sim = null;
 	private JComponent bView;
 	private Statistics statistics;
-	private JComponent leftPane = new JPanel();
-	private JSplitPane rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-	private JPanel bottomPanel = new JPanel(new BorderLayout());
-	ClockDisplay clockDisplay = new ClockDisplay();
+	private final JComponent leftPane = new JPanel();
+	private final JSplitPane rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+	private final JPanel bottomPanel = new JPanel(new BorderLayout());
+	private final ClockDisplay clockDisplay = new ClockDisplay();
 	public Clock clock = null; // HACK 5jan09 to get access to clock to enable
 								// EIScontrol of pause mode.
-
 	private EventQueueDisplay eventQueueDisplay;
 	private TimeFactorDial timeFactorPanel;
 
-	public SimulationArea(Simulator simulator, SimulationApplication simApp) {
+	public SimulationArea(final Simulator simulator, final SimulationApplication simApp) {
 		super();
-		sim = simulator;
+		this.sim = simulator;
 
 		setLayout(new BorderLayout());
 
@@ -66,166 +59,153 @@ public class SimulationArea extends JComponent {
 
 		createLeftPane(simApp);
 
-		sim.addListener(new SimulatorListener() {
-			public void modelUpdate(long time) {
-				// TODO : The model should be responsible for telling the view
-				// when it updates
-				bView.repaint();
-			}
-		});
+		this.sim.addListener(time -> SimulationArea.this.bView.repaint());
 	}
 
 	public Clock getClock() {
-		return sim.getClock();
+		return this.sim.getClock();
 	}
 
 	private void createLeftPane(final SimulationApplication simApp) {
-		leftPane.setLayout(new BorderLayout());
-		SingleValueInputPanel ip = new SingleValueInputPanel(sim.getParameters(), new InputPanel.Listener() {
-			public void parametersApplied() {
-				applyParameters(simApp);
-			}
-		});
-		leftPane.add(ip, BorderLayout.NORTH);
-		statistics = new Statistics();
-		leftPane.add(statistics, BorderLayout.CENTER);
+		this.leftPane.setLayout(new BorderLayout());
+		final SingleValueInputPanel ip = new SingleValueInputPanel(this.sim.getParameters(),
+				() -> applyParameters(simApp));
+		this.leftPane.add(ip, BorderLayout.NORTH);
+		this.statistics = new Statistics();
+		this.leftPane.add(this.statistics, BorderLayout.CENTER);
 
-		add(leftPane, BorderLayout.WEST);
+		add(this.leftPane, BorderLayout.WEST);
 	}
 
 	/**
 	 * Apply button was pressed (or otherwise the parameters have been set up).
 	 * Apply them to the sim.
-	 * 
-	 * @param simApp
-	 *            the {@link SimulationApplication} to apply the parameters to
+	 *
+	 * @param simApp the {@link SimulationApplication} to apply the parameters to
 	 */
-	public void applyParameters(SimulationApplication simApp) {
-		sim.initialize(new RealTimeClock.RealTimeClockFactory());
+	public void applyParameters(final SimulationApplication simApp) {
+		this.sim.initialize(new RealTimeClock.RealTimeClockFactory());
 		reconfigureSimulation(simApp);
 	}
 
 	private void createRightPane() {
-		add(rightSplitPane, BorderLayout.CENTER);
-		rightSplitPane.setResizeWeight(1.0);
-		rightSplitPane.setDividerLocation(425);
-		eventQueueDisplay = new EventQueueDisplay();
-		rightSplitPane.setRightComponent(eventQueueDisplay);
+		add(this.rightSplitPane, BorderLayout.CENTER);
+		this.rightSplitPane.setResizeWeight(1.0);
+		this.rightSplitPane.setDividerLocation(425);
+		this.eventQueueDisplay = new EventQueueDisplay();
+		this.rightSplitPane.setRightComponent(this.eventQueueDisplay);
 	}
 
 	/**
-	 * create the bottom panel for the sim area, containing the time factor dial
-	 * and a START button.
-	 * 
-	 * @param simApp
-	 *            is the SimulationApplication.
-	 * @param preferredTimeFactor
-	 *            is the initial factor to be used.
+	 * create the bottom panel for the sim area, containing the time factor dial and
+	 * a START button.
+	 *
+	 * @param simApp              is the SimulationApplication.
+	 * @param preferredTimeFactor is the initial factor to be used.
 	 */
 	private void createBottomPanel(final SimulationApplication simApp) {
-		timeFactorPanel = new TimeFactorDial(sim);
+		this.timeFactorPanel = new TimeFactorDial(this.sim);
 
-		bottomPanel.add(timeFactorPanel, BorderLayout.EAST);
+		this.bottomPanel.add(this.timeFactorPanel, BorderLayout.EAST);
 
-		JPanel startButtonPanel = new JPanel();
-		startButtonPanel.add(startButton);
-		bottomPanel.add(startButtonPanel, BorderLayout.CENTER);
+		final JPanel startButtonPanel = new JPanel();
+		startButtonPanel.add(this.startButton);
+		this.bottomPanel.add(startButtonPanel, BorderLayout.CENTER);
 
-		startButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				startPauseSimulation(simApp);
-			}
-		});
-		startButton.setEnabled(false);
-		add(bottomPanel, BorderLayout.SOUTH);
+		this.startButton.addActionListener(ae -> startPauseSimulation(simApp));
+		this.startButton.setEnabled(false);
+		add(this.bottomPanel, BorderLayout.SOUTH);
 		updateButtonText(false);
-		bottomPanel.add(clockDisplay, BorderLayout.WEST);
+		this.bottomPanel.add(this.clockDisplay, BorderLayout.WEST);
 	}
 
 	/**
 	 * Change of run mode. Notify parent if that is a GOAL environmentinterface.
-	 * 
+	 *
 	 * @param state
 	 */
-	private void stateChange(SimulationApplication simApp, EnvironmentState state) {
+	private void stateChange(final SimulationApplication simApp, final EnvironmentState state) {
 		if (simApp instanceof EnvironmentInterface) {
 			((EnvironmentInterface) simApp).notifyEvent(state);
 		}
-
 	}
 
 	/**
 	 * Start or Pause the simulation, after user pressed Start/Pause button.
 	 */
-	private void startPauseSimulation(SimulationApplication simApp) {
-		clock = sim.getClock();
-		synchronized (clock) {
-			if (clock.isRunning()) {
-				clock.pause();
+	private void startPauseSimulation(final SimulationApplication simApp) {
+		this.clock = this.sim.getClock();
+		synchronized (this.clock) {
+			if (this.clock.isRunning()) {
+				this.clock.pause();
 				stateChange(simApp, EnvironmentState.PAUSED);
 			} else {
 				// CHECK ok? We now store factor in clock anyway.
 				// int factor = ((Number) spinnerNumberModel.getValue())
 				// .intValue();
 				// ((RealTimeClock) clock).setTimeConversion(factor);
-				clock.start();
+				this.clock.start();
 				stateChange(simApp, EnvironmentState.RUNNING);
 			}
 		}
 	}
 
-	private void updateButtonText(boolean running) {
-		startButton.setText(running ? "Pause" : "Go, Dude!");
+	private void updateButtonText(final boolean running) {
+		this.startButton.setText(running ? "Pause" : "Go, Dude!");
 	}
 
-	public void paint(Graphics g) {
-		Model model = sim.getModel();
+	@Override
+	public void paint(final Graphics g) {
+		final Model model = this.sim.getModel();
 		if (model == null) {
 			super.paint(g);
-		} else
+		} else {
 			synchronized (model) {
 				super.paint(g);
 			}
+		}
 	}
 
 	/**
-	 * This is called after the user pressed "Apply" to initialize the
-	 * simulator.
-	 * 
+	 * This is called after the user pressed "Apply" to initialize the simulator.
+	 *
 	 * @param simApp
 	 */
 	private void reconfigureSimulation(final SimulationApplication simApp) {
-		startButton.setEnabled(true);
-		bView = simApp.createView(sim.getModel());
-		rightSplitPane.setLeftComponent(bView);
+		this.startButton.setEnabled(true);
+		this.bView = simApp.createView(this.sim.getModel());
+		this.rightSplitPane.setLeftComponent(this.bView);
 
-		final Clock clock = sim.getClock();
+		final Clock clock = this.sim.getClock();
 		clock.addListener(new Clock.Listener() {
-			public void timeUpdate(long time) {
-			}
-
-			public void stateUpdate(boolean running) {
-				updateButtonText(running);
-				if (!running)
-					statistics.updateStatistics();
+			@Override
+			public void timeUpdate(final long time) {
 			}
 
 			@Override
-			public void timeFactorUpdate(int timeFactor) {
+			public void stateUpdate(final boolean running) {
+				updateButtonText(running);
+				if (!running) {
+					SimulationArea.this.statistics.updateStatistics();
+				}
+			}
+
+			@Override
+			public void timeFactorUpdate(final int timeFactor) {
 			}
 		});
 
-		clock.addListener(timeFactorPanel);
+		clock.addListener(this.timeFactorPanel);
 
-		clockDisplay.setClock(sim.getClock());
-		eventQueueDisplay.initialize(sim.getEventQueue());
+		this.clockDisplay.setClock(this.sim.getClock());
+		this.eventQueueDisplay.initialize(this.sim.getEventQueue());
 
-		statistics.setModel(sim.getModel());
+		this.statistics.setModel(this.sim.getModel());
 		validate();
 
 		// if we get here, we need to notify GOAL about the new run state. #1591
-		boolean readyToRun = sim.getCurrentController() instanceof GOALController;
-		System.out.println(sim.getCurrentController());
+		final boolean readyToRun = this.sim.getCurrentController() instanceof GOALController;
+		System.out.println(this.sim.getCurrentController());
 		stateChange(simApp, readyToRun ? EnvironmentState.PAUSED : EnvironmentState.INITIALIZING);
 	}
 
@@ -235,22 +215,23 @@ public class SimulationArea extends JComponent {
 		// really need to worry about disposing of anything). bView will be set
 		// by this component shortly after calling initialize on the simulator,
 		// so we can check its value.
-		if (bView == null)
+		if (this.bView == null) {
 			return;
-		Clock clock = sim.getClock();
-		if (clock.isRunning())
+		}
+		final Clock clock = this.sim.getClock();
+		if (clock.isRunning()) {
 			clock.pause();
+		}
 	}
 
 	/**
-	 * Get currently active simulator in the area. Added W.Pasman 4nov2010, see
-	 * #711
-	 * 
-	 * @return currently active simulator in the area. Returns null if no
-	 *         simulator selected yet.
+	 * Get currently active simulator in the area. Added W.Pasman 4nov2010, see #711
+	 *
+	 * @return currently active simulator in the area. Returns null if no simulator
+	 *         selected yet.
 	 */
 	public Simulator getSimulator() {
-		return sim;
+		return this.sim;
 	}
 }
 
@@ -258,35 +239,33 @@ public class SimulationArea extends JComponent {
  * A dial to control the RealTime clock speed factor. YOU need to connect this
  * panel when the clock is created, using
  * {@link RealTimeClock#addListener(org.intranet.sim.clock.Clock.Listener)}.
- * 
+ *
  * @author W.Pasman 11nov2010, see #1354
- * 
+ *
  */
 class TimeFactorDial extends JPanel implements Clock.Listener {
-
-	final SpinnerNumberModel spinnerNumberModel;
+	private static final long serialVersionUID = 1L;
+	private final SpinnerNumberModel spinnerNumberModel;
 
 	/**
-	 * @param sim
-	 *            Simulator that was selected.
+	 * @param sim Simulator that was selected.
 	 */
 	public TimeFactorDial(final Simulator sim) {
-		JLabel timeFactorLabel = new JLabel("Time Factor");
+		final JLabel timeFactorLabel = new JLabel("Time Factor");
 
-		spinnerNumberModel = new SpinnerNumberModel(0, -20, 20, 1);
-		JSpinner timeFactor = new JSpinner(spinnerNumberModel);
-		spinnerNumberModel.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (!sim.isInitializied())
-					return;
+		this.spinnerNumberModel = new SpinnerNumberModel(0, -20, 20, 1);
+		final JSpinner timeFactor = new JSpinner(this.spinnerNumberModel);
+		this.spinnerNumberModel.addChangeListener(e -> {
+			if (!sim.isInitializied()) {
+				return;
+			}
 
-				int factor = ((Number) spinnerNumberModel.getValue()).intValue();
-				// CHECK should we save the new value? I am tempted to say no
-				// as user probably prefers 0 as initial value
-				RealTimeClock rtClock = (RealTimeClock) sim.getClock();
-				synchronized (rtClock) {
-					rtClock.setTimeConversion(factor);
-				}
+			final int factor = ((Number) TimeFactorDial.this.spinnerNumberModel.getValue()).intValue();
+			// CHECK should we save the new value? I am tempted to say no
+			// as user probably prefers 0 as initial value
+			final RealTimeClock rtClock = (RealTimeClock) sim.getClock();
+			synchronized (rtClock) {
+				rtClock.setTimeConversion(factor);
 			}
 		});
 
@@ -295,15 +274,15 @@ class TimeFactorDial extends JPanel implements Clock.Listener {
 	}
 
 	@Override
-	public void timeUpdate(long time) {
+	public void timeUpdate(final long time) {
 	}
 
 	@Override
-	public void stateUpdate(boolean running) {
+	public void stateUpdate(final boolean running) {
 	}
 
 	@Override
-	public void timeFactorUpdate(int timeFactor) {
-		spinnerNumberModel.setValue(timeFactor);
+	public void timeFactorUpdate(final int timeFactor) {
+		this.spinnerNumberModel.setValue(timeFactor);
 	}
 }

@@ -4,50 +4,54 @@
  */
 package org.intranet.sim.ui.multiple;
 
-class AverageNumber
-  extends Number
-{
-  double sum = 0.0;
-  int n = 0;
+class AverageNumber extends Number {
+	private static final long serialVersionUID = 1L;
+	private double sum = 0.0;
+	private int n = 0;
 
-  public AverageNumber()
-  {
-    super();
-  }
+	public AverageNumber() {
+		super();
+	}
 
-  public AverageNumber(double d)
-  {
-    super();
-    add(d);
-  }
+	public AverageNumber(final double d) {
+		super();
+		add(d);
+	}
 
-  public void add(double d)
-  {
-    sum += d;
-    n++;
-  }
+	public void add(final double d) {
+		this.sum += d;
+		this.n++;
+	}
 
-  public int intValue()
-  {
-    if (n == 0) return 0;
-    return (int)(sum/n);
-  }
+	@Override
+	public int intValue() {
+		if (this.n == 0) {
+			return 0;
+		}
+		return (int) (this.sum / this.n);
+	}
 
-  public long longValue()
-  {
-    if (n == 0) return 0;
-    return (long)(sum/n);
-  }
+	@Override
+	public long longValue() {
+		if (this.n == 0) {
+			return 0;
+		}
+		return (long) (this.sum / this.n);
+	}
 
-  public float floatValue()
-  {
-    if (n == 0) return 0;
-    return (float)(sum/n);
-  }
+	@Override
+	public float floatValue() {
+		if (this.n == 0) {
+			return 0;
+		}
+		return (float) (this.sum / this.n);
+	}
 
-  public double doubleValue()
-  {
-    if (n == 0) return 0;
-    return (sum/n);
-  }
+	@Override
+	public double doubleValue() {
+		if (this.n == 0) {
+			return 0;
+		}
+		return (this.sum / this.n);
+	}
 }

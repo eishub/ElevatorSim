@@ -16,10 +16,8 @@ import org.junit.Test;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public class AssignmentTest {
-
 	private Assignment a;
 	private EventQueue eQ;
 	private Floor floorA;
@@ -27,26 +25,26 @@ public class AssignmentTest {
 
 	@Before
 	public void setUp() throws Exception {
-		eQ = new EventQueue();
-		floorA = new Floor(eQ, 1, 0.0f, 10.0f);
-		floorB = new Floor(eQ, 2, 11.0f, 21.0f);
-		a = new Assignment(floorA, Direction.UP);
+		this.eQ = new EventQueue();
+		this.floorA = new Floor(this.eQ, 1, 0.0f, 10.0f);
+		this.floorB = new Floor(this.eQ, 2, 11.0f, 21.0f);
+		this.a = new Assignment(this.floorA, Direction.UP);
 	}
 
 	@Test
 	final public void testAssignment() {
-		Assignment a = new Assignment(floorA, Direction.UP);
+		final Assignment a = new Assignment(this.floorA, Direction.UP);
 		assertNotNull(a);
 	}
 
 	@Test
 	final public void testGetDestination() {
-		assertEquals(floorA, a.getDestination());
+		assertEquals(this.floorA, this.a.getDestination());
 	}
 
 	@Test
 	final public void testGetDirection() {
-		assertEquals(Direction.UP, a.getDirection());
+		assertEquals(Direction.UP, this.a.getDirection());
 	}
 
 	/*
@@ -54,31 +52,31 @@ public class AssignmentTest {
 	 */
 	@Test
 	final public void testEqualsTrue() {
-		Assignment b = new Assignment(floorA, Direction.UP);
-		assertTrue(a.equals(b));
-		assertTrue(b.equals(a));
+		final Assignment b = new Assignment(this.floorA, Direction.UP);
+		assertTrue(this.a.equals(b));
+		assertTrue(b.equals(this.a));
 	}
 
 	@Test
 	final public void testNullEqualsFalse() {
-		assertFalse(a.equals(null));
+		assertFalse(this.a.equals(null));
 	}
 
 	@Test
 	final public void testInstanceEqualsFalse() {
-		assertFalse(a.equals("a"));
+		assertFalse(this.a.equals("a"));
 	}
 
 	@Test
 	final public void testDestinationEqualsFalse() {
-		Assignment b = new Assignment(floorB, Direction.UP);
-		assertFalse(a.equals(b));
+		final Assignment b = new Assignment(this.floorB, Direction.UP);
+		assertFalse(this.a.equals(b));
 	}
 
 	@Test
 	final public void testDirectionEqualsFalse() {
-		Assignment b = new Assignment(floorA, Direction.DOWN);
-		assertFalse(a.equals(b));
+		final Assignment b = new Assignment(this.floorA, Direction.DOWN);
+		assertFalse(this.a.equals(b));
 	}
 
 }

@@ -11,49 +11,53 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public class FloatParameter extends SingleValueParameter {
+	private static final long serialVersionUID = 1L;
 	private float value;
 
-	public FloatParameter(Simulator.Keys key, float defaultValue) {
+	public FloatParameter(final Simulator.Keys key, final float defaultValue) {
 		super(key);
-		value = defaultValue;
+		this.value = defaultValue;
 	}
 
-	public void setValueFromUI(Object param) {
-		value = Float.parseFloat((String) param);
+	@Override
+	public void setValueFromUI(final Object param) {
+		this.value = Float.parseFloat((String) param);
 	}
 
+	@Override
 	public Object getUIValue() {
-		return String.valueOf(value);
+		return String.valueOf(this.value);
 	}
 
 	public float getFloatValue() {
-		return value;
+		return this.value;
 	}
 
-	void setFloatValue(float newValue) {
-		value = newValue;
+	void setFloatValue(final float newValue) {
+		this.value = newValue;
 	}
 
-	public List getValues(String min, String max, String inc) {
+	@Override
+	public List<Object> getValues(final String min, final String max, final String inc) {
 		float minFloat = Float.parseFloat(min);
 		float maxFloat = Float.parseFloat(max);
-		float incFloat = Float.parseFloat(inc);
+		final float incFloat = Float.parseFloat(inc);
 
 		if (minFloat > maxFloat) {
-			float temp = minFloat;
+			final float temp = minFloat;
 			minFloat = maxFloat;
 			maxFloat = temp;
 		}
 
-		int capacity = (int) ((maxFloat - minFloat) / incFloat + 1);
-		List intValues = new ArrayList(capacity);
+		final int capacity = (int) ((maxFloat - minFloat) / incFloat + 1);
+		final List<Object> intValues = new ArrayList<>(capacity);
 
 		// populate the array list with strings representing the values
-		for (float val = minFloat; val <= maxFloat; val += incFloat)
+		for (float val = minFloat; val <= maxFloat; val += incFloat) {
 			intValues.add(Float.toString(val));
+		}
 
 		return intValues;
 	}

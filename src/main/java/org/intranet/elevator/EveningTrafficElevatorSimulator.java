@@ -4,7 +4,7 @@
  */
 package org.intranet.elevator;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.intranet.elevator.model.Floor;
@@ -24,94 +24,82 @@ import org.intranet.ui.LongParameter;
  * @author W.Pasman 8nov2010 added ControllerParameter
  */
 public class EveningTrafficElevatorSimulator extends Simulator {
-	private IntegerParameter floorsParameter;
-	private IntegerParameter carsParameter;
-	private IntegerParameter ridersParameter;
-	private FloatParameter durationParameter;
-	private IntegerParameter stdDeviationParameter;
-	private LongParameter seedParameter;
-	private ChoiceParameter controllerParameter;
-
+	private final IntegerParameter floorsParameter;
+	private final IntegerParameter carsParameter;
+	private final IntegerParameter ridersParameter;
+	private final FloatParameter durationParameter;
+	private final IntegerParameter stdDeviationParameter;
+	private final LongParameter seedParameter;
+	private final ChoiceParameter controllerParameter;
 	private Building building;
-
-	ArrayList<Controller> the_controllers; // all pickable controllers
-
+	private final List<Controller> the_controllers; // all pickable controllers
 	/**
 	 * Currently selected controller. set only after initializeModel() was done.
 	 */
 	private Controller controller = null;
 
-	public EveningTrafficElevatorSimulator(ArrayList<Controller> controllers) {
+	public EveningTrafficElevatorSimulator(final List<Controller> controllers) {
 		super();
-		the_controllers = controllers;
+		this.the_controllers = controllers;
 
-		floorsParameter = Simulator.Keys.FLOORS.getDefaultIntegerParameter();
-		parameters.add(floorsParameter);
-		carsParameter = Simulator.Keys.CARS.getDefaultIntegerParameter();
-		parameters.add(carsParameter);
-		ridersParameter = Simulator.Keys.NPEOPLEPERFLOOR
-				.getDefaultIntegerParameter();
-		parameters.add(ridersParameter);
-		durationParameter = Simulator.Keys.INSERTIONTIMEHR
-				.getDefaultFloatParameter();
-		parameters.add(durationParameter);
-		stdDeviationParameter = Simulator.Keys.STANDARDDEV
-				.getDefaultIntegerParameter();
-		parameters.add(stdDeviationParameter);
-		seedParameter = Simulator.Keys.RANDOMSEED.getDefaultLongParameter();
-		parameters.add(seedParameter);
+		this.floorsParameter = Simulator.Keys.FLOORS.getDefaultIntegerParameter();
+		this.parameters.add(this.floorsParameter);
+		this.carsParameter = Simulator.Keys.CARS.getDefaultIntegerParameter();
+		this.parameters.add(this.carsParameter);
+		this.ridersParameter = Simulator.Keys.NPEOPLEPERFLOOR.getDefaultIntegerParameter();
+		this.parameters.add(this.ridersParameter);
+		this.durationParameter = Simulator.Keys.INSERTIONTIMEHR.getDefaultFloatParameter();
+		this.parameters.add(this.durationParameter);
+		this.stdDeviationParameter = Simulator.Keys.STANDARDDEV.getDefaultIntegerParameter();
+		this.parameters.add(this.stdDeviationParameter);
+		this.seedParameter = Simulator.Keys.RANDOMSEED.getDefaultLongParameter();
+		this.parameters.add(this.seedParameter);
 
-		controllerParameter = new ChoiceParameter(Simulator.Keys.CONTROLLER,
-				the_controllers, preferredController(the_controllers),
-				Controller.class);
-		parameters.add(controllerParameter);
+		this.controllerParameter = new ChoiceParameter(Simulator.Keys.CONTROLLER, this.the_controllers,
+				preferredController(this.the_controllers), Controller.class);
+		this.parameters.add(this.controllerParameter);
 	}
 
+	@Override
 	public void initializeModel() {
-		int numFloors = floorsParameter.getIntegerValue();
-		int numCars = carsParameter.getIntegerValue();
-		int numRiders = ridersParameter.getIntegerValue();
-		float duration = durationParameter.getFloatValue();
-		int stdDeviation = stdDeviationParameter.getIntegerValue();
-		long seed = seedParameter.getLongValue();
-		controller = (Controller) controllerParameter.getChoiceValue();
+		final int numFloors = this.floorsParameter.getIntegerValue();
+		final int numCars = this.carsParameter.getIntegerValue();
+		final int numRiders = this.ridersParameter.getIntegerValue();
+		final float duration = this.durationParameter.getFloatValue();
+		final int stdDeviation = this.stdDeviationParameter.getIntegerValue();
+		final long seed = this.seedParameter.getLongValue();
+		this.controller = (Controller) this.controllerParameter.getChoiceValue();
 
 		// copy the latest settings into the global simulatorsettings.
 		// that way we can recall them the next run (if not overridden by MAS)
-		Simulator.simulatorprefs.putInt(Simulator.Keys.FLOORS.toString(),
-				numFloors);
-		Simulator.simulatorprefs.putInt(Simulator.Keys.CARS.toString(),
-				numCars);
-		Simulator.simulatorprefs.putInt(
-				Simulator.Keys.NPEOPLEPERFLOOR.toString(), numRiders);
-		Simulator.simulatorprefs.putDouble(
-				Simulator.Keys.INSERTIONTIMEHR.toString(), duration);
-		Simulator.simulatorprefs.putInt(Simulator.Keys.STANDARDDEV.toString(),
-				stdDeviation);
-		Simulator.simulatorprefs.putLong(Simulator.Keys.RANDOMSEED.toString(),
-				seed);
-		Simulator.simulatorprefs.put(Simulator.Keys.CONTROLLER.toString(),
-				controller.toString());
+		Simulator.simulatorprefs.putInt(Simulator.Keys.FLOORS.toString(), numFloors);
+		Simulator.simulatorprefs.putInt(Simulator.Keys.CARS.toString(), numCars);
+		Simulator.simulatorprefs.putInt(Simulator.Keys.NPEOPLEPERFLOOR.toString(), numRiders);
+		Simulator.simulatorprefs.putDouble(Simulator.Keys.INSERTIONTIMEHR.toString(), duration);
+		Simulator.simulatorprefs.putInt(Simulator.Keys.STANDARDDEV.toString(), stdDeviation);
+		Simulator.simulatorprefs.putLong(Simulator.Keys.RANDOMSEED.toString(), seed);
+		Simulator.simulatorprefs.put(Simulator.Keys.CONTROLLER.toString(), this.controller.toString());
 
-		building = new Building(getEventQueue(), numFloors, numCars, controller);
+		this.building = new Building(getEventQueue(), numFloors, numCars, this.controller);
 		// destination floor is the ground floor
-		final Floor destFloor = building.getFloor(0);
+		final Floor destFloor = this.building.getFloor(0);
 
-		Random rand = new Random(seed);
+		final Random rand = new Random(seed);
 
 		for (int i = 1; i < numFloors; i++) {
-			Floor startingFloor = building.getFloor(i);
+			final Floor startingFloor = this.building.getFloor(i);
 			for (int j = 0; j < numRiders; j++) {
-				final Person person = building.createPerson(startingFloor);
+				final Person person = this.building.createPerson(startingFloor);
 				// time to insert
 				// Convert a gaussian[-1, 1] to a gaussian[0, 1]
-				float gaussian = (getGaussian(rand, stdDeviation) + 1) / 2;
+				final float gaussian = (getGaussian(rand, stdDeviation) + 1) / 2;
 				// Apply gaussian value to the duration (in hours)
 				// and convert to milliseconds
-				long insertTime = (long) (gaussian * duration * 3600 * 1000);
+				final long insertTime = (long) (gaussian * duration * 3600 * 1000);
 
 				// insertion event for destination at time
-				Event event = new Event(insertTime) {
+				final Event event = new Event(insertTime) {
+					@Override
 					public void perform() {
 						person.setDestination(destFloor);
 					}
@@ -121,29 +109,32 @@ public class EveningTrafficElevatorSimulator extends Simulator {
 		}
 	}
 
+	@Override
 	public final Model getModel() {
-		return building;
+		return this.building;
 	}
 
+	@Override
 	public String getDescription() {
 		return "Evening Traffic Rider Insertion";
 	}
 
+	@Override
 	public Simulator duplicate() {
-		return new EveningTrafficElevatorSimulator(the_controllers);
+		return new EveningTrafficElevatorSimulator(this.the_controllers);
 	}
 
-	private static float getGaussian(Random rand, int stddev) {
+	private static float getGaussian(final Random rand, final int stddev) {
 		while (true) {
-			float gaussian = (float) (rand.nextGaussian() / stddev);
-			if (gaussian >= -1.0f && gaussian <= 1.0f)
+			final float gaussian = (float) (rand.nextGaussian() / stddev);
+			if (gaussian >= -1.0f && gaussian <= 1.0f) {
 				return gaussian;
+			}
 		}
 	}
 
 	@Override
 	public Controller getCurrentController() {
-		return controller;
+		return this.controller;
 	}
-
 }

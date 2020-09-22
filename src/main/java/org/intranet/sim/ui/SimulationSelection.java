@@ -5,9 +5,6 @@
 package org.intranet.sim.ui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -22,80 +19,71 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public final class SimulationSelection extends JPanel {
-	
-	private JList simulationJList = new JList();
-	private List simulations = new ArrayList();
+	private static final long serialVersionUID = 1L;
+	private final JList<String> simulationJList = new JList<>();
+	private List<Simulator> simulations;
 	private SimulationApplication simulationApp;
 	private Listener listener;
 
 	interface Listener {
-		void simulationSelected(Simulator sim, SimulationApplication app,
-				boolean multiple);
+		void simulationSelected(Simulator sim, SimulationApplication app, boolean multiple);
 	}
 
-	public SimulationSelection(final SimulationApplication simApp, Listener l) {
+	public SimulationSelection(final SimulationApplication simApp, final Listener l) {
 		super();
 		setLayout(new BorderLayout());
-		listener = l;
-		simulationApp = simApp;
-		simulations = simApp.getSimulations();
+		this.listener = l;
+		this.simulationApp = simApp;
+		this.simulations = simApp.getSimulations();
 
-		JScrollPane scrollPane = new JScrollPane(simulationJList);
+		final JScrollPane scrollPane = new JScrollPane(this.simulationJList);
 		add(scrollPane, BorderLayout.CENTER);
 
-		JPanel buttonPanel = new JPanel();
+		final JPanel buttonPanel = new JPanel();
 		add(buttonPanel, BorderLayout.SOUTH);
 
-		JButton realtimeButton = new JButton("Real-Time");
+		final JButton realtimeButton = new JButton("Real-Time");
 		buttonPanel.add(realtimeButton);
 
-		JButton multipleButton = new JButton("Multiple");
+		final JButton multipleButton = new JButton("Multiple");
 		buttonPanel.add(multipleButton);
 
-		ListModel listModel = new AbstractListModel() {
-			public Object getElementAt(int arg0) {
-				return ((Simulator) simulations.get(arg0)).getDescription();
+		final ListModel<String> listModel = new AbstractListModel<String>() {
+			private static final long serialVersionUID = 9011825828997455707L;
+
+			@Override
+			public String getElementAt(final int arg0) {
+				return SimulationSelection.this.simulations.get(arg0).getDescription();
 			}
 
+			@Override
 			public int getSize() {
-				return simulations.size();
+				return SimulationSelection.this.simulations.size();
 			}
 		};
 
-		realtimeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int index = simulationJList.getSelectedIndex();
-				apply(index, false);
-			}
+		realtimeButton.addActionListener(arg0 -> {
+			final int index = SimulationSelection.this.simulationJList.getSelectedIndex();
+			apply(index, false);
 		});
 
-		multipleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int index = simulationJList.getSelectedIndex();
-				apply(index, true);
-			}
+		multipleButton.addActionListener(arg0 -> {
+			final int index = SimulationSelection.this.simulationJList.getSelectedIndex();
+			apply(index, true);
 		});
 
-		simulationJList.setModel(listModel);
-		simulationJList.setSelectedIndex(0);
-		// simulationJList.addMouseListener(new MouseAdapter()
-		// {
-		// public void mouseClicked(MouseEvent e)
-		// {
-		// if (e.getClickCount() == 2)
-		// apply(simulationJList.locationToIndex(e.getPoint()), false);
-		// }
-		// });
+		this.simulationJList.setModel(listModel);
+		this.simulationJList.setSelectedIndex(0);
 	}
 
-	private void apply(int index, boolean isMultiple) {
-		if (index < 0)
+	private void apply(final int index, final boolean isMultiple) {
+		if (index < 0) {
 			return;
+		}
 
-		Simulator sim = (Simulator) simulations.get(index);
-		listener.simulationSelected(sim, simulationApp, isMultiple);
+		final Simulator sim = this.simulations.get(index);
+		this.listener.simulationSelected(sim, this.simulationApp, isMultiple);
 	}
 }

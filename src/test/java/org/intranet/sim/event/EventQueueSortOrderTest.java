@@ -11,31 +11,29 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class EventQueueSortOrderTest {
+	private final int[] times;
 
-	private int[] times;
-
-	public EventQueueSortOrderTest(int... t) {
-		times = t;
+	public EventQueueSortOrderTest(final int... t) {
+		this.times = t;
 	}
 
 	@Test
 	public void sortOrder() throws Throwable {
-
 		// the object under test.
 		final EventQueue eQ = new EventQueue();
 
-		for (Integer t : times) {
-			TestEvent event = new TestEvent(t);
+		for (final Integer t : this.times) {
+			final TestEvent event = new TestEvent(t);
 			eQ.addEvent(event);
 		}
 
 		/**
 		 * Check that we get back a sorted order
 		 */
-		List<Event> list = eQ.getEventList();
+		final List<Event> list = eQ.getEventList();
 		System.out.println("" + list);
 		long t = 0;
-		for (Event e : list) {
+		for (final Event e : list) {
 			if (e.getTime() < t) {
 				throw new IllegalStateException("list is not sorted!" + list);
 			}
@@ -44,22 +42,16 @@ public class EventQueueSortOrderTest {
 
 	}
 
-	// @Parameters
-	// public static List<Integer[]> data1() {
-	// return Arrays.asList(new Integer[][] { { 1, 1, 2 }, { 2, 2, 4 },
-	// { 8, 2, 10 }, { 4, 5, 9 } });
-	// }
-
 	@Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 
-		{ new int[] { 1, 1, 2 } },
+				{ new int[] { 1, 1, 2 } },
 
-		{ new int[] { 2, 2, 4 } },
+				{ new int[] { 2, 2, 4 } },
 
-		{ new int[] { 3, 2, 4 } },
+				{ new int[] { 3, 2, 4 } },
 
-		{ new int[] { 4, 3, 3, 3, 2, 1 } } });
+				{ new int[] { 4, 3, 3, 3, 2, 1 } } });
 	}
 }

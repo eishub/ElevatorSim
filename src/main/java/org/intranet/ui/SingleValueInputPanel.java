@@ -15,20 +15,23 @@ import javax.swing.ListSelectionModel;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public final class SingleValueInputPanel extends InputPanel {
-	public SingleValueInputPanel(List parameters, Listener l) {
+	private static final long serialVersionUID = 1L;
+
+	public SingleValueInputPanel(final List<Parameter> parameters, final Listener l) {
 		super(parameters, l);
 	}
 
-	protected void addParameter(Parameter p) {
-		SingleValueParameter param = (SingleValueParameter) p;
-		JLabel inputLabel = new JLabel(param.getDescription());
+	@Override
+	protected void addParameter(final Parameter p) {
+		final SingleValueParameter param = (SingleValueParameter) p;
+		final JLabel inputLabel = new JLabel(param.getDescription());
 		JComponent inputField;
 		if (param instanceof ChoiceParameter) {
-			ChoiceParameter listParam = (ChoiceParameter) param;
-			JList list = new JList(listParam.getLegalValues().toArray());
+			final ChoiceParameter listParam = (ChoiceParameter) param;
+			final List<?> legalValues = listParam.getLegalValues();
+			final JList<Object> list = new JList<>(legalValues.toArray(new Object[legalValues.size()]));
 			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			list.setSelectedValue(listParam.getChoiceValue(), true);
 			inputField = list;
@@ -39,19 +42,19 @@ public final class SingleValueInputPanel extends InputPanel {
 		// #2257 disable editing
 		inputField.setEnabled(false);
 
-		members.addStuffToArrays(param, inputField);
+		this.members.addStuffToArrays(param, inputField);
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridy = centerRow++;
-		center.add(inputLabel, gbc);
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = this.centerRow++;
+		this.center.add(inputLabel, gbc);
 		gbc.gridx = 1;
-		center.add(inputField, gbc);
+		this.center.add(inputField, gbc);
 	}
 
-	protected void copyUIToParameter(int memberIndex, JComponent field,
-			Parameter param) {
-		Object value = (param instanceof ChoiceParameter) ? ((JList) field)
-				.getSelectedValue() : ((JTextField) field).getText();
+	@Override
+	protected void copyUIToParameter(final int memberIndex, final JComponent field, final Parameter param) {
+		final Object value = (param instanceof ChoiceParameter) ? ((JList<?>) field).getSelectedValue()
+				: ((JTextField) field).getText();
 		((SingleValueParameter) param).setValueFromUI(value);
 	}
 }

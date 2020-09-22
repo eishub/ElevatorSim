@@ -11,7 +11,6 @@ import javax.swing.JComponent;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public interface SimulationApplication {
 	JComponent createView(Model m);

@@ -10,25 +10,26 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public abstract class MultipleValueParameter extends Parameter {
-	public MultipleValueParameter(Simulator.Keys key) {
+	private static final long serialVersionUID = 1L;
+
+	public MultipleValueParameter(final Simulator.Keys key) {
 		super(key);
-		isMultiple = false;
+		this.isMultiple = false;
 	}
 
 	public abstract Object getSingleValue();
 
-	public abstract List getParameterList();
+	public abstract List<Parameter> getParameterList();
 
 	protected boolean isMultiple;
 
-	public void setMultiple(boolean multiple) {
-		isMultiple = multiple;
+	public void setMultiple(final boolean multiple) {
+		this.isMultiple = multiple;
 	}
 
 	public boolean isMultiple() {
-		return isMultiple;
+		return this.isMultiple;
 	}
 }

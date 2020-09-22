@@ -7,8 +7,7 @@ package org.intranet.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -18,110 +17,90 @@ import javax.swing.JTextField;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
 public abstract class InputPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
 	protected JPanel center = new JPanel(new GridBagLayout());
 	protected int centerRow = 1; // skip the header row
 	protected MemberArrays members = new MemberArrays();
 
 	protected class MemberArrays {
-		private List baseInputFields = new ArrayList();
-		private List maxInputFields = new ArrayList();
-		private List incrementInputFields = new ArrayList();
-		private List checkboxInputFields = new ArrayList();
-		private List inputParams = new ArrayList();
+		private final List<JComponent> baseInputFields = new LinkedList<>();
+		private final List<JComponent> maxInputFields = new LinkedList<>();
+		private final List<JComponent> incrementInputFields = new LinkedList<>();
+		private final List<JComponent> checkboxInputFields = new LinkedList<>();
+		private final List<Parameter> inputParams = new LinkedList<>();
 
-		void addStuffToArrays(Parameter p, JComponent base, JComponent max,
-				JComponent increment, JComponent checkbox) {
-			baseInputFields.add(base);
-			maxInputFields.add(max);
-			incrementInputFields.add(increment);
-			checkboxInputFields.add(checkbox);
-			inputParams.add(p);
+		void addStuffToArrays(final Parameter p, final JComponent base, final JComponent max,
+				final JComponent increment, final JComponent checkbox) {
+			this.baseInputFields.add(base);
+			this.maxInputFields.add(max);
+			this.incrementInputFields.add(increment);
+			this.checkboxInputFields.add(checkbox);
+			this.inputParams.add(p);
 		}
 
-		void addStuffToArrays(Parameter p, JComponent base) {
+		void addStuffToArrays(final Parameter p, final JComponent base) {
 			addStuffToArrays(p, base, null, null, null);
 		}
 
 		int getSize() {
-			return inputParams.size();
+			return this.inputParams.size();
 		}
 
-		Parameter getParameter(int i) {
-			return (Parameter) inputParams.get(i);
+		Parameter getParameter(final int i) {
+			return this.inputParams.get(i);
 		}
 
-		List getParameters() {
-			return inputParams;
+		List<Parameter> getParameters() {
+			return this.inputParams;
 		}
 
-		JComponent getBaseInputField(int i) {
-			return (JComponent) baseInputFields.get(i);
+		JComponent getBaseInputField(final int i) {
+			return this.baseInputFields.get(i);
 		}
 
-		JTextField getMaxInputField(int i) {
-			return (JTextField) maxInputFields.get(i);
+		JTextField getMaxInputField(final int i) {
+			return (JTextField) this.maxInputFields.get(i);
 		}
 
-		JTextField getIncrementInputField(int i) {
-			return (JTextField) incrementInputFields.get(i);
+		JTextField getIncrementInputField(final int i) {
+			return (JTextField) this.incrementInputFields.get(i);
 		}
 
-		JCheckBox getCheckboxInputField(int i) {
-			return (JCheckBox) checkboxInputFields.get(i);
-		}
-
-		private void copyUIToParameters() {
-			for (int i = 0; i < getSize(); i++) {
-				JComponent field = getBaseInputField(i);
-				Parameter param = getParameter(i);
-				copyUIToParameter(i, field, param);
-			}
+		JCheckBox getCheckboxInputField(final int i) {
+			return (JCheckBox) this.checkboxInputFields.get(i);
 		}
 	}
 
-	protected abstract void copyUIToParameter(int memberIndex,
-			JComponent field, Parameter param);
+	protected abstract void copyUIToParameter(int memberIndex, JComponent field, Parameter param);
 
-	private List listeners = new ArrayList();
+	private final List<Listener> listeners = new LinkedList<>();
 
 	public interface Listener {
 		void parametersApplied();
 	}
 
-	private void addListener(Listener l) {
-		listeners.add(l);
+	private void addListener(final Listener l) {
+		this.listeners.add(l);
 	}
 
-	public void removeListener(Listener l) {
-		listeners.remove(l);
+	public void removeListener(final Listener l) {
+		this.listeners.remove(l);
 	}
 
 	private InputPanel() {
 		super();
 		setLayout(new BorderLayout());
-		JPanel centered = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		// JButton apply = new JButton("Apply");
-		// centered.add(apply);
+		final JPanel centered = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(centered, BorderLayout.SOUTH);
-		/**
-		 * disable apply. #2257 apply.addActionListener(new ActionListener() {
-		 * public void actionPerformed(ActionEvent ae) {
-		 * members.copyUIToParameters(); try { applyParameters(); } catch
-		 * (Exception e) { Window window = SwingUtilities
-		 * .windowForComponent(InputPanel.this); new ExceptionDialog(window,
-		 * members.getParameters(), e); } } });
-		 */
-
-		add(center, BorderLayout.CENTER);
+		add(this.center, BorderLayout.CENTER);
 	}
 
-	protected InputPanel(List parameters, Listener l) {
+	protected InputPanel(final List<Parameter> parameters, final Listener l) {
 		this();
-		for (Iterator i = parameters.iterator(); i.hasNext();) {
-			Parameter p = (Parameter) i.next();
+		for (final Parameter parameter : parameters) {
+			final Parameter p = parameter;
 			addParameter(p);
 		}
 		addListener(l);
@@ -130,8 +109,8 @@ public abstract class InputPanel extends JPanel {
 	protected abstract void addParameter(Parameter p);
 
 	public void applyParameters() {
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			Listener l = (Listener) i.next();
+		for (final Listener listener : this.listeners) {
+			final Listener l = listener;
 			l.parametersApplied();
 		}
 	}

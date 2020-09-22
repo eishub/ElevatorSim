@@ -5,8 +5,6 @@
 package org.intranet.sim.ui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -27,35 +25,28 @@ import elevatorenv.EnvironmentInterface;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
-@SuppressWarnings("serial")
 public class ApplicationUI extends JFrame {
-
+	private static final long serialVersionUID = 1L;
 	public JComponent simulationArea; // TRAC 824
-	private SimulationApplication simApp;
+	private final SimulationApplication simApp;
 
 	public ApplicationUI(final SimulationApplication sa) {
 		super(sa.getApplicationName());
-		simApp = sa;
+		this.simApp = sa;
 		setIconImage(sa.getImageIcon());
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			@Override
+			public void windowClosing(final WindowEvent e) {
 				close();
 			}
 		});
 
-		JMenuBar mb = new JMenuBar();
+		final JMenuBar mb = new JMenuBar();
 
-		JMenu helpMenu = new JMenu("Help");
-		JMenuItem helpAboutMenu = new JMenuItem("About");
-		helpAboutMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Creating a dialog box with the license in it.
-				// Stand-alone window, don'w worry about it.
-				new AboutDialog(ApplicationUI.this, sa);
-			}
-		});
+		final JMenu helpMenu = new JMenu("Help");
+		final JMenuItem helpAboutMenu = new JMenuItem("About");
+		helpAboutMenu.addActionListener(e -> new AboutDialog(ApplicationUI.this, sa));
 		helpMenu.add(helpAboutMenu);
 		mb.add(Box.createHorizontalGlue()); // add help to the far right
 		mb.add(helpMenu);
@@ -68,39 +59,28 @@ public class ApplicationUI extends JFrame {
 
 	/**
 	 * returns null if user did not select a simulator.
-	 * 
-	 * @param owner
-	 *            is the parent frame, used for centering
-	 * @param sa
-	 *            the simulation application. Seems not used
+	 *
+	 * @param owner is the parent frame, used for centering
+	 * @param sa    the simulation application. Seems not used
 	 * @return simulator to be used
 	 */
-	public Simulator showSimulatorSelectionGUI(JFrame owner,
-			SimulationApplication sa) {
-
-		SimulationSelectionDialog dialog = new SimulationSelectionDialog(owner,
-				sa, new SimulationSelection.Listener() {
-					public void simulationSelected(Simulator sim,
-							SimulationApplication app, boolean isMultiple) {
-					}
-				});
+	public Simulator showSimulatorSelectionGUI(final JFrame owner, final SimulationApplication sa) {
+		final SimulationSelectionDialog dialog = new SimulationSelectionDialog(owner, sa, (sim, app, isMultiple) -> {
+		});
 		return dialog.getSelectedSimulation();
 	}
 
 	/**
-	 * Handle the selection of a Simulator. Sets up the main screen
-	 * appropriately. After this call, the main screen shows the GUI that allows
-	 * the user to select the specific settings for this simulator.
-	 * 
-	 * @param sim
-	 *            the selected Simulator.
-	 * @param app
-	 *            is the SimulationApplication.
-	 * @param isMultiple
-	 *            true if simulation is Multiple (not yet handled properly)
+	 * Handle the selection of a Simulator. Sets up the main screen appropriately.
+	 * After this call, the main screen shows the GUI that allows the user to select
+	 * the specific settings for this simulator.
+	 *
+	 * @param sim        the selected Simulator.
+	 * @param app        is the SimulationApplication.
+	 * @param isMultiple true if simulation is Multiple (not yet handled properly)
 	 */
-	public void handleSimulationSelected(Simulator sim,
-			SimulationApplication app, boolean isMultiple) {
+	public void handleSimulationSelected(final Simulator sim, final SimulationApplication app,
+			final boolean isMultiple) {
 		disposeMainScreenComponents();
 		createMainScreenComponents(sim, app, isMultiple);
 		// TODO : Figure out why we need to validate()
@@ -108,21 +88,23 @@ public class ApplicationUI extends JFrame {
 		validate();
 	}
 
-	protected void createMainScreenComponents(Simulator sim,
-			SimulationApplication app, boolean isMultiple) {
-		if (isMultiple)
-			simulationArea = new MultipleSimulationArea(sim, app);
-		else
-			simulationArea = new SimulationArea(sim, app);
-		getContentPane().add(simulationArea, BorderLayout.CENTER);
+	protected void createMainScreenComponents(final Simulator sim, final SimulationApplication app,
+			final boolean isMultiple) {
+		if (isMultiple) {
+			this.simulationArea = new MultipleSimulationArea(sim, app);
+		} else {
+			this.simulationArea = new SimulationArea(sim, app);
+		}
+		getContentPane().add(this.simulationArea, BorderLayout.CENTER);
 	}
 
 	protected void disposeMainScreenComponents() {
-		if (simulationArea != null) {
-			if (simulationArea instanceof SimulationArea)
-				((SimulationArea) simulationArea).dispose();
-			getContentPane().remove(simulationArea);
-			simulationArea = null;
+		if (this.simulationArea != null) {
+			if (this.simulationArea instanceof SimulationArea) {
+				((SimulationArea) this.simulationArea).dispose();
+			}
+			getContentPane().remove(this.simulationArea);
+			this.simulationArea = null;
 		}
 	}
 
@@ -132,12 +114,10 @@ public class ApplicationUI extends JFrame {
 	 */
 	private void close() {
 		try {
-			((EnvironmentInterface) simApp).kill();
-		} catch (ManagementException e) {
+			((EnvironmentInterface) this.simApp).kill();
+		} catch (final ManagementException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-
 }

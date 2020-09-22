@@ -6,64 +6,93 @@ package org.intranet.statistics;
 
 /**
  * @author Neil McKellar and Chris Dailey
- *
  */
-public class LongColumn
-  implements Column
-{
-  private long[] values;
-  private String heading;
-  private long total;
-  private float average;
-  private long min;
-  private long max;
-  private int minIndex;
-  private int maxIndex;
+public class LongColumn implements Column {
+	private final long[] values;
+	private final String heading;
+	private long total;
+	private float average;
+	private long min;
+	private long max;
+	private int minIndex;
+	private int maxIndex;
 
-  public LongColumn(String hdr, long[] vals)
-  {
-    values = vals;
-    heading = hdr;
-    calculate();
-  }
+	public LongColumn(final String hdr, final long[] vals) {
+		this.values = vals;
+		this.heading = hdr;
+		calculate();
+	}
 
-  public String getHeading() { return heading; }
-  public Number getTotal() { return new Long(total); }
-  public Number getAverage() { return new Float(average); }
-  public Number getMin() { return new Long(min); }
-  public Number getMax() { return new Long(max); }
-  public int getValueCount() { return values.length; }
-  public Number getValue(int x) { return new Long(values[x]); }
-  public int getMinIndex() { return minIndex; }
-  public int getMaxIndex() { return maxIndex; }
-  public boolean isMin(int index)
-  {
-    return (values[index] == values[minIndex]);
-  }
-  public boolean isMax(int index)
-  {
-    return (values[index] == values[maxIndex]);
-  }
+	@Override
+	public String getHeading() {
+		return this.heading;
+	}
 
-  private void calculate()
-  {
-    total = 0;
-    min = Long.MAX_VALUE;
-    max = Long.MIN_VALUE;
-    for (int i = 0; i < values.length; i++)
-    {
-      total += values[i];
-      if (values[i] < min)
-      {
-        min = values[i];
-        minIndex = i;
-      }
-      if (values[i] > max)
-      {
-        max = values[i];
-        maxIndex = i;
-      }
-    }
-    average = (1.0F * total) / values.length;
-  }
+	@Override
+	public Number getTotal() {
+		return this.total;
+	}
+
+	@Override
+	public Number getAverage() {
+		return this.average;
+	}
+
+	@Override
+	public Number getMin() {
+		return this.min;
+	}
+
+	@Override
+	public Number getMax() {
+		return this.max;
+	}
+
+	@Override
+	public int getValueCount() {
+		return this.values.length;
+	}
+
+	@Override
+	public Number getValue(final int x) {
+		return this.values[x];
+	}
+
+	@Override
+	public int getMinIndex() {
+		return this.minIndex;
+	}
+
+	@Override
+	public int getMaxIndex() {
+		return this.maxIndex;
+	}
+
+	@Override
+	public boolean isMin(final int index) {
+		return (this.values[index] == this.values[this.minIndex]);
+	}
+
+	@Override
+	public boolean isMax(final int index) {
+		return (this.values[index] == this.values[this.maxIndex]);
+	}
+
+	private void calculate() {
+		this.total = 0;
+		this.min = Long.MAX_VALUE;
+		this.max = Long.MIN_VALUE;
+		for (int i = 0; i < this.values.length; i++) {
+			this.total += this.values[i];
+			if (this.values[i] < this.min) {
+				this.min = this.values[i];
+				this.minIndex = i;
+			}
+			if (this.values[i] > this.max) {
+				this.max = this.values[i];
+				this.maxIndex = i;
+			}
+		}
+		this.average = (1.0F * this.total) / this.values.length;
+	}
 }

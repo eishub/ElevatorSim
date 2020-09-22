@@ -10,30 +10,28 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
+ *
  *         LATER: add a way to validate inputs
  */
 public abstract class Parameter implements Serializable {
-	private Simulator.Keys simkey;
+	private static final long serialVersionUID = 1L;
+	private final Simulator.Keys simkey;
 
-	private Parameter() {
+	public Parameter(final Simulator.Keys key) {
 		super();
-	}
-
-	public Parameter(Simulator.Keys key) {
-		super();
-		simkey = key;
+		this.simkey = key;
 	}
 
 	public final String getDescription() {
-		return simkey.getDescription();
+		return this.simkey.getDescription();
 	}
 
+	@Override
 	public String toString() {
 		return getDescription();
 	}
 
 	public Simulator.Keys getKey() {
-		return simkey;
+		return this.simkey;
 	}
 }

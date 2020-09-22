@@ -4,7 +4,7 @@
  */
 package org.intranet.elevator;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.intranet.elevator.model.operate.Building;
 import org.intranet.elevator.model.operate.Person;
@@ -17,78 +17,73 @@ import org.intranet.ui.IntegerParameter;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public class ThreePersonBugSimulator extends Simulator {
-	// private IntegerParameter floorsParameter;
-	private IntegerParameter carsParameter;
-	private ChoiceParameter controllerParameter;
-
+	private final IntegerParameter carsParameter;
+	private final ChoiceParameter controllerParameter;
 	private Building building;
-	ArrayList<Controller> the_controllers; // all pickable controllers
-
+	private final List<Controller> the_controllers; // all pickable controllers
 	/**
 	 * Currently selected controller. set only after initializeModel() was done.
 	 */
 	private Controller controller = null;
 
-	public ThreePersonBugSimulator(ArrayList<Controller> controllers) {
+	public ThreePersonBugSimulator(final List<Controller> controllers) {
 		super();
-		the_controllers = controllers;
+		this.the_controllers = controllers;
 
-		carsParameter = Simulator.Keys.INSERT2NDREQAT
-				.getDefaultIntegerParameter();
-		parameters.add(carsParameter);
-		controllerParameter = new ChoiceParameter(Simulator.Keys.CONTROLLER,
-				the_controllers, preferredController(the_controllers),
-				Controller.class);
-		parameters.add(controllerParameter);
+		this.carsParameter = Simulator.Keys.INSERT2NDREQAT.getDefaultIntegerParameter();
+		this.parameters.add(this.carsParameter);
+		this.controllerParameter = new ChoiceParameter(Simulator.Keys.CONTROLLER, this.the_controllers,
+				preferredController(this.the_controllers), Controller.class);
+		this.parameters.add(this.controllerParameter);
 	}
 
+	@Override
 	public void initializeModel() {
-		int numCars = carsParameter.getIntegerValue();
-		controller = (Controller) controllerParameter.getChoiceValue();
+		final int numCars = this.carsParameter.getIntegerValue();
+		this.controller = (Controller) this.controllerParameter.getChoiceValue();
 
 		// copy the latest settings into the global simulatorsettings.
 		// that way we can recall them the next run (if not overridden by MAS)
+		Simulator.simulatorprefs.putInt(Simulator.Keys.CARS.toString(), numCars);
+		Simulator.simulatorprefs.put(Simulator.Keys.CONTROLLER.toString(), this.controller.toString());
 
-		Simulator.simulatorprefs.putInt(Simulator.Keys.CARS.toString(),
-				numCars);
-		Simulator.simulatorprefs.put(Simulator.Keys.CONTROLLER.toString(),
-				controller.toString());
-
-		building = new Building(getEventQueue(), 6, 1, controller);
+		this.building = new Building(getEventQueue(), 6, 1, this.controller);
 
 		createPerson(3, 0, 0);
 		createPerson(1, 2, numCars);
-		// createPerson(4, 8, 20000);
 	}
 
-	private void createPerson(int start, final int dest, long simTime) {
-		final Person person = building.createPerson(building.getFloor(start));
+	private void createPerson(final int start, final int dest, final long simTime) {
+		final Person person = this.building.createPerson(this.building.getFloor(start));
 		// insertion event for destination at time
-		Event event = new Event(simTime) {
+		final Event event = new Event(simTime) {
+			@Override
 			public void perform() {
-				person.setDestination(building.getFloor(dest));
+				person.setDestination(ThreePersonBugSimulator.this.building.getFloor(dest));
 			}
 		};
 		getEventQueue().addEvent(event);
 	}
 
+	@Override
 	public final Model getModel() {
-		return building;
+		return this.building;
 	}
 
+	@Override
 	public String getDescription() {
 		return "Three Person Trip Bug";
 	}
 
+	@Override
 	public Simulator duplicate() {
-		return new ThreePersonBugSimulator(the_controllers);
+		return new ThreePersonBugSimulator(this.the_controllers);
 	}
 
 	@Override
 	public Controller getCurrentController() {
-		return controller;
+		return this.controller;
 	}
 }

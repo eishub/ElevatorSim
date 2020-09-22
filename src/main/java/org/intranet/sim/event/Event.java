@@ -7,41 +7,34 @@ package org.intranet.sim.event;
 import java.util.Comparator;
 
 /**
- * 
+ *
  * An event to happen at some point in time. In the elevator simulator, these
  * events are created BEFORE the event should happen, and then
  * {@link #perform()} is called when the time has come (or passed) to trigger
  * the event.
- * 
+ *
  * <p>
  * At this point, the time is an abstract integer. However the RealTimeClock
  * uses {@link System#currentTimeMillis()}
  * </p>
- * 
+ *
  * @author Neil McKellar and Chris Dailey
- * 
- * 
  */
 public abstract class Event {
 	private static long maxId;
-	private long id;
-	private long time;
-
-	private Event() {
-		super();
-	}
+	private final long id;
+	private final long time;
 
 	/**
-	 * Create an event that will happen at the given simulated time. At that
-	 * time, perform() will be called.
-	 * 
-	 * @param newTime
-	 *            the time (ms since start) when the event will be performed.
+	 * Create an event that will happen at the given simulated time. At that time,
+	 * perform() will be called.
+	 *
+	 * @param newTime the time (ms since start) when the event will be performed.
 	 */
-	public Event(long newTime) {
+	public Event(final long newTime) {
 		super();
-		id = getNextId();
-		time = newTime;
+		this.id = getNextId();
+		this.time = newTime;
 	}
 
 	private static synchronized long getNextId() {
@@ -49,29 +42,31 @@ public abstract class Event {
 	}
 
 	public long getId() {
-		return id;
+		return this.id;
 	}
 
+	@Override
 	public String toString() {
-		String fullClassName = getClass().getName();
-		String shortClassName = fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
-		return shortClassName + ": " + Long.toString(time);
+		final String fullClassName = getClass().getName();
+		final String shortClassName = fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
+		return shortClassName + ": " + Long.toString(this.time);
 	}
 
 	public long getTime() {
-		return time;
+		return this.time;
 	}
 
 	public abstract void perform();
 
 	public static final class EventTimeComparator implements Comparator<Event> {
-		public int compare(Event o1, Event o2) {
-			Event e1 = (Event) o1;
-			Event e2 = (Event) o2;
+		@Override
+		public int compare(final Event o1, final Event o2) {
+			final Event e1 = o1;
+			final Event e2 = o2;
 
-			long diff = (e1.getTime() - e2.getTime());
+			final long diff = (e1.getTime() - e2.getTime());
 			if (diff == 0) {
-				long idDiff = e1.getId() - e2.getId();
+				final long idDiff = e1.getId() - e2.getId();
 				return idDiff == 0 ? 0 : idDiff > 0 ? 1 : -1;
 			}
 			return (diff > 0) ? 1 : -1;
@@ -80,12 +75,11 @@ public abstract class Event {
 
 	/**
 	 * Create copy of Event, with new given time.
-	 * 
-	 * @param newTime
-	 *            the new time to use
+	 *
+	 * @param newTime the new time to use
 	 * @return {@link Event} caused by the setTime.
 	 */
-	public Event setTime(long newTime) {
+	public Event setTime(final long newTime) {
 		throw new UnsupportedOperationException();
 	}
 }

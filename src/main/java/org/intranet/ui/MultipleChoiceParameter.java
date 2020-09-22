@@ -4,50 +4,50 @@
  */
 package org.intranet.ui;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public final class MultipleChoiceParameter extends MultipleValueParameter {
-	private ChoiceParameter choiceParam;
+	private static final long serialVersionUID = 1L;
+	private final ChoiceParameter choiceParam;
 	private Object[] selectedValues;
 
-	public MultipleChoiceParameter(ChoiceParameter param) {
+	public MultipleChoiceParameter(final ChoiceParameter param) {
 		super(param.getKey());
-		choiceParam = param;
+		this.choiceParam = param;
 	}
 
-	public List getParameterList() {
-		List params = new ArrayList();
-		if (!isMultiple) {
-			ChoiceParameter p = new ChoiceParameter(choiceParam.getKey(),
-					choiceParam.getLegalValues(), choiceParam.getUIValue(),
-					choiceParam.getType());
-			p.setValueFromUI(selectedValues[0]);
+	@Override
+	public List<Parameter> getParameterList() {
+		final List<Parameter> params = new LinkedList<>();
+		if (!this.isMultiple) {
+			final ChoiceParameter p = new ChoiceParameter(this.choiceParam.getKey(), this.choiceParam.getLegalValues(),
+					this.choiceParam.getUIValue(), this.choiceParam.getType());
+			p.setValueFromUI(this.selectedValues[0]);
 			params.add(p);
 			return params;
 		}
-		for (int i = 0; i < selectedValues.length; i++) {
-			Object value = selectedValues[i];
-			ChoiceParameter p = (ChoiceParameter) choiceParam.clone();
+		for (final Object value : this.selectedValues) {
+			final ChoiceParameter p = (ChoiceParameter) this.choiceParam.clone();
 			p.setValueFromUI(value);
 			params.add(p);
 		}
 		return params;
 	}
 
-	public List getLegalValues() {
-		return choiceParam.getLegalValues();
+	public List<?> getLegalValues() {
+		return this.choiceParam.getLegalValues();
 	}
 
-	public void setChoice(Object[] selectedValues) {
+	public void setChoice(final Object[] selectedValues) {
 		this.selectedValues = selectedValues;
 	}
 
+	@Override
 	public Object getSingleValue() {
-		return selectedValues[0];
+		return this.selectedValues[0];
 	}
 }

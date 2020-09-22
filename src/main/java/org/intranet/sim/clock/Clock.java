@@ -4,8 +4,7 @@
  */
 package org.intranet.sim.clock;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,35 +21,31 @@ import java.util.List;
  * changes but not to influence the clock in the listen process.
  * </ul>
  * TODO Link not working
- * 
+ *
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public abstract class Clock {
 	private boolean isRunning = false;
-	protected List<Listener> listeners = new ArrayList<Listener>();
+	protected List<Listener> listeners = new LinkedList<>();
 	private FeedbackListener feedbackListener;
 	protected int accelFactor;
-
 	protected long simulationTime;
 
 	public interface Listener {
 		/**
 		 * Informs about elapsed time since start
-		 * 
-		 * @param time
-		 *            time in ms since start
+		 *
+		 * @param time time in ms since start
 		 */
 		void timeUpdate(long time);
 
 		void stateUpdate(boolean running);
 
 		/**
-		 * called when the time factor changes. 2^(time factor) is the ratio
-		 * simulated time/real time.
-		 * 
-		 * @param timeFactor
-		 *            Allowed integers in range [-20..20].
+		 * called when the time factor changes. 2^(time factor) is the ratio simulated
+		 * time/real time.
+		 *
+		 * @param timeFactor Allowed integers in range [-20..20].
 		 */
 		void timeFactorUpdate(int timeFactor);
 	}
@@ -58,15 +53,14 @@ public abstract class Clock {
 	public interface FeedbackListener {
 		/**
 		 * Informs about elapsed time since start
-		 * 
-		 * @param time
-		 *            time in ms since start
+		 *
+		 * @param time time in ms since start
 		 * @return unknown
 		 */
 		long timeUpdate(long time);
 	}
 
-	public Clock(FeedbackListener c) {
+	public Clock(final FeedbackListener c) {
 		super();
 		setFeedbackListener(c);
 	}
@@ -75,69 +69,66 @@ public abstract class Clock {
 	 * @return the simulation time in ms from start
 	 */
 	public final long getSimulationTime() {
-		return simulationTime;
+		return this.simulationTime;
 	}
 
-	public final void addListener(Listener l) {
-		listeners.add(l);
+	public final void addListener(final Listener l) {
+		this.listeners.add(l);
 		// inform new listener of latest state of affairs
-		l.timeFactorUpdate(accelFactor);
+		l.timeFactorUpdate(this.accelFactor);
 	}
 
-	public final void setFeedbackListener(FeedbackListener l) {
-		feedbackListener = l;
+	public final void setFeedbackListener(final FeedbackListener l) {
+		this.feedbackListener = l;
 	}
 
 	public final boolean isRunning() {
-		return isRunning;
+		return this.isRunning;
 	}
 
-	protected final void setRunningState(boolean newRunningState) {
-		isRunning = newRunningState;
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			Listener l = (Listener) i.next();
-			l.stateUpdate(isRunning);
+	protected final void setRunningState(final boolean newRunningState) {
+		this.isRunning = newRunningState;
+		for (final Listener listener : this.listeners) {
+			final Listener l = listener;
+			l.stateUpdate(this.isRunning);
 		}
 	}
 
 	/**
-	 * 
-	 * @param t
-	 *            the simulation time in ms from start. Notice that the
-	 *            simulation time is the real time multiplied with the
-	 *            acceleration factor
+	 *
+	 * @param t the simulation time in ms from start. Notice that the simulation
+	 *          time is the real time multiplied with the acceleration factor
 	 */
-	protected final void setSimulationTime(long t) {
-		simulationTime = feedbackListener.timeUpdate(t);
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			Listener l = (Listener) i.next();
-			l.timeUpdate(simulationTime);
+	protected final void setSimulationTime(final long t) {
+		this.simulationTime = this.feedbackListener.timeUpdate(t);
+		for (final Listener listener : this.listeners) {
+			final Listener l = listener;
+			l.timeUpdate(this.simulationTime);
 		}
 	}
 
 	/**
 	 * time conversion is basic aspect of clock now. Added W.Pasman 11nov2010
-	 * 
-	 * @param factor
-	 *            is time factor [-20..20]. This indicates that the ratio
-	 *            simulated/real time = 2^timefactor.
+	 *
+	 * @param factor is time factor [-20..20]. This indicates that the ratio
+	 *               simulated/real time = 2^timefactor.
 	 */
-	public void setTimeConversion(int factor) {
-		accelFactor = factor;
-		for (Listener l : listeners) {
-			l.timeFactorUpdate(accelFactor);
+	public void setTimeConversion(final int factor) {
+		this.accelFactor = factor;
+		for (final Listener l : this.listeners) {
+			l.timeFactorUpdate(this.accelFactor);
 		}
 
 	}
 
 	/**
 	 * Get the time factor. See {@link #setTimeConversion(int)}
-	 * 
-	 * @return current time factor [-20..20]. This indicates that the current
-	 *         ratio simulated/real time = 2^timefactor.
+	 *
+	 * @return current time factor [-20..20]. This indicates that the current ratio
+	 *         simulated/real time = 2^timefactor.
 	 */
 	public int getTimeConversion() {
-		return accelFactor;
+		return this.accelFactor;
 	}
 
 	public abstract void dispose();

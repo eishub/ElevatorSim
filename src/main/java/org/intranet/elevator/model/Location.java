@@ -4,22 +4,20 @@
  */
 package org.intranet.elevator.model;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.intranet.elevator.model.operate.Person;
 import org.intranet.sim.ModelElement;
 import org.intranet.sim.event.EventQueue;
 
-/**
- * @author Neil McKellar and Chris Dailey
- */
 public class Location extends ModelElement {
 	private float height;
-	private int capacity;
-	private List people = new ArrayList();
+	private final int capacity;
+	private final List<Person> people = new LinkedList<>();
 
-	Location(EventQueue eQ, float height, int capacity) {
+	Location(final EventQueue eQ, final float height, final int capacity) {
 		super(eQ);
 		this.height = height;
 		this.capacity = capacity;
@@ -29,35 +27,35 @@ public class Location extends ModelElement {
 	 * @return Current position of the elevator.
 	 */
 	public final float getHeight() {
-		return height;
+		return this.height;
 	}
 
-	protected void setHeight(float newHeight) {
-		height = newHeight;
+	protected void setHeight(final float newHeight) {
+		this.height = newHeight;
 	}
 
-	public final void personEnters(Object person) {
-		if (isAtCapacity())
-			throw new IllegalStateException("Location is at capacity: "
-					+ capacity);
-		people.add(person);
+	public final void personEnters(final Person person) {
+		if (isAtCapacity()) {
+			throw new IllegalStateException("Location is at capacity: " + this.capacity);
+		}
+		this.people.add(person);
 	}
 
-	public final Iterator getPeople() {
-		return people.iterator();
+	public final Iterator<Person> getPeople() {
+		return this.people.iterator();
 	}
 
-	public final void personLeaves(Object person) {
-		if (!people.remove(person)) {
+	public final void personLeaves(final Person person) {
+		if (!this.people.remove(person)) {
 			throw new IllegalStateException("Person is not in this location.");
 		}
 	}
 
 	public final boolean isAtCapacity() {
-		return (people.size() == capacity);
+		return (this.people.size() == this.capacity);
 	}
 
 	public final int getCapacity() {
-		return capacity;
+		return this.capacity;
 	}
 }

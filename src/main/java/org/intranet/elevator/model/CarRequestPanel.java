@@ -5,113 +5,97 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
-* @author Neil McKellar and Chris Dailey
-*/
-public final class CarRequestPanel
-{
-  private boolean up;
-  private boolean down;
-  private List buttonListeners = new ArrayList();
-  private List arrivalListeners = new ArrayList();
-  
-  CarRequestPanel()
-  {
-    super();
-  }
-  
-  public boolean isUp()
-  {
-    return up;
-  }
-  
-  public boolean isDown()
-  {
-    return down;
-  }
-  
-  public void pressUp()
-  {
-    if (up)
-      return;
-    up = true;
-    List buttonListeners = new ArrayList(this.buttonListeners);
-    for (Iterator i = buttonListeners.iterator(); i.hasNext(); )
-    {
-      ButtonListener l = (ButtonListener)i.next();
-      l.pressedUp();
-    }
-  }
-  
-  public void pressDown()
-  {
-    if (down)
-      return;
-    down = true;
-    List buttonListeners = new ArrayList(this.buttonListeners);
-    for (Iterator i = buttonListeners.iterator(); i.hasNext(); )
-    {
-      ButtonListener l = (ButtonListener)i.next();
-      l.pressedDown();
-    }
-  }
-  
-  void arrivedUp(CarEntrance entrance)
-  {
-    up = false;
-    List arrivalListeners = new ArrayList(this.arrivalListeners);
-    for (Iterator i = arrivalListeners.iterator(); i.hasNext(); )
-    {
-      ArrivalListener l = (ArrivalListener)i.next();
-      l.arrivedUp(entrance);
-    }
-  }
-  
-  void arrivedDown(CarEntrance entrance)
-  {
-    down = false;
-    List arrivalListeners = new ArrayList(this.arrivalListeners);
-    for (Iterator i = arrivalListeners.iterator(); i.hasNext(); )
-    {
-      ArrivalListener l = (ArrivalListener)i.next();
-      l.arrivedDown(entrance);
-    }
-  }
-  
-  public void addButtonListener(ButtonListener listener)
-  {
-    buttonListeners.add(listener);
-  }
-  
-  public void removeButtonListener(ButtonListener listener)
-  {
-    buttonListeners.remove(listener);
-  }
-  
-  public void addArrivalListener(ArrivalListener listener)
-  {
-    arrivalListeners.add(listener);
-  }
-  
-  public void removeArrivalListener(ArrivalListener listener)
-  {
-    arrivalListeners.remove(listener);
-  }
-  
-  public static interface ButtonListener
-  {
-    void pressedUp();
-    
-    void pressedDown();
-  }
-  
-  public static interface ArrivalListener
-  {
-    void arrivedUp(CarEntrance entrance);
-    
-    void arrivedDown(CarEntrance entrance);
-  }
+ * @author Neil McKellar and Chris Dailey
+ */
+public final class CarRequestPanel {
+	private boolean up;
+	private boolean down;
+	private final List<ButtonListener> buttonListeners = new LinkedList<>();
+	private final List<ArrivalListener> arrivalListeners = new LinkedList<>();
+
+	CarRequestPanel() {
+		super();
+	}
+
+	public boolean isUp() {
+		return this.up;
+	}
+
+	public boolean isDown() {
+		return this.down;
+	}
+
+	public void pressUp() {
+		if (this.up) {
+			return;
+		}
+		this.up = true;
+		final List<ButtonListener> buttonListeners = new ArrayList<>(this.buttonListeners);
+		for (final ButtonListener buttonListener : buttonListeners) {
+			final ButtonListener l = buttonListener;
+			l.pressedUp();
+		}
+	}
+
+	public void pressDown() {
+		if (this.down) {
+			return;
+		}
+		this.down = true;
+		final List<ButtonListener> buttonListeners = new ArrayList<>(this.buttonListeners);
+		for (final ButtonListener buttonListener : buttonListeners) {
+			final ButtonListener l = buttonListener;
+			l.pressedDown();
+		}
+	}
+
+	void arrivedUp(final CarEntrance entrance) {
+		this.up = false;
+		final List<ArrivalListener> arrivalListeners = new ArrayList<>(this.arrivalListeners);
+		for (final ArrivalListener arrivalListener : arrivalListeners) {
+			final ArrivalListener l = arrivalListener;
+			l.arrivedUp(entrance);
+		}
+	}
+
+	void arrivedDown(final CarEntrance entrance) {
+		this.down = false;
+		final List<ArrivalListener> arrivalListeners = new ArrayList<>(this.arrivalListeners);
+		for (final ArrivalListener arrivalListener : arrivalListeners) {
+			final ArrivalListener l = arrivalListener;
+			l.arrivedDown(entrance);
+		}
+	}
+
+	public void addButtonListener(final ButtonListener listener) {
+		this.buttonListeners.add(listener);
+	}
+
+	public void removeButtonListener(final ButtonListener listener) {
+		this.buttonListeners.remove(listener);
+	}
+
+	public void addArrivalListener(final ArrivalListener listener) {
+		this.arrivalListeners.add(listener);
+	}
+
+	public void removeArrivalListener(final ArrivalListener listener) {
+		this.arrivalListeners.remove(listener);
+	}
+
+	public interface ButtonListener {
+		void pressedUp();
+
+		void pressedDown();
+	}
+
+	public interface ArrivalListener {
+		void arrivedUp(CarEntrance entrance);
+
+		void arrivedDown(CarEntrance entrance);
+	}
 }

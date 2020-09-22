@@ -11,49 +11,53 @@ import org.intranet.sim.Simulator;
 
 /**
  * @author Neil McKellar and Chris Dailey
- * 
  */
 public class LongParameter extends SingleValueParameter {
-	long value;
+	private static final long serialVersionUID = 1L;
+	private long value;
 
-	public LongParameter(Simulator.Keys key, long defaultValue) {
+	public LongParameter(final Simulator.Keys key, final long defaultValue) {
 		super(key);
-		value = defaultValue;
+		this.value = defaultValue;
 	}
 
 	public long getLongValue() {
-		return value;
+		return this.value;
 	}
 
-	void setLongValue(long newValue) {
-		value = newValue;
+	void setLongValue(final long newValue) {
+		this.value = newValue;
 	}
 
-	public void setValueFromUI(Object param) {
+	@Override
+	public void setValueFromUI(final Object param) {
 		setLongValue(Long.parseLong((String) param));
 	}
 
+	@Override
 	public Object getUIValue() {
-		return Long.toString(value);
+		return Long.toString(this.value);
 	}
 
-	public List getValues(String min, String max, String inc) {
+	@Override
+	public List<Object> getValues(final String min, final String max, final String inc) {
 		long minLong = Long.parseLong(min);
 		long maxLong = Long.parseLong(max);
-		long incLong = Long.parseLong(inc);
+		final long incLong = Long.parseLong(inc);
 
 		if (minLong > maxLong) {
-			long temp = minLong;
+			final long temp = minLong;
 			minLong = maxLong;
 			maxLong = temp;
 		}
 
-		int capacity = (int) ((maxLong - minLong) / incLong + 1);
-		List longValues = new ArrayList(capacity);
+		final int capacity = (int) ((maxLong - minLong) / incLong + 1);
+		final List<Object> longValues = new ArrayList<>(capacity);
 
 		// populate the array list with strings representing the values
-		for (long val = minLong; val <= maxLong; val += incLong)
+		for (long val = minLong; val <= maxLong; val += incLong) {
 			longValues.add(Long.toString(val));
+		}
 
 		return longValues;
 	}
