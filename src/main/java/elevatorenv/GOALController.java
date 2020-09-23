@@ -328,6 +328,7 @@ public class GOALController implements Controller {
 		addList.removeAll(previous);
 		delList.addAll(previous);
 		delList.removeAll(percepts);
+		this.previousPercepts.put(entity, percepts);
 
 		return new PerceptUpdate(addList, delList);
 	}
