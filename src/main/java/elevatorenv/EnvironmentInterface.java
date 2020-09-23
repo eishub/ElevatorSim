@@ -408,7 +408,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements SimulationApp
 	 * Returns a list of percepts derived from the simulator environment. Defines
 	 * the perceptual capabilities of an entity.
 	 *
-	 * @param entity DOC
+	 * @param entity
 	 * @version 3 now throws error if problem occors. returns empty Percept array if
 	 *          no controller available yet
 	 * @version 4 now uses entity (=== car name) instead of agent name to comply
