@@ -4,7 +4,7 @@
  */
 package org.intranet.ui;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ public final class MultipleChoiceParameter extends MultipleValueParameter {
 
 	@Override
 	public List<Parameter> getParameterList() {
-		final List<Parameter> params = new LinkedList<>();
+		final List<Parameter> params = new ArrayList<>();
 		if (!this.isMultiple) {
 			final ChoiceParameter p = new ChoiceParameter(this.choiceParam.getKey(), this.choiceParam.getLegalValues(),
 					this.choiceParam.getUIValue(), this.choiceParam.getType());

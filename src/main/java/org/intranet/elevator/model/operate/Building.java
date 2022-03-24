@@ -6,7 +6,6 @@ package org.intranet.elevator.model.operate;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.elevator.model.Car;
@@ -30,10 +29,10 @@ import org.intranet.statistics.Table;
  */
 public class Building extends Model {
 	private float height; // external height of building
-	private final List<Floor> floors = new LinkedList<>();
-	private final List<Car> cars = new LinkedList<>();
+	private final List<Floor> floors = new ArrayList<>();
+	private final List<Car> cars = new ArrayList<>();
+	private final List<Person> people = new ArrayList<>();
 	private Controller metaController;
-	private final List<Person> people = new LinkedList<>();
 
 	private Building() {
 		super(null);

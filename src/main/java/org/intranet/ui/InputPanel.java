@@ -7,7 +7,7 @@ package org.intranet.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -24,12 +24,12 @@ public abstract class InputPanel extends JPanel {
 	protected int centerRow = 1; // skip the header row
 	protected MemberArrays members = new MemberArrays();
 
-	protected class MemberArrays {
-		private final List<JComponent> baseInputFields = new LinkedList<>();
-		private final List<JComponent> maxInputFields = new LinkedList<>();
-		private final List<JComponent> incrementInputFields = new LinkedList<>();
-		private final List<JComponent> checkboxInputFields = new LinkedList<>();
-		private final List<Parameter> inputParams = new LinkedList<>();
+	protected static class MemberArrays {
+		private final List<JComponent> baseInputFields = new ArrayList<>();
+		private final List<JComponent> maxInputFields = new ArrayList<>();
+		private final List<JComponent> incrementInputFields = new ArrayList<>();
+		private final List<JComponent> checkboxInputFields = new ArrayList<>();
+		private final List<Parameter> inputParams = new ArrayList<>();
 
 		void addStuffToArrays(final Parameter p, final JComponent base, final JComponent max,
 				final JComponent increment, final JComponent checkbox) {
@@ -75,7 +75,7 @@ public abstract class InputPanel extends JPanel {
 
 	protected abstract void copyUIToParameter(int memberIndex, JComponent field, Parameter param);
 
-	private final List<Listener> listeners = new LinkedList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	public interface Listener {
 		void parametersApplied();
@@ -90,7 +90,6 @@ public abstract class InputPanel extends JPanel {
 	}
 
 	private InputPanel() {
-		super();
 		setLayout(new BorderLayout());
 		final JPanel centered = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(centered, BorderLayout.SOUTH);

@@ -4,7 +4,7 @@
 */
 package org.intranet.elevator.model;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.intranet.sim.event.EventQueue;
@@ -31,7 +31,6 @@ public final class CarEntrance {
 
 	CarEntrance(final EventQueue eQ, final Location fromLocation, final Location toLocation,
 			final CarEntranceListener listener) {
-		super();
 		this.door = new Door(eQ, fromLocation, toLocation);
 		this.sensor = new DoorSensor(eQ);
 		this.entranceListener = listener;
@@ -72,7 +71,7 @@ public final class CarEntrance {
 		});
 	}
 
-	private final List<DoorWaitListener> waiters = new LinkedList<>();
+	private final List<DoorWaitListener> waiters = new ArrayList<>();
 
 	public void waitToEnterDoor(final DoorWaitListener listener) {
 		this.waiters.add(listener);

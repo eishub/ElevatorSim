@@ -5,7 +5,6 @@
 package org.intranet.sim;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -29,8 +28,8 @@ public abstract class Simulator {
 	private boolean initialized;
 	private EventQueue eventQueue;
 	private Clock clock;
-	protected List<Parameter> parameters = new LinkedList<>();
-	private final List<Object> listeners = new LinkedList<>();
+	protected List<Parameter> parameters = new ArrayList<>();
+	private final List<Object> listeners = new ArrayList<>();
 	private final Clock.FeedbackListener cc = time -> {
 		synchronized (getModel()) {
 			try {
@@ -70,7 +69,6 @@ public abstract class Simulator {
 	 * Initialize simulator.
 	 */
 	protected Simulator() {
-		super();
 	}
 
 	/**
@@ -248,7 +246,7 @@ public abstract class Simulator {
 		private String description;
 		private Object defaultValue;
 
-		private Keys(final String desc, final Object defvalue) {
+		Keys(final String desc, final Object defvalue) {
 			this.description = desc;
 			this.defaultValue = defvalue;
 		}

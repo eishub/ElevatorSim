@@ -9,7 +9,6 @@ import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -57,7 +56,6 @@ public class MultipleSimulationArea extends JComponent {
 	private final Box topBox = new Box(BoxLayout.Y_AXIS);
 
 	public MultipleSimulationArea(final Simulator simulator, final SimulationApplication app) {
-		super();
 		this.sim = simulator;
 		this.simApp = app;
 
@@ -93,7 +91,7 @@ public class MultipleSimulationArea extends JComponent {
 	}
 
 	private void createCenterPanel() {
-		final List<StatisticVariable> statisticsVariables = new LinkedList<>();
+		final List<StatisticVariable> statisticsVariables = new ArrayList<>();
 		// Only fill the statistics variable with the headers of one set of tables,
 		// otherwise the list will contain duplicates of each statistics variable
 		// from each of the set of table results
@@ -211,7 +209,7 @@ public class MultipleSimulationArea extends JComponent {
 	}
 
 	protected Iterator<List<Parameter>> createParameterSetIterator(final List<Parameter> rangeParams) {
-		final List<List<Parameter>> paramListList = new LinkedList<>();
+		final List<List<Parameter>> paramListList = new ArrayList<>(rangeParams.size());
 		for (final Parameter parameter : rangeParams) {
 			final MultipleValueParameter rp = (MultipleValueParameter) parameter;
 			paramListList.add(rp.getParameterList());

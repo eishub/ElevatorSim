@@ -5,7 +5,6 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.ModelElement;
@@ -74,8 +73,8 @@ public class Door extends ModelElement {
 	private int percentClosed = 100;
 	private final Location from;
 	private final Location to;
-	private final List<Listener> listeners = new LinkedList<>();
-	private final List<Listener> priorityListeners = new LinkedList<>();
+	private final List<Listener> listeners = new ArrayList<>();
+	private final List<Listener> priorityListeners = new ArrayList<>();
 	private Event event;
 	private static final long CLOSE_TIME = 2000;
 	private static final long CLOSE_WAIT_TIME = 3000;

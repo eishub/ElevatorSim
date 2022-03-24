@@ -4,8 +4,8 @@
  */
 package org.intranet.elevator.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.elevator.model.operate.Person;
@@ -15,7 +15,7 @@ import org.intranet.sim.event.EventQueue;
 public class Location extends ModelElement {
 	private float height;
 	private final int capacity;
-	private final List<Person> people = new LinkedList<>();
+	private final List<Person> people = new ArrayList<>();
 
 	Location(final EventQueue eQ, final float height, final int capacity) {
 		super(eQ);

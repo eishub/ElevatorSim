@@ -5,7 +5,6 @@
 package org.intranet.sim.event;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -42,7 +41,7 @@ public final class EventQueue {
 		void eventError(Exception ex);
 	}
 
-	private final List<Listener> listeners = new LinkedList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	/**
 	 * Add new event to the event set.

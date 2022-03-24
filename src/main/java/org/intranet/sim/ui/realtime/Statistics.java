@@ -6,8 +6,8 @@ package org.intranet.sim.ui.realtime;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -39,7 +39,6 @@ public final class Statistics extends JComponent {
 		private final Table t;
 
 		private StatisticsTableCellRenderer(final Table t) {
-			super();
 			this.t = t;
 		}
 
@@ -67,14 +66,13 @@ public final class Statistics extends JComponent {
 		}
 	}
 
-	private final class StatisticsTableModel extends AbstractTableModel {
+	private static final class StatisticsTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		private final Table t;
 		private final String[] tmma = { "Total", "Min", "Max", "Avg" };
 
 		private StatisticsTableModel(final Table t) {
 			// TODO : detect when the table changes (e.g. Real-time statistics updates)
-			super();
 			this.t = t;
 		}
 
@@ -91,17 +89,17 @@ public final class Statistics extends JComponent {
 				return c.getValue(row);
 			}
 			final int over = row - this.t.getRowCount();
-			if (over == 0) {
+			switch (over) {
+			case 0:
 				return c.getTotal();
-			}
-			if (over == 1) {
+			case 1:
 				return c.getMin();
-			}
-			if (over == 2) {
+			case 2:
 				return c.getMax();
-			}
-			if (over == 3) {
+			case 3:
 				return c.getAverage();
+			default:
+				break;
 			}
 			return null;
 		}
@@ -128,10 +126,9 @@ public final class Statistics extends JComponent {
 
 	private Model model;
 	private final JTabbedPane jtp;
-	private final List<JTable> jtables = new LinkedList<>();
+	private final List<JTable> jtables = new ArrayList<>();
 
 	public Statistics() {
-		super();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.jtp = new JTabbedPane();
 		add(this.jtp);
@@ -171,7 +168,7 @@ public final class Statistics extends JComponent {
 					Statistics.this.jtp.removeTabAt(0);
 				}
 				Statistics.this.jtables.clear();
-				for (Table t2 : tables) {
+				for (final Table t2 : tables) {
 					final JTable jt2 = new JTable(new StatisticsTableModel(t2));
 					Statistics.this.jtables.add(jt2);
 					jt2.setDefaultRenderer(Object.class, new StatisticsTableCellRenderer(t2));

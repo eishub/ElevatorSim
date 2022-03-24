@@ -5,7 +5,6 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.clock.RealTimeClock;
@@ -68,7 +67,7 @@ public final class Car extends MovableLocation {
 	private Floor location;
 	private Floor destination;
 	private final FloorRequestPanel panel = new FloorRequestPanel();
-	private final List<Listener> listeners = new LinkedList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	public interface Listener {
 		void docked();

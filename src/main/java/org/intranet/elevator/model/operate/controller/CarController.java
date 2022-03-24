@@ -7,7 +7,6 @@ package org.intranet.elevator.model.operate.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.elevator.model.Car;
@@ -24,7 +23,6 @@ public class CarController {
 	private final CarAssignments assignments;
 
 	public CarController(final Car c, final float stoppingDist) {
-		super();
 		this.car = c;
 		this.stoppingDistance = stoppingDist;
 		this.assignments = new CarAssignments(this.car.getName());
@@ -58,9 +56,7 @@ public class CarController {
 		final Assignment a = new Assignment(floor, destinationDirection);
 
 		if (this.assignments.getCurrentAssignment() == null) {
-			// don't care about direction
-			final float time = this.car.getTravelTime(floor);
-			return time;
+			return this.car.getTravelTime(floor);
 		}
 
 		// Don't send another elevator to do the work if this elevator is already
@@ -149,8 +145,8 @@ public class CarController {
 	private Iterator<FloorContext> createFloorContexts(final List<Floor> floors, final Direction carDirection) {
 		final List<Floor> sortedFloors = new ArrayList<>(floors);
 		Collections.sort(sortedFloors, (arg0, arg1) -> {
-			final Floor floor0 = (Floor) arg0;
-			final Floor floor1 = (Floor) arg1;
+			final Floor floor0 = arg0;
+			final Floor floor1 = arg1;
 			float difference = floor0.getHeight() - floor1.getHeight();
 			if (!carDirection.isUp()) {
 				difference = -difference;
@@ -163,12 +159,13 @@ public class CarController {
 			}
 			return 0;
 		});
-		final List<FloorContext> floorContexts = new LinkedList<>();
-		for (int floorNum = 0; floorNum < sortedFloors.size() - 1; floorNum++) {
+		final int contexts = sortedFloors.size() - 1;
+		final List<FloorContext> floorContexts = new ArrayList<>(contexts);
+		for (int floorNum = 0; floorNum < contexts; floorNum++) {
 			final Floor previous = sortedFloors.get(floorNum);
 			final Floor next = sortedFloors.get(floorNum + 1);
 			Floor successor;
-			if (floorNum == sortedFloors.size() - 2) {
+			if (floorNum == (contexts - 1)) {
 				successor = next;
 			} else {
 				successor = sortedFloors.get(floorNum + 2);
@@ -214,8 +211,7 @@ public class CarController {
 		}
 		final boolean wasUp = currentAssignment.getDirection().isUp();
 		final boolean atExtreme = (wasUp && location == topFloor) || (!wasUp && location == bottomFloor);
-		final boolean isUp = atExtreme ? !wasUp : wasUp;
-		return isUp;
+		return atExtreme ? !wasUp : wasUp;
 	}
 
 	public void setNextDestination() {

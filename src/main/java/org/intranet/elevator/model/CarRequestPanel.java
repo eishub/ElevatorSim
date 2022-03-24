@@ -5,7 +5,6 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,11 +13,10 @@ import java.util.List;
 public final class CarRequestPanel {
 	private boolean up;
 	private boolean down;
-	private final List<ButtonListener> buttonListeners = new LinkedList<>();
-	private final List<ArrivalListener> arrivalListeners = new LinkedList<>();
+	private final List<ButtonListener> buttonListeners = new ArrayList<>();
+	private final List<ArrivalListener> arrivalListeners = new ArrayList<>();
 
 	CarRequestPanel() {
-		super();
 	}
 
 	public boolean isUp() {

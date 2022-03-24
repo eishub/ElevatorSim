@@ -5,7 +5,6 @@
 package org.intranet.elevator.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.ModelElement;
@@ -57,7 +56,7 @@ import org.intranet.sim.event.EventQueue;
 public class DoorSensor extends ModelElement {
 	private State state = State.CLEAR;
 	private Event clearEvent = null;
-	private final List<Listener> listeners = new LinkedList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	private final class ClearEvent extends Event {
 		private ClearEvent(final long newTime) {

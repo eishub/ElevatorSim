@@ -4,7 +4,7 @@
  */
 package org.intranet.sim.clock;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public abstract class Clock {
 	private boolean isRunning = false;
-	protected List<Listener> listeners = new LinkedList<>();
+	protected List<Listener> listeners = new ArrayList<>();
 	private FeedbackListener feedbackListener;
 	protected int accelFactor;
 	protected long simulationTime;
@@ -61,7 +61,6 @@ public abstract class Clock {
 	}
 
 	public Clock(final FeedbackListener c) {
-		super();
 		setFeedbackListener(c);
 	}
 

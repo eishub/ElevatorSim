@@ -4,7 +4,7 @@
  */
 package org.intranet.ui;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public final class RangeParameter extends MultipleValueParameter {
 
 	@Override
 	public List<Parameter> getParameterList() {
-		final List<Parameter> params = new LinkedList<>();
+		final List<Parameter> params = new ArrayList<>();
 		if (!this.isMultiple) {
 			this.param.setValueFromUI(this.baseValue);
 			params.add(this.param);

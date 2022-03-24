@@ -4,7 +4,7 @@
  */
 package org.intranet.elevator.model.operate.controller;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.intranet.elevator.model.Car;
@@ -23,12 +23,11 @@ import org.intranet.sim.event.EventQueue;
  * @author Neil McKellar and Chris Dailey
  */
 public class SimpleController implements Controller {
-	private final List<Car> cars = new LinkedList<>();
+	private final List<Car> cars = new ArrayList<>();
 	private boolean up = true;
 	private boolean carsMoving = false;
 
 	public SimpleController() {
-		super();
 	}
 
 	@Override

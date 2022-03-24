@@ -7,10 +7,11 @@ package elevatorenv;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.intranet.elevator.model.Car;
 import org.intranet.elevator.model.CarEntrance;
@@ -42,7 +43,7 @@ import eis.iilang.Percept;
  */
 public class GOALController implements Controller {
 	private EventQueue evtQueue; // used to get time stamps.
-	private final List<Car> cars = new LinkedList<>();
+	private final List<Car> cars = new ArrayList<>();
 
 	/**
 	 * The direction light of a car, to be shown when the car arrives and door
@@ -65,19 +66,12 @@ public class GOALController implements Controller {
 	private final EnvironmentInterface env;
 
 	/**
-	 * send floorCount percept only once. Here we keep the elevator names that we
-	 * sent the percept to.
-	 */
-	private final List<String> floorCountSentTo = new LinkedList<>();
-
-	/**
 	 * Create new GOAL controller.
 	 *
 	 * @param theenv is the link to the environment interface, allows us to do
 	 *               callbacks and pass percept information
 	 */
 	public GOALController(final EnvironmentInterface theenv) {
-		super();
 		this.env = theenv;
 	}
 
@@ -197,11 +191,10 @@ public class GOALController implements Controller {
 	private final Map<String, List<Percept>> previousPercepts = new HashMap<>();
 
 	private final Map<String, Identifier> lastDoorState = new HashMap<>();
+	private final Map<String, Identifier> lastDoorStateSent = new HashMap<>();
 	private final Map<String, Numeral> lastNumPeople = new HashMap<>();
-
-	// this list contains the entity names that already received the capacity of
-	// the elevator.
-	private final List<String> sentCapacity = new LinkedList<>();
+	private final Map<String, Numeral> lastNumPeopleSent = new HashMap<>();
+	private final Set<String> sentInitial = new HashSet<>();
 
 	/**
 	 * create list of current percepts that can be passed through EIS. Floor numbers
@@ -234,9 +227,16 @@ public class GOALController implements Controller {
 	public synchronized PerceptUpdate sendPercepts(final String carname, final String entity, final int timefactor) {
 		final Car car = getCar(carname);
 
-		final List<Percept> percepts = new LinkedList<>();
-		final List<Percept> addList = new LinkedList<>();
-		final List<Percept> delList = new LinkedList<>();
+		final List<Percept> percepts = new ArrayList<>();
+		final List<Percept> addList = new ArrayList<>();
+		final List<Percept> delList = new ArrayList<>();
+
+		if (!this.sentInitial.contains(entity)) {
+			percepts.add(new Percept("capacity", new Numeral(car.getCapacity())));
+			final int n = car.getFloorRequestPanel().getServicedFloors().size();
+			percepts.add(new Percept("floorCount", new Numeral(n)));
+			this.sentInitial.add(entity);
+		}
 
 		// figure out which floor we are. see also TRAC #715 and #1334
 		// there are two ways to get floor. Sometimes one fails. Check why?
@@ -247,23 +247,29 @@ public class GOALController implements Controller {
 
 		// at a floor? Then give atFloor and doorState
 		Identifier newDoorState;
-		if (floor != null) {
-			percepts.add(new Percept("atFloor", new Numeral(floor.getFloorNumber())));
-
+		if (floor == null) {
+			newDoorState = new Identifier("closed");
+		} else {
 			final CarEntrance entrance = floor.getCarEntranceForCar(car);
 			newDoorState = new Identifier(entrance.getDoor().getState().toString().toLowerCase());
-		} else {
-			newDoorState = new Identifier("closed");
+
+			percepts.add(new Percept("atFloor", new Numeral(floor.getFloorNumber())));
 		}
 
 		final Identifier oldDoorState = this.lastDoorState.get(entity);
-		if (oldDoorState != null) {
-			delList.add(new Percept("doorState", oldDoorState));
-		}
-		if (!newDoorState.equals(oldDoorState)) {
-			// update needed.
+		if (newDoorState.equals(oldDoorState)) {
+			final Identifier sentDoorState = this.lastDoorStateSent.get(entity);
+			if (sentDoorState != null) {
+				delList.add(new Percept("doorState", sentDoorState));
+				this.lastDoorStateSent.remove(entity);
+			}
+		} else {
+			if (oldDoorState != null) {
+				delList.add(new Percept("doorState", oldDoorState));
+			}
 			addList.add(new Percept("doorState", newDoorState));
 			this.lastDoorState.put(entity, newDoorState);
+			this.lastDoorStateSent.put(entity, newDoorState);
 		}
 
 		// HACK see #1357.
@@ -285,11 +291,6 @@ public class GOALController implements Controller {
 			percepts.add(new Percept("eButtonOn", new Numeral(f.getFloorNumber())));
 		}
 
-		if (!this.sentCapacity.contains(entity)) {
-			this.sentCapacity.add(entity);
-			percepts.add(new Percept("capacity", new Numeral(car.getCapacity())));
-		}
-
 		// count people now in elevator. Annoying but we can't just get the list
 		Integer people = 0;
 		final Iterator<Person> peopleiterator = car.getPeople();
@@ -297,23 +298,22 @@ public class GOALController implements Controller {
 			people++;
 			peopleiterator.next();
 		}
-		final Numeral numPeople = new Numeral(people);
+		final Numeral newNumPeople = new Numeral(people);
 		// update needed?
 		final Numeral oldNumPeople = this.lastNumPeople.get(entity);
-		if (oldNumPeople != null) {
-			delList.add(new Percept("people", oldNumPeople));
-		}
-		if (!numPeople.equals(oldNumPeople)) {
-			// update needed.
-			addList.add(new Percept("people", numPeople));
-			this.lastNumPeople.put(entity, numPeople);
-		}
-
-		if (!this.floorCountSentTo.contains(carname)) {
-			// the num of floors = the number of buttons in the car, right?
-			final int n = car.getFloorRequestPanel().getServicedFloors().size();
-			percepts.add(new Percept("floorCount", new Numeral(n)));
-			this.floorCountSentTo.add(carname);
+		if (newNumPeople.equals(oldNumPeople)) {
+			final Numeral sentNumPeople = this.lastNumPeopleSent.get(entity);
+			if (sentNumPeople != null) {
+				delList.add(new Percept("people", sentNumPeople));
+				this.lastNumPeopleSent.remove(entity);
+			}
+		} else {
+			if (oldNumPeople != null) {
+				delList.add(new Percept("people", oldNumPeople));
+			}
+			addList.add(new Percept("people", newNumPeople));
+			this.lastNumPeople.put(entity, newNumPeople);
+			this.lastNumPeopleSent.put(entity, newNumPeople);
 		}
 
 		// the current time factor of the simulator #1357

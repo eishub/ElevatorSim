@@ -6,14 +6,13 @@ package org.intranet.elevator.model.operate.controller;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.intranet.elevator.model.Floor;
 
 class CarAssignments {
-	private List<Assignment> list = new LinkedList<>();
+	private List<Assignment> list = new ArrayList<>();
 	private final String carName;
 
 	CarAssignments() {
@@ -21,7 +20,6 @@ class CarAssignments {
 	}
 
 	CarAssignments(final String name) {
-		super();
 		this.carName = name;
 	}
 
@@ -161,7 +159,7 @@ class CarAssignments {
 
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		for (final Iterator<Assignment> assignments = iterator(); assignments.hasNext();) {
 			final Assignment a = assignments.next();
 			if (sb.length() > 0) {

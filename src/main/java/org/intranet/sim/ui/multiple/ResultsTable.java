@@ -8,7 +8,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -41,7 +40,7 @@ class ResultsTable extends JPanel {
 		void cellSelected(List<Parameter> params);
 	}
 
-	private final List<ResultsTableListener> listeners = new LinkedList<>();
+	private final List<ResultsTableListener> listeners = new ArrayList<>();
 
 	void addResultsTableListener(final ResultsTableListener rtl) {
 		this.listeners.add(rtl);
@@ -111,9 +110,7 @@ class ResultsTable extends JPanel {
 	}
 
 	static private int interpolate(final float percent, final int min, final int max) {
-		int result;
-		result = (int) (((max - min) * percent) + min);
-		return result;
+		return (int) (((max - min) * percent) + min);
 	}
 
 	static private float computePercentage(final float f, final float min, final float max) {
@@ -128,7 +125,6 @@ class ResultsTable extends JPanel {
 		private final List<Parameter> params;
 
 		public ResultsRowTableModel(final List<Parameter> secondaryParameters) {
-			super();
 			this.params = secondaryParameters;
 		}
 
@@ -158,7 +154,6 @@ class ResultsTable extends JPanel {
 
 		private ResultsGridTableModel(final List<Parameter> primaryParameters, final ResultsGrid grid,
 				final List<Parameter> secondaryParameters) {
-			super();
 			this.primaryParameters = primaryParameters;
 			this.grid = grid;
 			this.secondaryParameters = secondaryParameters;
@@ -193,7 +188,6 @@ class ResultsTable extends JPanel {
 		private final float max;
 
 		public ResultsTableRenderer(final TableCellRenderer defaultRenderer, final float min, final float max) {
-			super();
 			this.tcRenderer = defaultRenderer;
 			this.min = min;
 			this.max = max;

@@ -4,8 +4,8 @@
  */
 package org.intranet.elevator.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,9 +13,9 @@ import java.util.List;
  *
  */
 public class FloorRequestPanel {
-	private final List<Floor> floors = new LinkedList<>();
-	private final List<Floor> requestedFloors = new LinkedList<>();
-	private final List<Listener> listeners = new LinkedList<>();
+	private final List<Floor> floors = new ArrayList<>();
+	private final List<Floor> requestedFloors = new ArrayList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	public final void addServicedFloor(final Floor floor) {
 		this.floors.add(floor);

@@ -4,7 +4,7 @@
  */
 package org.intranet.elevator.model.operate.controller;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.intranet.elevator.model.Car;
@@ -15,7 +15,7 @@ import org.intranet.sim.event.EventQueue;
  * @author Neil McKellar and Chris Dailey
  */
 public class MetaController implements Controller {
-	private final List<CarController> carControllers = new LinkedList<>();
+	private final List<CarController> carControllers = new ArrayList<>();
 
 	@Override
 	public void initialize(final EventQueue eQ) {
@@ -48,13 +48,11 @@ public class MetaController implements Controller {
 			if (cost < lowestCost) {
 				c = controller;
 				lowestCost = cost;
-			} else if (cost == lowestCost) {
-				// Previously, the simulation simply collected statistics.
-				// With the addition of this comparison, the statistics being gathered
-				// are affecting the outcome of the simulation.
-				if (controller.getCar().getTotalDistance() < c.getCar().getTotalDistance()) {
-					c = controller;
-				}
+			} else // Previously, the simulation simply collected statistics.
+			// With the addition of this comparison, the statistics being gathered
+			// are affecting the outcome of the simulation.
+			if ((cost == lowestCost) && (controller.getCar().getTotalDistance() < c.getCar().getTotalDistance())) {
+				c = controller;
 			}
 		}
 

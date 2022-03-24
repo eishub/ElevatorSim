@@ -7,8 +7,8 @@ package org.intranet.sim.ui.multiple;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,8 +39,8 @@ public class ResultsSelection extends JPanel {
 	private JComboBox<StatisticVariable> statisticsChooser;
 	private JComboBox<Parameter> averageChooser;
 	private final List<StatisticVariable> statisticsVariables;
-	private final List<ValueSelector> valueSelectors = new LinkedList<>();
-	private final List<ResultsSelectionListener> listeners = new LinkedList<>();
+	private final List<ValueSelector> valueSelectors = new ArrayList<>();
+	private final List<ResultsSelectionListener> listeners = new ArrayList<>();
 
 	interface ResultsSelectionListener {
 		void resultsSelected(MultipleValueParameter primaryVar, MultipleValueParameter secondaryVar,
@@ -53,7 +53,6 @@ public class ResultsSelection extends JPanel {
 
 	public ResultsSelection(final List<Parameter> rangeParams, final List<StatisticVariable> statisticsVariables,
 			final ResultsSelectionListener l) {
-		super();
 		this.statisticsVariables = statisticsVariables;
 		if (l != null) {
 			addResultsSelectionListener(l);
@@ -85,7 +84,7 @@ public class ResultsSelection extends JPanel {
 		final MultipleValueParameter secondaryVar = (MultipleValueParameter) this.secondaryChooser.getSelectedItem();
 		final MultipleValueParameter averageVar = this.averageChooser.getSelectedItem() instanceof String ? null
 				: (MultipleValueParameter) this.averageChooser.getSelectedItem();
-		final List<Parameter> otherParameters = new LinkedList<>();
+		final List<Parameter> otherParameters = new ArrayList<>();
 		for (final Object element : this.valueSelectors) {
 			final ValueSelector vs = (ValueSelector) element;
 			final boolean isPrimaryVariable = primaryVar != null
@@ -133,7 +132,7 @@ public class ResultsSelection extends JPanel {
 	}
 
 	private JComponent createChoosers(final List<Parameter> rangeParamsInitial) {
-		final List<Parameter> multiValueParams = new LinkedList<>();
+		final List<Parameter> multiValueParams = new ArrayList<>();
 		for (final Parameter parameter : rangeParamsInitial) {
 			final MultipleValueParameter p = (MultipleValueParameter) parameter;
 			if (p.isMultiple()) {
@@ -302,14 +301,13 @@ public class ResultsSelection extends JPanel {
 
 	private class AverageComboBoxModel implements ComboBoxModel<Parameter> {
 		private final List<Parameter> rangeParams;
-		private final List<Parameter> currentParams = new LinkedList<>();
+		private final List<Parameter> currentParams = new ArrayList<>();
 		private Parameter selected;
-		private final List<ListDataListener> listeners = new LinkedList<>();
+		private final List<ListDataListener> listeners = new ArrayList<>();
 
 		// TODO: handle the case where no secondary var is selected
 		public AverageComboBoxModel(final List<Parameter> params, final Parameter primarySelected,
 				final Parameter secondarySelected) {
-			super();
 			this.rangeParams = params;
 			updateCurrentList(primarySelected, secondarySelected);
 		}
@@ -371,13 +369,12 @@ public class ResultsSelection extends JPanel {
 
 	private class SecondaryComboBoxModel implements ComboBoxModel<Parameter> {
 		private final List<Parameter> rangeParams;
-		private final List<Parameter> currentParams = new LinkedList<>();
+		private final List<Parameter> currentParams = new ArrayList<>();
 		private Parameter selected;
-		private final List<ListDataListener> listeners = new LinkedList<>();
+		private final List<ListDataListener> listeners = new ArrayList<>();
 
 		// TODO: handle the case where no secondary var is selected
 		public SecondaryComboBoxModel(final List<Parameter> params, final Object primarySelected) {
-			super();
 			this.rangeParams = params;
 			updateCurrentList(primarySelected);
 			if (this.currentParams.size() > 0) {

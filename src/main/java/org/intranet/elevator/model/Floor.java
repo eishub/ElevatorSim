@@ -4,8 +4,8 @@
 */
 package org.intranet.elevator.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.intranet.sim.event.EventQueue;
@@ -18,7 +18,7 @@ public final class Floor extends Location {
 	// distance from the ground
 	private final float ceiling; // relative to the floor's height
 	private final CarRequestPanel callPanel = new CarRequestPanel();
-	private final List<CarEntrance> carEntrances = new LinkedList<>();
+	private final List<CarEntrance> carEntrances = new ArrayList<>();
 
 	// TODO: Make a sequence diagram with all the passing off of notification
 	private final CarEntrance.CarEntranceListener carEntranceListener = new CarEntrance.CarEntranceListener() {
@@ -67,10 +67,7 @@ public final class Floor extends Location {
 		for (final CarEntrance carEntrance2 : this.carEntrances) {
 			final CarEntrance carEntrance = carEntrance2;
 			if (carEntrance.getDoor().isOpen()) {
-				if (up && carEntrance.isUp()) {
-					return carEntrance;
-				}
-				if (!up && carEntrance.isDown()) {
+				if ((up && carEntrance.isUp()) || (!up && carEntrance.isDown())) {
 					return carEntrance;
 				}
 			}

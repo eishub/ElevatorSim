@@ -4,7 +4,7 @@
  */
 package org.intranet.statistics;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,10 +12,9 @@ import java.util.List;
  */
 public class Table {
 	private final String name;
-	private final List<Column> columns = new LinkedList<>();
+	private final List<Column> columns = new ArrayList<>();
 
 	public Table(final String[] rows, final String tblName) {
-		super();
 		this.rowNames = rows;
 		this.name = tblName;
 	}
